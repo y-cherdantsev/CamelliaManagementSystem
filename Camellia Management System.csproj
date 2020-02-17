@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Camellia_Management_System</RootNamespace>
+    <PackageTags>camellia management wisk zhekacher</PackageTags>
+    <Company>Wisk Telecom Solutions</Company>
+    <Authors>Yevgeniy Cherdantsev</Authors>
+    <PackageId>CamelliaManagementSystem</PackageId>
+    <Description>Util for working with Camellia service</Description>
+    <Copyright>Wisk Telecom Solutions</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>camellia.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/ZhekaCher/Camellia-Management-System.git</RepositoryUrl>
+    <NeutralLanguage />
+    <Product>Camellia Management System</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="camellia.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="InteropKalkanCryptCOMLib" Version="1.0.1" />
+  </ItemGroup>
+
+</Project>
