@@ -1,15 +1,11 @@
 ﻿﻿﻿﻿namespace Camellia_Management_System.JsonObjects.RequestObjects
 {
-
-/*!
-
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 18:49:50
-@version 1.0
-@brief Eds json object
-    
-    */
-
+    /// @author Yevgeniy Cherdantsev
+    /// @date 18.02.2020 12:17:45
+    /// @version 1.0
+    /// <summary>
+    /// Eds json object
+    /// </summary>
     public class Eds
     {
         public long createdDate { get; set; }
