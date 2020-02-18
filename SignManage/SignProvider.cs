@@ -5,62 +5,51 @@ using System.Text.Json;
 
 namespace Camellia_Management_System.SignManage
 {
-    /*!
-
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 19:00:59
-@version 1.0
-@brief Sign Providing system (Automatic randomizer of signs from the given directory)
-     
-@code
-     
-     var signs = new SignProvider(@"C:\...\...\signs\");
-     var newSign = signs.GetNextSign();
-     
-@endcode
-    
-    */
-
+    /// @author Yevgeniy Cherdantsev
+    /// @date 18.02.2020 10:21:54
+    /// @version 1.0
+    /// <summary>
+    /// Sign Providing system (Automatic randomizer of signs from the given directory)
+    /// </summary>
+    /// <code>
+    /// var signs = new SignProvider(@"C:\...\...\signs\");
+    /// var newSign = signs.GetNextSign();
+    /// </code>
     public class SignProvider
     {
         private readonly string _pathToSignFolders;
         private int _i = 0;
-        private List<CustomSigns> _customSigns;
+        private List<CustomSign> _customSign;
 
-        /*!
-
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 18:59:31
-@version 1.0
-@brief Sign Provider constructor
-@param[in] pathToSignFolders - path to the folder with signs
-@throw FileNotFoundException - если не найдено указанной папки
-     
-@code
-     new SignProvider(@"C:\...\...\signs\");
-@endcode
-     
-     */
+        /// @author Yevgeniy Cherdantsev
+        /// @date 18.02.2020 10:23:09
+        /// @version 1.0
+        /// <summary>
+        /// Sign Provider constructor
+        /// </summary>
+        /// <param name="pathToSignFolders">path to the folder with signs</param>
+        /// <exception cref="FileNotFoundException">If the folder can't be found</exception>
+        /// <code>
+        /// new SignProvider(@"C:\...\...\signs\");
+        /// </code>
         public SignProvider(string pathToSignFolders)
         {
             _pathToSignFolders = pathToSignFolders;
-            _customSigns = ShuffleList(LoadSigns());
+            _customSign = ShuffleList(LoadSigns());
         }
 
 
-        /*!
-
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 19:08:30
-@version 1.0
-@brief generating list of signs
-@return customSigns - list of signs
-@throw FileNotFoundException
-     
-     */
-        private List<CustomSigns> LoadSigns()
+        /// @author Yevgeniy Cherdantsev
+        /// @date 18.02.2020 10:25:57
+        /// @version 1.0
+        /// <summary>
+        /// Generating list of signs
+        /// </summary>
+        /// <returns>List - list of signs</returns>
+        /// <exception cref="FileNotFoundException">If file not found</exception>
+        private List<CustomSign> LoadSigns()
         {
-            var customSigns = new List<CustomSigns>();
+            var customSigns = new List<CustomSign>();
             var directoryInfo = new DirectoryInfo(_pathToSignFolders);
             if (!directoryInfo.Exists)
                 throw new FileNotFoundException($"Can not find directory: '{_pathToSignFolders}'");
@@ -68,7 +57,7 @@ namespace Camellia_Management_System.SignManage
                 throw new FileNotFoundException($"'{_pathToSignFolders}' has no inner directories");
             foreach (var directory in directoryInfo.GetDirectories())
             {
-                var customSign = new CustomSigns();
+                var customSign = new CustomSign();
                 var files = directory.GetFiles();
                 foreach (var fileInfo in files)
                 {
@@ -108,75 +97,65 @@ namespace Camellia_Management_System.SignManage
             return customSigns;
         }
 
-        /*!
 
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 19:33:42
-@version 1.0
-@brief Reterns new random sign
-@return randomSign - randomized sign
-
-@code
-     var newSign = signs.GetNextSign();
-@endcode
-     
-     */
-        
-        public CustomSigns GetNextSign()
+        /// @author Yevgeniy Cherdantsev
+        /// @date 18.02.2020 10:30:26
+        /// @version 1.0
+        /// <summary>
+        /// Reterns new random sign
+        /// </summary>
+        /// <returns>CustomSign - randomized sign</returns>
+        /// <code>
+        /// var newSign = signs.GetNextSign();
+        /// </code>
+        public CustomSign GetNextSign()
         {
-            if (_customSigns.Count == 0)
-                _customSigns = ShuffleList(LoadSigns());
+            if (_customSign.Count == 0)
+                _customSign = ShuffleList(LoadSigns());
 
-            var randomSign = _customSigns[0];
-            _customSigns.RemoveAt(0);
-            while (!(new FileInfo(randomSign.AuthSign.FilePath).Exists && new FileInfo(randomSign.RsaSign.FilePath).Exists))
+            var randomSign = _customSign[0];
+            _customSign.RemoveAt(0);
+            while (!(new FileInfo(randomSign.AuthSign.FilePath).Exists &&
+                     new FileInfo(randomSign.RsaSign.FilePath).Exists))
                 return GetNextSign();
 
             return randomSign;
         }
 
-        /*!
 
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 19:36:05
-@version 1.0
-@brief Temp class
-    
-    */
-
-        public class CustomSigns
+        /// @author Yevgeniy Cherdantsev
+        /// @date 18.02.2020 10:31:15
+        /// @version 1.0
+        /// <summary>
+        /// Temp class
+        /// </summary>
+        public class CustomSign
         {
             public Sign AuthSign { get; set; } = new Sign();
             public Sign RsaSign { get; set; } = new Sign();
         }
 
 
-/*!
-
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 19:36:25
-@version 1.0
-@brief Temp class for loading json object from 'passwords.json' file
-    
-    */
-        
+        /// @author Yevgeniy Cherdantsev
+        /// @date 18.02.2020 10:31:36
+        /// @version 1.0
+        /// <summary>
+        /// Temp class for loading json object from 'passwords.json' file
+        /// </summary>
         private class CustomPasswords
         {
             public string auth { get; set; }
             public string rsa { get; set; }
         }
 
-/*!
-
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 19:37:18
-@version 1.0
-@brief Shiffles given list of objects
-@param[in] inputList - List
-@return shuffledList - Shuffled list
-     
-     */
-        
+        /// @author Yevgeniy Cherdantsev
+        /// @date 18.02.2020 10:31:53
+        /// @version 1.0
+        /// <summary>
+        /// Shuffles given list of objects
+        /// </summary>
+        /// <param name="inputList">List to shuffle</param>
+        /// <returns>List - Shuffled list</returns>
         private static List<TE> ShuffleList<TE>(IList<TE> inputList)
         {
             var shuffledList = new List<TE>();

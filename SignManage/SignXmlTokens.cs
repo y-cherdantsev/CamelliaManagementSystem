@@ -2,28 +2,36 @@
 
 namespace Camellia_Management_System.SignManage
 {
-/*!
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 16:24:09
-@version 1.0
-@brief Class that signs xml tokens
-    
-    */
 
+    /// @author Yevgeniy Cherdantsev
+    /// @date 18.02.2020 10:35:27
+    /// @version 1.0
+    /// <summary>
+    /// Class that signs xml tokens
+    /// </summary>
     public class SignXmlTokens
     {
         /*!
 
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 16:24:44
-@version 1.0
-@brief Signing of the xml token
-@param[in] inData - xml text
-@param[in] sign - sign
-@return string - signed token
 @throw exception - unexpected exception
      
      */
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 18.02.2020 10:35:42
+        /// @version 1.0
+        /// <summary>
+        /// Signing of the xml token
+        /// </summary>
+        /// <param name="inData">XML text</param>
+        /// <param name="sign">Sign</param>
+        /// <returns>String - signed token</returns>
+        /// <exception cref="Exception">Unexpected exception</exception>
+
+
+    
+
         public static string SignToken(string inData, Sign sign)
         {
             /*
