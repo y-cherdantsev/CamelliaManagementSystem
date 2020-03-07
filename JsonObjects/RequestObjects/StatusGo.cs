@@ -1,29 +1,23 @@
 ﻿﻿﻿namespace Camellia_Management_System.JsonObjects.RequestObjects
 {
-
-/*!
-
-@author Yevgeniy Cherdantsev
-@date 17.02.2020 18:51:40
-@version 1.0
-@brief StatusGo json object
-    
-    */
-
+    /// @author Yevgeniy Cherdantsev
+    /// @date 18.02.2020 12:19:00
+    /// @version 1.0
+    /// <summary>
+    /// StatusGo json object
+    /// </summary>
     public class StatusGo
     {
         public string code { get; set; } = "";
         public Name name { get; set; } = new Name();
     }
-    
-    /*!
-@author Yevgeniy Cherdantsev
-@date 10.01.2020 09:16:09
-@version 1.0
-@brief Name json object
-    
-    */
 
+    /// @author Yevgeniy Cherdantsev
+    /// @date 18.02.2020 12:19:21
+    /// @version 1.0
+    /// <summary>
+    /// Name json object
+    /// </summary>
     public class Name
     {
         public string ru { get; set; } = "";
