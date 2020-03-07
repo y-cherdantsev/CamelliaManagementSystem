@@ -1,5 +1,16 @@
 ﻿namespace Camellia_Management_System.SignManage
 {
+    /// @author Yevgeniy Cherdantsev
+    /// @date 18.02.2020 10:31:15
+    /// @version 1.0
+    /// <summary>
+    /// Class which contains all information about user signs
+    /// </summary>
+    public class FullSign
+    {
+        public Sign AuthSign { get; set; } = new Sign();
+        public Sign RsaSign { get; set; } = new Sign();
+    }
 
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 10:17:31
@@ -7,18 +18,17 @@
     /// <summary>
     /// Sign Object Creator
     /// </summary>
-
     public class Sign
     {
         /// <summary>
         /// Path to the sign file
         /// </summary>
-        internal string FilePath { get; set; }
+        public string FilePath { get; set; }
 
         /// <summary>
         /// Password for the sign
         /// </summary>
-        internal string Password { get; set; }
+        public string Password { get; set; }
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:34:30

@@ -19,7 +19,7 @@ namespace Camellia_Management_System.SignManage
     {
         private readonly string _pathToSignFolders;
         private int _i = 0;
-        private List<CustomSign> _customSign;
+        private List<FullSign> _fullSign;
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:23:09
@@ -46,7 +46,7 @@ namespace Camellia_Management_System.SignManage
         public SignProvider(string pathToSignFolders)
         {
             _pathToSignFolders = pathToSignFolders;
-            _customSign = ShuffleList(LoadSigns());
+            _fullSign = ShuffleList(LoadSigns());
         }
 
 
@@ -58,9 +58,9 @@ namespace Camellia_Management_System.SignManage
         /// </summary>
         /// <returns>List - list of signs</returns>
         /// <exception cref="FileNotFoundException">If file not found</exception>
-        private List<CustomSign> LoadSigns()
+        private List<FullSign> LoadSigns()
         {
-            var customSigns = new List<CustomSign>();
+            var fullSigns = new List<FullSign>();
             var directoryInfo = new DirectoryInfo(_pathToSignFolders);
             if (!directoryInfo.Exists)
                 throw new FileNotFoundException($"Can not find directory: '{_pathToSignFolders}'");
@@ -68,44 +68,44 @@ namespace Camellia_Management_System.SignManage
                 throw new FileNotFoundException($"'{_pathToSignFolders}' has no inner directories");
             foreach (var directory in directoryInfo.GetDirectories())
             {
-                var customSign = new CustomSign();
+                var fullSign = new FullSign();
                 var files = directory.GetFiles();
                 foreach (var fileInfo in files)
                 {
                     if (fileInfo.Name.StartsWith("AUTH"))
-                        customSign.AuthSign.FilePath = fileInfo.FullName;
+                        fullSign.AuthSign.FilePath = fileInfo.FullName;
                     else if (fileInfo.Name.StartsWith("RSA"))
-                        customSign.RsaSign.FilePath = fileInfo.FullName;
+                        fullSign.RsaSign.FilePath = fileInfo.FullName;
                     else if (fileInfo.Name.Equals("passwords.json"))
                     {
                         var customPasswords =
                             JsonSerializer.Deserialize<CustomPasswords>(fileInfo.OpenText().ReadToEnd());
-                        customSign.AuthSign.Password = customPasswords.auth;
-                        customSign.RsaSign.Password = customPasswords.rsa;
+                        fullSign.AuthSign.Password = customPasswords.auth;
+                        fullSign.RsaSign.Password = customPasswords.rsa;
                     }
                 }
 
-                if (customSign.AuthSign.FilePath == null)
+                if (fullSign.AuthSign.FilePath == null)
                     throw new FileNotFoundException(
                         $"Hasn't found any auth signs in '{_pathToSignFolders}' directory");
 
-                if (customSign.AuthSign.Password == null)
+                if (fullSign.AuthSign.Password == null)
                     throw new FileNotFoundException(
                         $"Hasn't found any password for auth sign in '{_pathToSignFolders}' directory");
 
-                if (customSign.RsaSign.FilePath == null)
+                if (fullSign.RsaSign.FilePath == null)
                     throw new FileNotFoundException(
                         $"Hasn't found any rsa signs in '{_pathToSignFolders}' directory");
 
-                if (customSign.AuthSign.Password == null)
+                if (fullSign.AuthSign.Password == null)
                     throw new FileNotFoundException(
                         $"Hasn't found any password for rsa sign in '{_pathToSignFolders}' directory");
 
 
-                customSigns.Add(customSign);
+                fullSigns.Add(fullSign);
             }
 
-            return customSigns;
+            return fullSigns;
         }
 
 
@@ -115,35 +115,22 @@ namespace Camellia_Management_System.SignManage
         /// <summary>
         /// Reterns new random sign
         /// </summary>
-        /// <returns>CustomSign - randomized sign</returns>
+        /// <returns>FullSign - randomized sign</returns>
         /// <code>
         /// var newSign = signs.GetNextSign();
         /// </code>
-        public CustomSign GetNextSign()
+        public FullSign GetNextSign()
         {
-            if (_customSign.Count == 0)
-                _customSign = ShuffleList(LoadSigns());
+            if (_fullSign.Count == 0)
+                _fullSign = ShuffleList(LoadSigns());
 
-            var randomSign = _customSign[0];
-            _customSign.RemoveAt(0);
+            var randomSign = _fullSign[0];
+            _fullSign.RemoveAt(0);
             while (!(new FileInfo(randomSign.AuthSign.FilePath).Exists &&
                      new FileInfo(randomSign.RsaSign.FilePath).Exists))
                 return GetNextSign();
 
             return randomSign;
-        }
-
-
-        /// @author Yevgeniy Cherdantsev
-        /// @date 18.02.2020 10:31:15
-        /// @version 1.0
-        /// <summary>
-        /// Temp class
-        /// </summary>
-        public class CustomSign
-        {
-            public Sign AuthSign { get; set; } = new Sign();
-            public Sign RsaSign { get; set; } = new Sign();
         }
 
 
