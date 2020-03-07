@@ -36,14 +36,14 @@ namespace Camellia_Management_System.Requests
         }
 
 
-        protected ReadinessStatus WaitResult(string requestNumber)
+        protected ReadinessStatus WaitResult(string requestNumber, int delay)
         {
             Thread.Sleep(2000);
             var readinessStatus = GetReadinessStatus(requestNumber);
 
             while (readinessStatus.status.Equals("IN_PROCESSING"))
             {
-                Thread.Sleep(1200);
+                Thread.Sleep(delay);
                 readinessStatus = GetReadinessStatus(requestNumber);
             }
 

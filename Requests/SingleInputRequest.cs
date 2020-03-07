@@ -24,13 +24,13 @@ namespace Camellia_Management_System.Requests
         }
 
 
-        public IEnumerable<ResultForDownload> GetReference(string input)
+        public IEnumerable<ResultForDownload> GetReference(string input, int delay = 1000)
         {
             var token = GetToken(input);
             token = JsonSerializer.Deserialize<TokenResponse>(token).xml;
             var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);
             var requestNumber = SendPdfRequest(signedToken);
-            var readinessStatus = WaitResult(requestNumber);
+            var readinessStatus = WaitResult(requestNumber, delay);
             if (readinessStatus.status.Equals("APPROVED"))
                 return readinessStatus.resultsForDownload;
 
