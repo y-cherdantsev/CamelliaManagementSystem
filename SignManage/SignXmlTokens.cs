@@ -11,13 +11,6 @@ namespace Camellia_Management_System.SignManage
     /// </summary>
     public class SignXmlTokens
     {
-        /*!
-
-@throw exception - unexpected exception
-     
-     */
-
-
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:35:42
         /// @version 1.0
@@ -28,10 +21,6 @@ namespace Camellia_Management_System.SignManage
         /// <param name="sign">Sign</param>
         /// <returns>String - signed token</returns>
         /// <exception cref="Exception">Unexpected exception</exception>
-
-
-    
-
         public static string SignToken(string inData, Sign sign)
         {
             /*

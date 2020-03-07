@@ -31,6 +31,17 @@ namespace Camellia_Management_System.SignManage
         /// <exception cref="FileNotFoundException">If the folder can't be found</exception>
         /// <code>
         /// new SignProvider(@"C:\...\...\signs\");
+        /// 
+        /// Authentication sign should start with 'AUTH'
+        /// RSA sign should start with 'RSA'
+        ///
+        /// passwords.json example:
+        /// {
+        ///     "auth":"auth_password",
+        ///     "rsa":"rsa_password"
+        /// }
+        ///
+        /// !!! This files should be in the inner folder: './signs/inner_folder1/' !!!
         /// </code>
         public SignProvider(string pathToSignFolders)
         {
