@@ -15,6 +15,7 @@
     <RepositoryUrl>https://github.com/ZhekaCher/Camellia-Management-System.git</RepositoryUrl>
     <NeutralLanguage />
     <Product>Camellia Management System</Product>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,5 +28,6 @@
   <ItemGroup>
     <PackageReference Include="InteropKalkanCryptCOMLib" Version="1.0.1" />
   </ItemGroup>
+  
 
 </Project>

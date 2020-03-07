@@ -18,12 +18,12 @@ namespace Camellia_Management_System
     {
         public HttpClient HttpClient;
         public UserInformation UserInformation;
-        private readonly FullSign _fullSign;
+        internal readonly FullSign FullSign;
 
 
         public CamelliaClient(FullSign fullSign)
         {
-            _fullSign = fullSign;
+            FullSign = fullSign;
 
             var handler = new HttpClientHandler
             {
@@ -36,7 +36,7 @@ namespace Camellia_Management_System
 
         public CamelliaClient(FullSign fullSign, IWebProxy webProxy)
         {
-            _fullSign = fullSign;
+            FullSign = fullSign;
 
             var handler = new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = webProxy};
 
@@ -70,7 +70,7 @@ namespace Camellia_Management_System
 
         private void Authorize()
         {
-            var signedToken = SignXmlTokens.SignToken(GetToken(), _fullSign.AuthSign);
+            var signedToken = SignXmlTokens.SignToken(GetToken(), FullSign.AuthSign);
 
             var values = new Dictionary<string, string>
             {
@@ -94,6 +94,14 @@ namespace Camellia_Management_System
             return userInformation;
         }
 
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 07.03.2020 15:50:14
+        /// @version 1.0
+        /// <summary>
+        /// Logging out of camellia system
+        /// </summary>
         public void Logout()
         {
             HttpClient.GetAsync("https://egov.kz/cms/ru/auth/logout")
