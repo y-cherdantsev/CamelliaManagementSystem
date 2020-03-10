@@ -8,11 +8,21 @@ namespace Camellia_Management_System.FileManage
     /// @date 07.03.2020 17:30:46
     /// @version 1.0
     /// <summary>
-    /// INPUT
+    /// Parsing of registration reference and gettion of founders from it
     /// </summary>
-    public class FoundersPdfParse
+    public static class FoundersPdfParse
     {
-        public static List<string> GetFounders(string innerText)
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:31:22
+        /// @version 1.0
+        /// <summary>
+        /// Parsing text and gets founderf from it
+        /// </summary>
+        /// <param name="innerText">Text of a pdf file</param>
+        /// <returns>IEnumerable - List of founders</returns>
+        public static IEnumerable<string> GetFounders(string innerText)
         {
             var founders = new List<string>();
             var textFromPdf = innerText;
@@ -71,6 +81,16 @@ namespace Camellia_Management_System.FileManage
         }
 
 
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:32:28
+        /// @version 1.0
+        /// <summary>
+        /// Minimization of a text and removing of unneccesary symbols before using it
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns>string - minimized text</returns>
         private static string MinimizeRegistrationReferenceText(string text)
 
         {
@@ -124,7 +144,17 @@ namespace Camellia_Management_System.FileManage
             return text;
         }
 
-        private static List<string> Normalize(List<string> founders)
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:33:42
+        /// @version 1.0
+        /// <summary>
+        /// Removing of unneccesary element and symbols in founders list
+        /// </summary>
+        /// <param name="founders">List of founders</param>
+        /// <returns>IEnumerable - normalized list</returns>
+        private static IEnumerable<string> Normalize(List<string> founders)
         {
             founders.RemoveAll(x => x.Replace(" ", "").Equals("-"));
             for (var i = 0; i < founders.Count; i++)
