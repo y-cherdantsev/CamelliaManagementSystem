@@ -18,22 +18,21 @@ namespace Camellia_Management_System.FileManage
             var founders = new List<string>();
             var textFromPdf = innerText;
             if (textFromPdf.ToLower().Contains("регистрации филиала"))
-                throw new Exception("Trying to parse 'Филиал'");
+                return founders;
             var minimized = MinimizeRegistrationReferenceText(textFromPdf);
 
             var from = "Учредители (участники):</b>";
             var to = "<b>";
-            var fromPosition = minimized.ToLower().IndexOf(from.ToLower());
+            var fromPosition = minimized.ToLower().IndexOf(from.ToLower(), StringComparison.Ordinal);
             minimized = minimized.Substring(fromPosition + from.Length, minimized.Length - fromPosition - from.Length);
-            minimized = minimized.Substring(0, minimized.ToLower().IndexOf(to)).Trim();
+            minimized = minimized.Substring(0, minimized.ToLower().IndexOf(to, StringComparison.Ordinal)).Trim();
             var elements = minimized.Split("\n");
 
-
-            bool flag = false;
+            var flag = false;
             foreach (var element in elements)
             {
                 if (element.Replace("\r", "").Replace("\n", "").Replace(" ", "").All(char.IsUpper) &&
-                    element.Any(x => x.Equals(' ')))
+                    element.Contains(" "))
                 {
                     founders.Add(element);
                     flag = false;
@@ -52,19 +51,24 @@ namespace Camellia_Management_System.FileManage
                         founders.Add(element);
                     }
 
-                    if (element.Replace("\n", "").Replace("\r", "").Replace(" ", "").EndsWith("\""))
+                    if (element.Replace("\r\n", "").Replace(" ", "").EndsWith("\""))
                     {
                         flag = false;
                     }
 
-                    if (element.Replace("\n", "").Replace("\r", "").Replace(" ", "").EndsWith("»"))
+                    if (element.Replace("\r\n", "").Replace(" ", "").EndsWith("»"))
+                    {
+                        flag = false;
+                    }
+
+                    if (!element.Contains(" "))
                     {
                         flag = false;
                     }
                 }
             }
 
-            return founders;
+            return Normalize(founders);
         }
 
 
@@ -73,7 +77,7 @@ namespace Camellia_Management_System.FileManage
         {
             text = text.Trim();
             var to = "<b>Наименование";
-            var position = text.ToLower().IndexOf(to.ToLower());
+            var position = text.ToLower().IndexOf(to.ToLower(), StringComparison.Ordinal);
             text = text.Substring(position,
                 text.Length - position);
             while (true)
@@ -111,6 +115,7 @@ namespace Camellia_Management_System.FileManage
                     break;
                 }
             }
+
             text = text.Replace("&quot;", "\"");
             text = text.Replace("&quot", "\"");
             text = text.Replace("</BODY>", "");
@@ -118,6 +123,14 @@ namespace Camellia_Management_System.FileManage
             text = text.Replace("<br>", "");
 
             return text;
+        }
+
+        private static List<string> Normalize(List<string> founders)
+        {
+            founders.RemoveAll(x => x.Replace(" ", "").Equals("-"));
+            for (var i = 0; i < founders.Count; i++)
+                founders[i] = founders[i].Replace("\r", "");
+            return founders.Count > 0 ? founders : null;
         }
     }
 }
