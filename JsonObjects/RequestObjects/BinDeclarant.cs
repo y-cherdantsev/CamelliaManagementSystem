@@ -5,7 +5,7 @@
     /// @date 07.03.2020 16:32:40
     /// @version 1.0
     /// <summary>
-    /// INPUT
+    /// Json object that should be send in order to get reference
     /// </summary>
     public class BinDeclarant
     {

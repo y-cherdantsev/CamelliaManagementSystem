@@ -6,7 +6,7 @@
     /// @date 07.03.2020 16:37:58
     /// @version 1.0
     /// <summary>
-    /// INPUT
+    /// Token response while using sign
     /// </summary>
     public class TokenResponse
     {
