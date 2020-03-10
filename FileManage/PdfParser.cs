@@ -8,7 +8,7 @@ namespace Camellia_Management_System.FileManage
     /// @date 07.03.2020 17:22:27
     /// @version 1.0
     /// <summary>
-    /// INPUT
+    /// Class that parsing pdf and gets information from them in centralized objects
     /// </summary>
     public class PdfParser
     {
@@ -41,7 +41,16 @@ namespace Camellia_Management_System.FileManage
             return text;
         }
 
-        public List<string> GetFounders()
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:25:01
+        /// @version 1.0
+        /// <summary>
+        /// INPUT
+        /// </summary>
+        /// <returns>IEnumerable - list of founders</returns>
+        public IEnumerable<string> GetFounders()
         {
             return FoundersPdfParse.GetFounders(_innerText);
         }

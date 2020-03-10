@@ -19,8 +19,7 @@ namespace Camellia_Management_System.SignManage
         /// </summary>
         /// <param name="inData">XML text</param>
         /// <param name="sign">Sign</param>
-        /// <returns>String - signed token</returns>
-        /// <exception cref="Exception">Unexpected exception</exception>
+        /// <returns>string - signed token</returns>
         public static string SignToken(string inData, Sign sign)
         {
             /*

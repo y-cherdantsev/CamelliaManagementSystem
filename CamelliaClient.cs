@@ -21,6 +21,14 @@ namespace Camellia_Management_System
         internal readonly FullSign FullSign;
 
 
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:13:49
+        /// @version 1.0
+        /// <summary>
+        /// Constructor for creating Camellia client
+        /// </summary>
+        /// <param name="fullSign"></param>
         public CamelliaClient(FullSign fullSign)
         {
             FullSign = fullSign;
@@ -34,6 +42,16 @@ namespace Camellia_Management_System
             UserInformation = GetUserInformation();
         }
 
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:14:34
+        /// @version 1.0
+        /// <summary>
+        /// Constructor for creating Camellia client through proxy
+        /// </summary>
+        /// <param name="fullSign"></param>
+        /// <param name="webProxy"></param>
         public CamelliaClient(FullSign fullSign, IWebProxy webProxy)
         {
             FullSign = fullSign;
@@ -44,6 +62,15 @@ namespace Camellia_Management_System
             UserInformation = GetUserInformation();
         }
 
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:15:18
+        /// @version 1.0
+        /// <summary>
+        /// Connects to the cammelia system using handler
+        /// </summary>
+        /// <param name="handler"></param>
         private void Connect(HttpMessageHandler handler)
         {
             HttpClient = new HttpClient(handler);
@@ -53,13 +80,20 @@ namespace Camellia_Management_System
             HttpClient = new HttpClient(handler);
             Authorize();
         }
-
+        
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:15:18
+        /// @version 1.0
+        /// <summary>
+        /// Request of the connection token
+        /// </summary>
+        /// <returns>string - Connection token</returns>
         private string GetToken()
         {
             var response = HttpClient.GetStringAsync("https://idp.egov.kz/idp/sign-in")
                 .GetAwaiter()
                 .GetResult();
-            response = response.Substring(response.IndexOf("id=\"xmlToSign\" value=\"") +
+            response = response.Substring(response.IndexOf("id=\"xmlToSign\" value=\"", StringComparison.Ordinal) +
                                           "id=\"xmlToSign\" value=\"".Length);
             response = response.Substring(0, response.IndexOf("\" />"));
             response = response.Replace("&lt;", "<");
@@ -68,6 +102,13 @@ namespace Camellia_Management_System
             return response;
         }
 
+        
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:15:18
+        /// @version 1.0
+        /// <summary>
+        /// Authorization to the system using sign
+        /// </summary>
         private void Authorize()
         {
             var signedToken = SignXmlTokens.SignToken(GetToken(), FullSign.AuthSign);
@@ -85,6 +126,15 @@ namespace Camellia_Management_System
             HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content).GetAwaiter().GetResult();
         }
 
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:17:42
+        /// @version 1.0
+        /// <summary>
+        /// Loading user information from camellia system
+        /// </summary>
+        /// <returns>UserInformation - Information about authorized user</returns>
         private UserInformation GetUserInformation()
         {
             var res = HttpClient.GetStringAsync("https://egov.kz/services/P30.11/rest/current-user")
@@ -109,6 +159,13 @@ namespace Camellia_Management_System
                 .GetResult();
         }
 
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.03.2020 10:19:28
+        /// @version 1.0
+        /// <summary>
+        /// Disposing
+        /// </summary>
         public void Dispose()
         {
             Logout();
