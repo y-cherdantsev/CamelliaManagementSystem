@@ -26,6 +26,9 @@ namespace Camellia_Management_System.Requests
 
         public IEnumerable<ResultForDownload> GetReference(string input, int delay = 1000)
         {
+            if (input.Length==12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, input))
+                throw new Exception("This bin is not registered");
+
             var token = GetToken(input);
             token = JsonSerializer.Deserialize<TokenResponse>(token).xml;
             var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);

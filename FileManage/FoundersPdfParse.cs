@@ -40,7 +40,7 @@ namespace Camellia_Management_System.FileManage
             var flag = false;
             foreach (var element in elements)
             {
-                if (element.Replace("\r", "").Replace("\n", "").Replace(" ", "").All(char.IsUpper) &&
+                if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty).All(char.IsUpper) &&
                     element.Contains(" "))
                 {
                     founders.Add(element);
@@ -60,12 +60,12 @@ namespace Camellia_Management_System.FileManage
                         founders.Add(element);
                     }
 
-                    if (element.Replace("\r\n", "").Replace(" ", "").EndsWith("\""))
+                    if (element.Replace("\r\n", string.Empty).Replace(" ", string.Empty).EndsWith("\""))
                     {
                         flag = false;
                     }
 
-                    if (element.Replace("\r\n", "").Replace(" ", "").EndsWith("»"))
+                    if (element.Replace("\r\n", string.Empty).Replace(" ", string.Empty).EndsWith("»"))
                     {
                         flag = false;
                     }
@@ -137,9 +137,9 @@ namespace Camellia_Management_System.FileManage
 
             text = text.Replace("&quot;", "\"");
             text = text.Replace("&quot", "\"");
-            text = text.Replace("</BODY>", "");
-            text = text.Replace("</HTML>", "");
-            text = text.Replace("<br>", "");
+            text = text.Replace("</BODY>", string.Empty);
+            text = text.Replace("</HTML>", string.Empty);
+            text = text.Replace("<br>", string.Empty);
 
             return text;
         }
@@ -156,9 +156,9 @@ namespace Camellia_Management_System.FileManage
         /// <returns>IEnumerable - normalized list</returns>
         private static IEnumerable<string> Normalize(List<string> founders)
         {
-            founders.RemoveAll(x => x.Replace(" ", "").Equals("-"));
+            founders.RemoveAll(x => x.Replace(" ", string.Empty).Equals("-"));
             for (var i = 0; i < founders.Count; i++)
-                founders[i] = founders[i].Replace("\r", "");
+                founders[i] = founders[i].Replace("\r", string.Empty);
             return founders.Count > 0 ? founders : null;
         }
     }
