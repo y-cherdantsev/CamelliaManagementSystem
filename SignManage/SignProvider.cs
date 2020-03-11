@@ -18,7 +18,6 @@ namespace Camellia_Management_System.SignManage
     public class SignProvider
     {
         private readonly string _pathToSignFolders;
-        private int _i = 0;
         private List<FullSign> _fullSign;
 
         /// @author Yevgeniy Cherdantsev

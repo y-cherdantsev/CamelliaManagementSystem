@@ -12,11 +12,8 @@ namespace Camellia_Management_System.Requests
     /// @date 07.03.2020 16:35:25
     /// @version 1.0
     /// <summary>
-    /// INPUT
-    /// </summary>
-    /// <code>
     /// 
-    /// </code>
+    /// </summary>
     public abstract class SingleInputRequest : CamelliaRequest
     {
         protected SingleInputRequest(CamelliaClient camelliaClient) : base(camelliaClient)
