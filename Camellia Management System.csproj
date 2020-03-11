@@ -17,7 +17,7 @@
     <Product>Camellia Management System</Product>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ApplicationIcon>camellia.ico</ApplicationIcon>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
