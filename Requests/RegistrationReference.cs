@@ -26,14 +26,15 @@ namespace Camellia_Management_System.Requests
         /// </summary>
         /// <param name="bin">Bin</param>
         /// <param name="delay">Delay of checking if the reference is in ms</param>
+        /// <param name="deleteFile">If the file should be deleted after parsing</param>
         /// <returns>IEnumerable - list of founders</returns>
-        public IEnumerable<string> GetFounders(string bin, int delay = 1000)
+        public IEnumerable<string> GetFounders(string bin, int delay = 1000, bool deleteFile = true)
         {
             var reference = GetReference(bin, delay);
 
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
-                return new PdfParser(temp.SaveFile("./")).GetFounders();
+                return new PdfParser(temp.SaveFile("./"), deleteFile).GetFounders();
             return null;
         }
     }

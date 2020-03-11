@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-	<PackageVersion>1.0.1</PackageVersion>
-	<Version>1.0.1</Version>
+	<PackageVersion>1.0.2</PackageVersion>
+	<Version>1.0.2</Version>
     <RootNamespace>Camellia_Management_System</RootNamespace>
     <PackageTags>camellia management wisk zhekacher</PackageTags>
     <Company>Wisk Telecom Solutions</Company>

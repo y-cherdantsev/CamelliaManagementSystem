@@ -10,10 +10,11 @@
 
 ## Versioning
 #### Last version:
-1.0.1 - Added documentation to the package; Added ability to check if the company is exists;
+1.0.2 - Founder getting included in requesting reference
 
 ###### Older versions:
 1.0.0 - Initial version
+1.0.1 - Added documentation to the package; Added ability to check if the company is exists;
 
 ## Authors
 
