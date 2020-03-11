@@ -18,7 +18,7 @@ namespace Camellia_Management_System.FileManage
         /// @date 10.03.2020 10:31:22
         /// @version 1.0
         /// <summary>
-        /// Parsing text and gets founderf from it
+        /// Parsing text and gets founders from it
         /// </summary>
         /// <param name="innerText">Text of a pdf file</param>
         /// <returns>IEnumerable - List of founders</returns>

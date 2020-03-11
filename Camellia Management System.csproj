@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+	<PackageVersion>1.0.1</PackageVersion>
+	<Version>1.0.1</Version>
     <RootNamespace>Camellia_Management_System</RootNamespace>
     <PackageTags>camellia management wisk zhekacher</PackageTags>
     <Company>Wisk Telecom Solutions</Company>
@@ -17,7 +19,15 @@
     <Product>Camellia Management System</Product>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ApplicationIcon>camellia.ico</ApplicationIcon>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\zheka\RiderProjects\Camellia Management System\Camellia Management System\Camellia Management System.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\zheka\RiderProjects\Camellia Management System\Camellia Management System\Camellia Management System.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

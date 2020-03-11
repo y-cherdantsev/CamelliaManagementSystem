@@ -12,6 +12,17 @@ namespace Camellia_Management_System.Requests
     
     public static class AdditionalRequests
     {
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 11.03.2020 16:19:56
+        /// @version 1.0
+        /// <summary>
+        /// Returns boolean if the bin is registered in camellia system
+        /// </summary>
+        /// <param name="camelliaClient">Camellia client</param>
+        /// <param name="bin">bin of the company</param>
+        /// <returns>bool - true if company registered</returns>
         public static bool IsBinRegistered(CamelliaClient camelliaClient,string bin)
         {
             var res = camelliaClient.HttpClient.GetStringAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}")
