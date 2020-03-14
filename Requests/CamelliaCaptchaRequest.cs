@@ -35,8 +35,12 @@ namespace Camellia_Management_System.Requests
             var filePath = path;
 
             var inputStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
-            using var outputFileStream = new FileStream(filePath, FileMode.Create);
-            inputStream.CopyTo(outputFileStream);
+            using (var outputFileStream = new FileStream(filePath, FileMode.Create))
+            {
+                inputStream.CopyTo(outputFileStream);
+                outputFileStream.Flush();
+            }
+            inputStream.Dispose();
         }
 
         protected bool CheckCaptcha(string solvedCaptcha)

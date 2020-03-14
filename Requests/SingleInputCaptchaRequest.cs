@@ -15,7 +15,6 @@ namespace Camellia_Management_System.Requests
     /// <summary>
     /// INPUT
     /// </summary>
-
     public abstract class SingleInputCaptchaRequest : CamelliaCaptchaRequest
     {
         public SingleInputCaptchaRequest(CamelliaClient camelliaClient) : base(camelliaClient)

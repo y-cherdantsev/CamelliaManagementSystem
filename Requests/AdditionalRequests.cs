@@ -10,7 +10,7 @@ namespace Camellia_Management_System.Requests
     /// Additional requests
     /// </summary>
     
-    public static class AdditionalRequests
+    static class AdditionalRequests
     {
 
 

@@ -10,7 +10,7 @@ namespace Camellia_Management_System.Requests
     /// <summary>
     /// 
     /// </summary>
-    public class RegistrationReference : SingleInputRequest
+    public sealed class RegistrationReference : SingleInputRequest
     {
         public RegistrationReference(CamelliaClient camelliaClient) : base(camelliaClient)
         { 

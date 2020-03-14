@@ -12,7 +12,7 @@
     /// </code>
 
 
-    public class ParticipationReference : SingleInputCaptchaRequest
+    public sealed class ParticipationReference : SingleInputCaptchaRequest
     {
         public ParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {

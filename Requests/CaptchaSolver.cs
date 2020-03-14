@@ -19,7 +19,7 @@ namespace Camellia_Management_System.Requests
     /// </code>
 
 
-    public static class CaptchaSolver
+    static class CaptchaSolver
     {
         private const string ApiKey = "1bcedad1e4e52767b3bda6bf7aa11461";
         public static string SolveCaptcha(string imagePath)
@@ -42,11 +42,9 @@ namespace Camellia_Management_System.Requests
             while (true)
             {
                 var url = $"https://2captcha.com/res.php?key={ApiKey}&action=get&id={captchaId}";
-                Console.WriteLine($"URL: {url}");
                 var client = new RestClient(url);
                 var request = new RestRequest(Method.GET);
                 var response = client.Execute(request);
-                Console.WriteLine(">>> " + response.Content);
                 if (response.Content.Equals("ERROR_CAPTCHA_UNSOLVABLE"))
                     throw new AuthenticationException();
                 if (!response.Content.Equals("CAPCHA_NOT_READY")) 
