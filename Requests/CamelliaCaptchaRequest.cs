@@ -71,13 +71,13 @@ namespace Camellia_Management_System.Requests
                 webDriver.Manage().Cookies.AddCookie(selCookie);
             }
 
-            webDriver.Navigate().GoToUrl($"{RequestLink()}/");
+            webDriver.Navigate().GoToUrl($"{RequestLink()}");
             var src = "";
             for (int i = 0; i < 5; i++)
             {
                 try
                 {
-                    Thread.Sleep(5000);
+                    Thread.Sleep(1000);
                     src = webDriver.FindElement(By.Id("captcha_picture")).GetAttribute("src");
                 }
                 catch (Exception)
