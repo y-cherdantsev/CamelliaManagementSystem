@@ -39,7 +39,10 @@ namespace Camellia_Management_System.Requests
             {
                 inputStream.CopyTo(outputFileStream);
                 outputFileStream.Flush();
+                outputFileStream.Close();
             }
+            inputStream.Flush();
+            inputStream.Close();
             inputStream.Dispose();
         }
 
