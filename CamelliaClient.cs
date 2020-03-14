@@ -33,10 +33,7 @@ namespace Camellia_Management_System
         {
             FullSign = fullSign;
 
-            var handler = new HttpClientHandler
-            {
-                AllowAutoRedirect = true
-            };
+            var handler = new HttpClientHandler {AllowAutoRedirect = true};
             CookieContainer = handler.CookieContainer;
 
             Connect(handler);

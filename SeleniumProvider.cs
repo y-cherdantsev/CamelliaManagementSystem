@@ -31,9 +31,7 @@ namespace Camellia_Management_System
         {
             lock (_lock)
             {
-                while (_webDrivers.ContainsValue(false))
-                {
-                }
+                while (_webDrivers.All(x => x.Value)) ;
 
                 var webDriver = _webDrivers.FirstOrDefault(x => x.Value == false).Key;
                 _webDrivers[webDriver] = false;

@@ -1,13 +1,18 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using EgovFoundersRequest.JsonObjects;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using Cookie = System.Net.Cookie;
 
 namespace Camellia_Management_System.Requests
 {
-
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 11:25:15
     /// @version 1.0
@@ -17,8 +22,6 @@ namespace Camellia_Management_System.Requests
     /// <code>
     /// 
     /// </code>
-
-
     public abstract class CamelliaCaptchaRequest : CamelliaRequest
     {
         protected CamelliaCaptchaRequest(CamelliaClient camelliaClient) : base(camelliaClient)
@@ -54,38 +57,46 @@ namespace Camellia_Management_System.Requests
             request.Content =
                 new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = CamelliaClient.HttpClient.SendAsync(request).GetAwaiter().GetResult().Content.ReadAsStringAsync()
+            var response = CamelliaClient.HttpClient.SendAsync(request).GetAwaiter().GetResult().Content
+                .ReadAsStringAsync()
                 .GetAwaiter().GetResult();
             return response.Contains("\"rightCaptcha\":true");
         }
 
         protected string GetCaptchaLink(IWebDriver webDriver)
         {
-            foreach (Cookie cookie in CamelliaClient.CookieContainer.GetCookies(new Uri("https://www.egov.kz")).Cast<Cookie>())
+            foreach (Cookie cookie in CamelliaClient.CookieContainer.GetCookies(new Uri("https://www.egov.kz")))
             {
-                // var selCookie = new OpenQA.Selenium.Cookie(cookie.Name, cookie.Value, cookie.Domain, cookie.Path,
-                // cookie.Expires);
                 var selCookie = new OpenQA.Selenium.Cookie(cookie.Name, cookie.Value, cookie.Path);
                 webDriver.Manage().Cookies.AddCookie(selCookie);
             }
 
-            webDriver.Navigate().GoToUrl("https://egov.kz/services/P30.03/#/declaration/0/,/");
-            var src = webDriver.FindElement(By.Id("captcha_picture")).GetAttribute("src");
+            webDriver.Navigate().GoToUrl($"{RequestLink()}/");
+            var src = "";
+            for (int i = 0; i < 5; i++)
+            {
+                try
+                {
+                    Thread.Sleep(5000);
+                    src = webDriver.FindElement(By.Id("captcha_picture")).GetAttribute("src");
+                }
+                catch (Exception)
+                {
+                }
+            }
+
 
             var handler = new HttpClientHandler
             {
                 AllowAutoRedirect = true,
                 CookieContainer = new CookieContainer()
             };
-            _egov.CookieContainer = handler.CookieContainer;
+            CamelliaClient.CookieContainer = handler.CookieContainer;
 
             foreach (var cookie in webDriver.Manage().Cookies.AllCookies)
-            {
-                _egov.CookieContainer.Add(new Cookie(cookie.Name, cookie.Value, cookie.Path, cookie.Domain));
-            }
+                CamelliaClient.CookieContainer.Add(new Cookie(cookie.Name, cookie.Value, cookie.Path, cookie.Domain));
 
-            _egov.HttpClient = new HttpClient(handler);
-            webDriver.Close();
+            CamelliaClient.HttpClient = new HttpClient(handler);
             return src;
         }
     }

@@ -31,7 +31,7 @@ namespace Camellia_Management_System.Requests
                 var result = GetCaptchaAnswer(captchaId);
                 return result;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return "";
             }
