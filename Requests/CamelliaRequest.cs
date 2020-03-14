@@ -18,17 +18,17 @@ namespace Camellia_Management_System.Requests
     public abstract class CamelliaRequest
     {
         protected readonly CamelliaClient CamelliaClient;
-        protected string RequestLink;
 
         public CamelliaRequest(CamelliaClient camelliaClient)
         {
             CamelliaClient = camelliaClient;
         }
 
+        protected abstract string RequestLink();
         private ReadinessStatus GetReadinessStatus(string requestNumber)
         {
             var res = CamelliaClient.HttpClient
-                .GetStringAsync($"{RequestLink}/rest/request-states/{requestNumber}")
+                .GetStringAsync($"{RequestLink()}/rest/request-states/{requestNumber}")
                 .GetAwaiter()
                 .GetResult();
             var readinessStatus = JsonSerializer.Deserialize<ReadinessStatus>(res);
@@ -36,9 +36,10 @@ namespace Camellia_Management_System.Requests
         }
 
 
-        protected ReadinessStatus WaitResult(string requestNumber, int delay)
+        protected ReadinessStatus WaitResult(string requestNumber, int delay = 1000)
         {
-            Thread.Sleep(2000);
+            delay = delay < 500 ? 1000 : delay;
+            Thread.Sleep(delay*2);
             var readinessStatus = GetReadinessStatus(requestNumber);
 
             while (readinessStatus.status.Equals("IN_PROCESSING"))
@@ -52,10 +53,13 @@ namespace Camellia_Management_System.Requests
 
             throw new Exception($"Readiness status equals {readinessStatus.status}");
         }
-        protected string SendPdfRequest(string signedToken)
+
+        protected string SendPdfRequest(string signedToken, string solvedCaptcha = null)
         {
+            string requestUri = solvedCaptcha==null? $"{RequestLink()}rest/app/send-eds" : $"{RequestLink()}rest/app/send-eds?captchaCode={solvedCaptcha}";
+
             using (var request = new HttpRequestMessage(new HttpMethod("POST"),
-                $"{RequestLink}rest/app/send-eds"))
+               requestUri ))
             {
                 request.Headers.Add("Connection", "keep-alive");
                 request.Headers.Add("Accept", "application/json, text/plain, */*");
@@ -64,7 +68,7 @@ namespace Camellia_Management_System.Requests
                 request.Headers.Add("User-Agent", "Mozilla5.0 Windows NT 10.0");
                 request.Headers.Add("Sec-Fetch-Site", "same-origin");
                 request.Headers.Add("Sec-Fetch-Mode", "cors");
-                request.Headers.Add("Referer", $"{RequestLink}");
+                request.Headers.Add("Referer", $"{RequestLink()}");
                 request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
                 request.Headers.Add("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
                 request.Headers.Add("Cookie", "sign.certType=file;sign.file=null");
@@ -82,7 +86,7 @@ namespace Camellia_Management_System.Requests
         protected string GetToken(string bin)
         {
             using var request = new HttpRequestMessage(new HttpMethod("POST"),
-                $"{RequestLink}/rest/app/xml");
+                $"{RequestLink()}/rest/app/xml");
             request.Headers.Add("Connection", "keep-alive");
             request.Headers.Add("Cache-Control", "max-age=0");
             request.Headers.Add("Origin", "https://idp.egov.kz");

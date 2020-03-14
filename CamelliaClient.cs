@@ -18,8 +18,8 @@ namespace Camellia_Management_System
     {
         public HttpClient HttpClient;
         public UserInformation UserInformation;
+        public CookieContainer CookieContainer;
         internal readonly FullSign FullSign;
-
 
 
         /// @author Yevgeniy Cherdantsev
@@ -37,11 +37,11 @@ namespace Camellia_Management_System
             {
                 AllowAutoRedirect = true
             };
+            CookieContainer = handler.CookieContainer;
 
             Connect(handler);
             UserInformation = GetUserInformation();
         }
-
 
 
         /// @author Yevgeniy Cherdantsev
@@ -57,11 +57,10 @@ namespace Camellia_Management_System
             FullSign = fullSign;
 
             var handler = new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = webProxy};
-
+            CookieContainer = handler.CookieContainer;
             Connect(handler);
             UserInformation = GetUserInformation();
         }
-
 
 
         /// @author Yevgeniy Cherdantsev
@@ -80,7 +79,7 @@ namespace Camellia_Management_System
             HttpClient = new HttpClient(handler);
             Authorize();
         }
-        
+
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:15:18
         /// @version 1.0
@@ -102,7 +101,7 @@ namespace Camellia_Management_System
             return response;
         }
 
-        
+
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:15:18
         /// @version 1.0
@@ -127,7 +126,6 @@ namespace Camellia_Management_System
         }
 
 
-
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:17:42
         /// @version 1.0
@@ -143,7 +141,6 @@ namespace Camellia_Management_System
             var userInformation = JsonSerializer.Deserialize<UserInformation>(res);
             return userInformation;
         }
-
 
 
         /// @author Yevgeniy Cherdantsev

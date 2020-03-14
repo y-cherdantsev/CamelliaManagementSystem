@@ -13,8 +13,7 @@ namespace Camellia_Management_System.Requests
     public class RegistrationReference : SingleInputRequest
     {
         public RegistrationReference(CamelliaClient camelliaClient) : base(camelliaClient)
-        {
-            RequestLink = "https://egov.kz/services/P30.11/";
+        { 
         }
 
 
@@ -36,6 +35,11 @@ namespace Camellia_Management_System.Requests
             if (temp != null)
                 return new PdfParser(temp.SaveFile("./"), deleteFile).GetFounders();
             return null;
+        }
+
+        protected override string RequestLink()
+        {
+            return "https://egov.kz/services/P30.11/";
         }
     }
 }
