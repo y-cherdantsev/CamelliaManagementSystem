@@ -24,7 +24,7 @@ namespace Camellia_Management_System.FileManage
         /// </summary>
         /// <param name="path">Path to the file</param>
         /// <param name="deleteFile">If the object should delete file after parsing</param>
-        public PdfParser(string path, bool deleteFile = false)
+        public PdfParser(string path, bool deleteFile = true)
         {
             var file = new FileInfo(path);
             _innerText = GetTextFromPdf(file);
@@ -74,6 +74,13 @@ namespace Camellia_Management_System.FileManage
         {
             return FoundersPdfParse.GetFounders(_innerText);
         }
+        
+        public IEnumerable<string> GetChildCompanies()
+        {
+            return ChildCompaniesPdfParse.GetChildCompanies(_innerText);
+        }
+        
+        
         
     }
 }

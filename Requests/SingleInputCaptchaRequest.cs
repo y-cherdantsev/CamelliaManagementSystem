@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using System.Threading;
 using Camellia_Management_System.JsonObjects;
@@ -23,6 +24,9 @@ namespace Camellia_Management_System.Requests
         
         public IEnumerable<ResultForDownload> GetReference(string input, SeleniumProvider seleniumProvider, int delay = 1000, int numOfCaptchaTries = 5)
         {
+            if (input.Length==12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, input))
+                throw new InvalidDataException("This bin is not registered");
+            
             var webDriver = seleniumProvider.GetDriver();
             var captcha = GetCaptchaLink(webDriver);
             seleniumProvider.ReleaseDriver(webDriver);
@@ -52,6 +56,8 @@ namespace Camellia_Management_System.Requests
 
             if (readinessStatus.status.Equals("APPROVED"))
                 return readinessStatus.resultsForDownload;
+            if (readinessStatus.status.Equals("REJECTED"))
+                throw new Exception("REJECTED");
 
             throw new Exception($"Readiness status equals {readinessStatus.status}");
         }

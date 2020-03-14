@@ -1,6 +1,10 @@
-﻿namespace Camellia_Management_System.Requests
-{
+﻿using System.Collections.Generic;
+using System.Linq;
+using Camellia_Management_System.FileManage;
+using OpenQA.Selenium;
 
+namespace Camellia_Management_System.Requests
+{
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 11:03:28
     /// @version 1.0
@@ -10,13 +14,20 @@
     /// <code>
     /// 
     /// </code>
-
-
     public sealed class ParticipationReference : SingleInputCaptchaRequest
     {
         public ParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {
-            
+        }
+
+        public IEnumerable<string> GetChildCompanies(string bin, SeleniumProvider seleniumProvider, int delay = 1000,
+            bool deleteFile = true)
+        {
+            var reference = GetReference(bin, seleniumProvider, delay);
+            var temp = reference.First(x => x.language.Contains("ru"));
+            if (temp != null)
+                return new PdfParser(temp.SaveFile("./"), deleteFile).GetChildCompanies();
+            return null;
         }
 
         protected override string RequestLink()
