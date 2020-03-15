@@ -14,11 +14,6 @@ namespace Camellia_Management_System.Requests
     /// <summary>
     /// INPUT
     /// </summary>
-    /// <code>
-    /// 
-    /// </code>
-
-
     static class CaptchaSolver
     {
         private const string ApiKey = "1bcedad1e4e52767b3bda6bf7aa11461";

@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-
-namespace Camellia_Management_System.Requests
+﻿namespace Camellia_Management_System.Requests
 {
 
     /// @author Yevgeniy Cherdantsev
