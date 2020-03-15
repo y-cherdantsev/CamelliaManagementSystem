@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Camellia_Management_System.FileManage;
-using OpenQA.Selenium;
 
 namespace Camellia_Management_System.Requests
 {

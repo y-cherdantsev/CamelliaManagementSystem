@@ -1,15 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Net;
+﻿using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using EgovFoundersRequest.JsonObjects;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
-using Cookie = System.Net.Cookie;
 
 namespace Camellia_Management_System.Requests
 {
