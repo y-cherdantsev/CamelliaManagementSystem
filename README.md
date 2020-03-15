@@ -7,6 +7,7 @@
 ## Libraries
 
 * InteropKalkanCryptCOMLib 1.0.1
+* RestSharp 106.10.1
 
 ## Versioning
 #### Last version:
