@@ -22,15 +22,11 @@ namespace Camellia_Management_System.Requests
         {
         }
         
-        public IEnumerable<ResultForDownload> GetReference(string input, SeleniumProvider seleniumProvider, int delay = 1000, int numOfCaptchaTries = 5)
+        public IEnumerable<ResultForDownload> GetReference(string input, int delay = 1000, int numOfCaptchaTries = 5)
         {
             if (input.Length==12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, input))
                 throw new InvalidDataException("This bin is not registered");
-            
-            var webDriver = seleniumProvider.GetDriver();
-            // var captcha = GetCaptchaLink(webDriver);
             var captcha = "https://egov.kz/services/P30.03/captcha?"+(long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-            seleniumProvider.ReleaseDriver(webDriver);
             var tempDirectoryPath = Environment.GetEnvironmentVariable("TEMP");
             var filePath = $"{tempDirectoryPath}\\temp_captcha_{DateTime.Now.Ticks}.jpeg";
             var solvedCaptcha = "";

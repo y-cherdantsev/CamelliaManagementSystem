@@ -69,42 +69,5 @@ namespace Camellia_Management_System.Requests
                 .GetAwaiter().GetResult();
             return response.Contains("\"rightCaptcha\":true");
         }
-
-        protected string GetCaptchaLink(IWebDriver webDriver)
-        {
-            foreach (Cookie cookie in CamelliaClient.CookieContainer.GetCookies(new Uri("https://www.egov.kz")))
-            {
-                var selCookie = new OpenQA.Selenium.Cookie(cookie.Name, cookie.Value, cookie.Path);
-                webDriver.Manage().Cookies.AddCookie(selCookie);
-            }
-
-            webDriver.Navigate().GoToUrl($"{RequestLink()}");
-            var src = "";
-            for (int i = 0; i < 5; i++)
-            {
-                try
-                {
-                    Thread.Sleep(1000);
-                    src = webDriver.FindElement(By.Id("captcha_picture")).GetAttribute("src");
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-
-            var handler = new HttpClientHandler
-            {
-                AllowAutoRedirect = true,
-                CookieContainer = new CookieContainer()
-            };
-            CamelliaClient.CookieContainer = handler.CookieContainer;
-
-            foreach (var cookie in webDriver.Manage().Cookies.AllCookies)
-                CamelliaClient.CookieContainer.Add(new Cookie(cookie.Name, cookie.Value, cookie.Path, cookie.Domain));
-
-            CamelliaClient.HttpClient = new HttpClient(handler);
-            return src;
-        }
     }
 }

@@ -20,10 +20,10 @@ namespace Camellia_Management_System.Requests
         {
         }
 
-        public IEnumerable<string> GetChildCompanies(string bin, SeleniumProvider seleniumProvider, int delay = 1000,
+        public IEnumerable<string> GetChildCompanies(string bin, int delay = 1000,
             bool deleteFile = true)
         {
-            var reference = GetReference(bin, seleniumProvider, delay);
+            var reference = GetReference(bin, delay);
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
                 return new PdfParser(temp.SaveFile("./"), deleteFile).GetChildCompanies();
