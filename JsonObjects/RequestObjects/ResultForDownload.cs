@@ -23,6 +23,9 @@ namespace Camellia_Management_System.JsonObjects.RequestObjects
             if (fileName == null)
             {
                 fileName = $"{nameEn} - {DateTime.Now.Ticks}";
+            }else
+            {
+                fileName = fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
             }
 
             using var webClient = new WebClient();
