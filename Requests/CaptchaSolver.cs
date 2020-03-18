@@ -12,15 +12,24 @@ namespace Camellia_Management_System.Requests
     /// @date 14.03.2020 11:05:15
     /// @version 1.0
     /// <summary>
-    /// INPUT
+    /// Service which solves captchas
     /// </summary>
-    static class CaptchaSolver
+    internal static class CaptchaSolver
     {
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 16.03.2020 09:34:39
+        /// @version 1.0
+        /// <summary>
+        /// Api Key for the service
+        /// </summary>
         private const string ApiKey = "1bcedad1e4e52767b3bda6bf7aa11461";
         public static string SolveCaptcha(string imagePath)
         {
-            var base64 = Encode(GetBase64FromImage(imagePath));
-            var captchaId = GetCaptchaId(base64);
+            var base64 = GetBase64FromImage(imagePath);
+            var base64Encoded = Encode(base64);
+            var captchaId = GetCaptchaId(base64Encoded);
             try
             {
                 var result = GetCaptchaAnswer(captchaId);
