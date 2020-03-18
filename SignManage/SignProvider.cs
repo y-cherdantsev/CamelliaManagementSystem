@@ -19,6 +19,7 @@ namespace Camellia_Management_System.SignManage
     {
         private readonly string _pathToSignFolders;
         private List<FullSign> _fullSign;
+        public int SignsLeft => _fullSign.Count;
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:23:09

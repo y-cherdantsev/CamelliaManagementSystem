@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -24,6 +25,7 @@ namespace Camellia_Management_System.Requests
         }
 
         protected abstract string RequestLink();
+
         private ReadinessStatus GetReadinessStatus(string requestNumber)
         {
             var res = CamelliaClient.HttpClient
@@ -35,14 +37,17 @@ namespace Camellia_Management_System.Requests
         }
 
 
-        protected ReadinessStatus WaitResult(string requestNumber, int delay = 1000)
+        protected ReadinessStatus WaitResult(string requestNumber, int delay = 1000, int waitFor = 20000)
         {
             delay = delay < 500 ? 1000 : delay;
-            Thread.Sleep(delay*2);
+            var wait = waitFor / delay;
+            Thread.Sleep(delay * 2);
             var readinessStatus = GetReadinessStatus(requestNumber);
 
             while (readinessStatus.status.Equals("IN_PROCESSING"))
             {
+                if (wait-- <= 0)
+                    throw new InvalidDataException("Timeout exceeded");
                 Thread.Sleep(delay);
                 readinessStatus = GetReadinessStatus(requestNumber);
             }
@@ -55,10 +60,12 @@ namespace Camellia_Management_System.Requests
 
         protected string SendPdfRequest(string signedToken, string solvedCaptcha = null)
         {
-            string requestUri = solvedCaptcha==null? $"{RequestLink()}rest/app/send-eds" : $"{RequestLink()}rest/app/send-eds?captchaCode={solvedCaptcha}";
+            string requestUri = solvedCaptcha == null
+                ? $"{RequestLink()}rest/app/send-eds"
+                : $"{RequestLink()}rest/app/send-eds?captchaCode={solvedCaptcha}";
 
             using (var request = new HttpRequestMessage(new HttpMethod("POST"),
-               requestUri ))
+                requestUri))
             {
                 request.Headers.Add("Connection", "keep-alive");
                 request.Headers.Add("Accept", "application/json, text/plain, */*");
