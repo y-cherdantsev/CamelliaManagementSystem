@@ -11,7 +11,7 @@
 
 ## Versioning
 #### Last version:
-* 1.0.8 - 
+* 1.0.8 - Added child companies parser via (ParticipationReference)
 
 ###### Older versions:
 * 1.0.0 - Initial version
