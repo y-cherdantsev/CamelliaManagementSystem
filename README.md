@@ -11,7 +11,7 @@
 
 ## Versioning
 #### Last version:
-* 1.0.7 - 
+* 1.0.8 - 
 
 ###### Older versions:
 * 1.0.0 - Initial version
