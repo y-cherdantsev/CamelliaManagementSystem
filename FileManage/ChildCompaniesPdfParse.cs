@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Camellia_Management_System.FileManage
 {
@@ -23,7 +24,10 @@ namespace Camellia_Management_System.FileManage
             }
 
             childCompanies.Remove(childCompanies[0]);
-            return childCompanies.Count > 0 ? childCompanies : null;
+            if (childCompanies.Count < 1)
+                throw new InvalidDataException("No information were found in the reference");
+
+            return childCompanies;
         }
     }
 }

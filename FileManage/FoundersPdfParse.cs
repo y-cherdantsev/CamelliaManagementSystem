@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Camellia_Management_System.FileManage
@@ -77,7 +78,10 @@ namespace Camellia_Management_System.FileManage
                 }
             }
 
-            return Normalize(founders);
+            var result = Normalize(founders);
+            if (result == null)
+                throw new InvalidDataException("No information were found in the reference");
+            return result;
         }
 
 

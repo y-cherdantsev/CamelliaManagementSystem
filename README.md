@@ -11,7 +11,7 @@
 
 ## Versioning
 #### Last version:
-* 1.0.8 - Added child companies parser via (ParticipationReference)
+* 1.0.9 - If null throws InvalidDataException
 
 ###### Older versions:
 * 1.0.0 - Initial version
@@ -19,6 +19,7 @@
 * 1.0.2 - Founder getting included in requesting reference
 * 1.0.3 - Minor refactorings
 * 1.0.6 - Added throw while timeout and variable that shows left signs in sign provider
+* 1.0.8 - Added child companies parser via (ParticipationReference)
 
 ## Authors
 
