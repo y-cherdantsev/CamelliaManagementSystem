@@ -24,6 +24,7 @@ namespace Camellia_Management_System.FileManage
             }
 
             childCompanies.Remove(childCompanies[0]);
+            childCompanies.RemoveAll(x => x.Contains("-"));
             if (childCompanies.Count < 1)
                 throw new InvalidDataException("No information were found in the reference");
 
