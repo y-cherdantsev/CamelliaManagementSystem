@@ -103,7 +103,7 @@ namespace Camellia_Management_System.FileManage
         {
             founders.RemoveAll(x => x.Replace(" ", string.Empty).Equals("-"));
             for (var i = 0; i < founders.Count; i++)
-                founders[i] = founders[i].Replace("\r", string.Empty);
+                founders[i] = founders[i].Replace("\r", string.Empty).Replace("&amp;", "&");
             return founders.Count > 0 ? founders : null;
         }
     }
