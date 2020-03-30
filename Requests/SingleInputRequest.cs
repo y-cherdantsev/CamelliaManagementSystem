@@ -21,7 +21,7 @@ namespace Camellia_Management_System.Requests
         }
 
 
-        public IEnumerable<ResultForDownload> GetReference(string input, int delay = 1000)
+        public IEnumerable<ResultForDownload> GetReference(string input, int delay = 1000, int timeout = 60000)
         {
             if (input.Length==12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, input))
                 throw new InvalidDataException("This bin is not registered");
@@ -30,7 +30,7 @@ namespace Camellia_Management_System.Requests
             token = JsonSerializer.Deserialize<TokenResponse>(token).xml;
             var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);
             var requestNumber = SendPdfRequest(signedToken);
-            var readinessStatus = WaitResult(requestNumber, delay);
+            var readinessStatus = WaitResult(requestNumber, delay, timeout);
             if (readinessStatus.status.Equals("APPROVED"))
                 return readinessStatus.resultsForDownload;
 

@@ -21,7 +21,7 @@ namespace Camellia_Management_System.Requests
         {
         }
         
-        public IEnumerable<ResultForDownload> GetReference(string input, int delay = 1000, int numOfCaptchaTries = 5)
+        public IEnumerable<ResultForDownload> GetReference(string input, int delay = 1000, int timeout = 60000, int numOfCaptchaTries = 5)
         {
             if (input.Length==12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, input))
                 throw new InvalidDataException("This bin is not registered");
@@ -48,7 +48,7 @@ namespace Camellia_Management_System.Requests
 
             var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);
             var requestNumber = SendPdfRequest(signedToken, solvedCaptcha);
-            var readinessStatus = WaitResult(requestNumber, delay);
+            var readinessStatus = WaitResult(requestNumber, delay, timeout);
 
             if (readinessStatus.status.Equals("APPROVED"))
                 return readinessStatus.resultsForDownload;

@@ -37,10 +37,10 @@ namespace Camellia_Management_System.Requests
         }
 
 
-        protected ReadinessStatus WaitResult(string requestNumber, int delay = 1000, int waitFor = 20000)
+        protected ReadinessStatus WaitResult(string requestNumber, int delay = 1000, int timeout = 60000)
         {
             delay = delay < 500 ? 1000 : delay;
-            var wait = waitFor / delay;
+            var wait = timeout / delay;
             Thread.Sleep(delay * 2);
             var readinessStatus = GetReadinessStatus(requestNumber);
 
