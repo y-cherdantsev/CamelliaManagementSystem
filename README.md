@@ -11,7 +11,7 @@
 
 ## Versioning
 #### Last version:
-* 1.0.10 - If '-' in child companies removes it
+* 1.0.12 - Added timeout selection
 
 ###### Older versions:
 * 1.0.0 - Initial version
@@ -21,6 +21,8 @@
 * 1.0.6 - Added throw while timeout and variable that shows left signs in sign provider
 * 1.0.8 - Added child companies parser via (ParticipationReference)
 * 1.0.9 - If null throws InvalidDataException
+* 1.0.10 - If '-' in child companies removes it
+* 1.0.11 - Changes &amp; to &
 
 ## Authors
 
