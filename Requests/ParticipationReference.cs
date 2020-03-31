@@ -20,9 +20,9 @@ namespace Camellia_Management_System.Requests
         }
 
         public IEnumerable<string> GetChildCompanies(string bin, int delay = 1000,
-            bool deleteFile = true)
+            bool deleteFile = true, int timeout = 60000)
         {
-            var reference = GetReference(bin, delay);
+            var reference = GetReference(bin, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
                 return new PdfParser(temp.SaveFile("./"), deleteFile).GetChildCompanies();
