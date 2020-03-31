@@ -47,7 +47,7 @@ namespace Camellia_Management_System.Requests
             while (readinessStatus.status.Equals("IN_PROCESSING"))
             {
                 if (wait-- <= 0)
-                    throw new InvalidDataException("Timeout exceeded");
+                    throw new TimeoutException($"Timeout '{timeout}' exceeded");
                 Thread.Sleep(delay);
                 readinessStatus = GetReadinessStatus(requestNumber);
             }
