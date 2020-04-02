@@ -73,7 +73,6 @@ namespace Camellia_Management_System
             HttpClient.GetStringAsync("https://www.egov.kz")
                 .GetAwaiter()
                 .GetResult();
-            HttpClient = new HttpClient(handler);
             Authorize();
         }
 
