@@ -11,7 +11,7 @@
 
 ## Versioning
 #### Last version:
-* 1.0.15 - External exception while signing the token
+* 1.0.17 - Added selection of timeout and number of tries to connection
 
 ###### Older versions:
 * 1.0.0 - Initial version
@@ -26,6 +26,8 @@
 * 1.0.12 - Added timeout selection
 * 1.0.13 - Throws timeout exception
 * 1.0.14 - Added timeout selection into parsing methods
+* 1.0.15 - External exception while signing the token
+* 1.0.16 - Added CamelliaClientProvider
 
 ## Authors
 
