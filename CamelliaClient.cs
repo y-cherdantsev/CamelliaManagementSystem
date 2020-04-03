@@ -32,15 +32,16 @@ namespace Camellia_Management_System
         /// </summary>
         /// <param name="fullSign"></param>
         /// <param name="webProxy"></param>
-        public CamelliaClient(FullSign fullSign, IWebProxy webProxy = null)
+        public CamelliaClient(FullSign fullSign, IWebProxy webProxy = null, int httpClientTimeout = 15000)
         {
             FullSign = fullSign;
             Proxy = webProxy;
             HttpClientHandler handler;
             handler = webProxy!= null ? new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = webProxy} : new HttpClientHandler {AllowAutoRedirect = true};
-
             CookieContainer = handler.CookieContainer;
-            Connect(handler);
+            HttpClient = new HttpClient(handler);
+            HttpClient.Timeout = TimeSpan.FromMilliseconds(httpClientTimeout);
+            Connect();
             UserInformation = GetUserInformation();
         }
 
@@ -52,9 +53,8 @@ namespace Camellia_Management_System
         /// Connects to the cammelia system using handler
         /// </summary>
         /// <param name="handler"></param>
-        private void Connect(HttpMessageHandler handler)
+        private void Connect()
         {
-            HttpClient = new HttpClient(handler);
             HttpClient.GetStringAsync("https://www.egov.kz")
                 .GetAwaiter()
                 .GetResult();

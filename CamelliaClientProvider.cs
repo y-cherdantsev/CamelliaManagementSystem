@@ -11,20 +11,31 @@ namespace Camellia_Management_System
         private List<CamelliaClient> _camelliaClients = new List<CamelliaClient>();
         private readonly List<CamelliaClient> _usedClients = new List<CamelliaClient>();
 
-        public CamelliaClientProvider(SignProvider signProvider, IWebProxy webProxy = null)
+        public int ClientsLeft => _camelliaClients.Count;
+
+        public CamelliaClientProvider(SignProvider signProvider, IWebProxy webProxy = null, 
+            int handlerTimeout = 20000, int numOfTries = 5)
         {
+            //TODO (SEVERAL PROXIES)
             while (signProvider.SignsLeft > 0)
             {
-                try
+                var sign = signProvider.GetNextSign();
+
+                for (var i = 0; i < numOfTries; i++)
                 {
-                    var sign = signProvider.GetNextSign();
-                    var client = new CamelliaClient(sign, webProxy);
-                    _camelliaClients.Add(client);
+                    try
+                    {
+                        var client = new CamelliaClient(sign, webProxy, handlerTimeout);
+                        _camelliaClients.Add(client);
+                        i = numOfTries;
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
                 }
-                catch (Exception ignore)
-                {
-                    //ignore
-                }
+                
+                
             }
 
 
