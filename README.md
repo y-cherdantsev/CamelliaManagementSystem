@@ -11,7 +11,7 @@
 
 ## Versioning
 #### Last version:
-* 1.0.14 - Added timeout selection into parsing methods
+* 1.0.15 - External exception while signing the token
 
 ###### Older versions:
 * 1.0.0 - Initial version
@@ -25,6 +25,7 @@
 * 1.0.11 - Changes &amp; to &
 * 1.0.12 - Added timeout selection
 * 1.0.13 - Throws timeout exception
+* 1.0.14 - Added timeout selection into parsing methods
 
 ## Authors
 

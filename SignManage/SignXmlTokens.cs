@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Camellia_Management_System.SignManage
 {
@@ -48,7 +49,7 @@ namespace Camellia_Management_System.SignManage
 
             if (EDSError > 0)
             {
-                throw new Exception("Some error occured while loading the key storage");
+                throw new ExternalException("Some error occured while loading the key storage");
             }
 
             var Alias = "";
@@ -68,7 +69,7 @@ namespace Camellia_Management_System.SignManage
 
             if (EDSError > 0)
             {
-                throw new Exception("Some error occured while signing the token");
+                throw new ExternalException("Some error occured while signing the token");
             }
 
             var outData = OutSign.Replace("\n", "\r\n");

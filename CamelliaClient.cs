@@ -19,26 +19,9 @@ namespace Camellia_Management_System
         public HttpClient HttpClient;
         public UserInformation UserInformation;
         public CookieContainer CookieContainer;
+        internal readonly IWebProxy Proxy;
         internal readonly FullSign FullSign;
 
-
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:13:49
-        /// @version 1.0
-        /// <summary>
-        /// Constructor for creating Camellia client
-        /// </summary>
-        /// <param name="fullSign"></param>
-        public CamelliaClient(FullSign fullSign)
-        {
-            FullSign = fullSign;
-
-            var handler = new HttpClientHandler {AllowAutoRedirect = true};
-            CookieContainer = handler.CookieContainer;
-
-            Connect(handler);
-            UserInformation = GetUserInformation();
-        }
 
 
         /// @author Yevgeniy Cherdantsev
@@ -49,11 +32,13 @@ namespace Camellia_Management_System
         /// </summary>
         /// <param name="fullSign"></param>
         /// <param name="webProxy"></param>
-        public CamelliaClient(FullSign fullSign, IWebProxy webProxy)
+        public CamelliaClient(FullSign fullSign, IWebProxy webProxy = null)
         {
             FullSign = fullSign;
+            Proxy = webProxy;
+            HttpClientHandler handler;
+            handler = webProxy!= null ? new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = webProxy} : new HttpClientHandler {AllowAutoRedirect = true};
 
-            var handler = new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = webProxy};
             CookieContainer = handler.CookieContainer;
             Connect(handler);
             UserInformation = GetUserInformation();
@@ -120,6 +105,19 @@ namespace Camellia_Management_System
             var content = new FormUrlEncodedContent(values);
 
             HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content).GetAwaiter().GetResult();
+        }
+
+        public bool IsLogged()
+        {
+            try
+            {
+                GetUserInformation();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
 
 
