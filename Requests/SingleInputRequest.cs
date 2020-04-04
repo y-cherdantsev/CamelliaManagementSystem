@@ -34,7 +34,7 @@ namespace Camellia_Management_System.Requests
             if (readinessStatus.status.Equals("APPROVED"))
                 return readinessStatus.resultsForDownload;
 
-            throw new Exception($"Readiness status equals {readinessStatus.status}");
+            throw new InvalidDataException($"Readiness status equals {readinessStatus.status}");
         }
     }
 }
