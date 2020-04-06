@@ -61,12 +61,12 @@ namespace Camellia_Management_System.FileManage
                         founders.Add(element);
                     }
 
-                    if (element.Replace("\r\n", string.Empty).Replace(" ", string.Empty).EndsWith("\""))
+                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty).EndsWith("\""))
                     {
                         flag = false;
                     }
 
-                    if (element.Replace("\r\n", string.Empty).Replace(" ", string.Empty).EndsWith("»"))
+                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty).EndsWith("»"))
                     {
                         flag = false;
                     }
