@@ -12,11 +12,13 @@ namespace Camellia_Management_System
         private List<CamelliaClient> _camelliaClients = new List<CamelliaClient>();
         private readonly List<CamelliaClient> _usedClients = new List<CamelliaClient>();
         private readonly SignProvider _signProvider;
+        private readonly IEnumerator<IWebProxy> _webProxies;
         public int ClientsLeft => _camelliaClients.Count;
 
-        public CamelliaClientProvider(SignProvider signProvider, IWebProxy webProxy = null, 
+        public CamelliaClientProvider(SignProvider signProvider, IEnumerator<IWebProxy> webProxies = null,
             int handlerTimeout = 20000, int numOfTries = 5)
         {
+            _webProxies = webProxies;
             _signProvider = signProvider;
             //TODO (SEVERAL PROXIES)
             while (signProvider.SignsLeft > 0)
@@ -27,7 +29,9 @@ namespace Camellia_Management_System
                 {
                     try
                     {
-                        var client = new CamelliaClient(sign, webProxy, handlerTimeout);
+                        var client = new CamelliaClient(sign, _webProxies.Current, handlerTimeout);
+                        if (!_webProxies.MoveNext())
+                            _webProxies.Reset();
                         _camelliaClients.Add(client);
                         i = numOfTries;
                     }
@@ -46,7 +50,6 @@ namespace Camellia_Management_System
 
         public CamelliaClient GetNextClient()
         {
-            
             if (_camelliaClients.Count == 0)
             {
                 if (_usedClients.Count == 0)
@@ -60,7 +63,9 @@ namespace Camellia_Management_System
                         {
                             try
                             {
-                                var client = new CamelliaClient(sign);
+                                var client = new CamelliaClient(sign, _webProxies.Current);
+                                if (!_webProxies.MoveNext())
+                                    _webProxies.Reset();
                                 _camelliaClients.Add(client);
                                 i = 3;
                             }
@@ -71,18 +76,23 @@ namespace Camellia_Management_System
                         }
                     }
                 }
+
                 _camelliaClients = ShuffleList(_usedClients);
                 _usedClients.Clear();
-                if (_camelliaClients.Count<1 && _usedClients.Count<1)
-                {
-                    throw new InvalidDataException("Can't load clients");
-                }
             }
 
             CamelliaClient result;
             lock (_camelliaClients)
             {
-                result = _camelliaClients[0];
+                try
+                {
+                    result = _camelliaClients[0];
+                }
+                catch (Exception)
+                {
+                    throw new InvalidDataException("Client manager has no loaded clients; Reason: service unavaliable");
+                }
+
                 _usedClients.Add(result);
                 _camelliaClients.Remove(result);
                 if (!result.IsLogged())
