@@ -17,22 +17,14 @@ namespace Camellia_Management_System.Requests
     internal static class CaptchaSolver
     {
 
-
-        /// @author Yevgeniy Cherdantsev
-        /// @date 16.03.2020 09:34:39
-        /// @version 1.0
-        /// <summary>
-        /// Api Key for the service
-        /// </summary>
-        private const string ApiKey = "1bcedad1e4e52767b3bda6bf7aa11461";
-        public static string SolveCaptcha(string imagePath)
+        public static string SolveCaptcha(string imagePath, string apiKey)
         {
             var base64 = GetBase64FromImage(imagePath);
             var base64Encoded = Encode(base64);
-            var captchaId = GetCaptchaId(base64Encoded);
+            var captchaId = GetCaptchaId(base64Encoded, apiKey);
             try
             {
-                var result = GetCaptchaAnswer(captchaId);
+                var result = GetCaptchaAnswer(captchaId, apiKey);
                 return result;
             }
             catch (Exception)
@@ -41,11 +33,11 @@ namespace Camellia_Management_System.Requests
             }
         }
         
-        private static string GetCaptchaAnswer(string captchaId)
+        private static string GetCaptchaAnswer(string captchaId, string apiKey)
         {
             while (true)
             {
-                var url = $"https://2captcha.com/res.php?key={ApiKey}&action=get&id={captchaId}";
+                var url = $"https://2captcha.com/res.php?key={apiKey}&action=get&id={captchaId}";
                 var client = new RestClient(url);
                 var request = new RestRequest(Method.GET);
                 var response = client.Execute(request);
@@ -57,13 +49,13 @@ namespace Camellia_Management_System.Requests
             }
         }
 
-        private static string GetCaptchaId(string base64)
+        private static string GetCaptchaId(string base64, string apiKey)
         {
             try
             {
                 var client = new RestClient("https://2captcha.com/in.php");
                 var request = new RestRequest(Method.POST);
-                request.AddParameter("undefined", $"method=base64&key={ApiKey}&body={base64}",
+                request.AddParameter("undefined", $"method=base64&key={apiKey}&body={base64}",
                     ParameterType.RequestBody);
                 var response = client.Execute(request);
                 return response.Content.Split('|')[1];

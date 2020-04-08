@@ -21,7 +21,7 @@ namespace Camellia_Management_System.Requests
         {
         }
         
-        public IEnumerable<ResultForDownload> GetReference(string input, int delay = 1000, int timeout = 60000, int numOfCaptchaTries = 5)
+        public IEnumerable<ResultForDownload> GetReference(string input, string captchaApiKey, int delay = 1000, int timeout = 60000, int numOfCaptchaTries = 5)
         {
             if (input.Length==12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, input))
                 throw new InvalidDataException("This bin is not registered");
@@ -34,7 +34,7 @@ namespace Camellia_Management_System.Requests
                 if (i == numOfCaptchaTries)
                     throw new Exception($"Wrong captcha {i} times");
                 DownloadCaptcha(captcha, filePath);
-                solvedCaptcha = CaptchaSolver.SolveCaptcha(filePath);
+                solvedCaptcha = CaptchaSolver.SolveCaptcha(filePath, captchaApiKey);
                 if (solvedCaptcha.Equals(""))
                     continue;
 

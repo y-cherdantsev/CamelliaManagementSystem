@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Camellia_Management_System.SignManage;
 
 namespace Camellia_Management_System
@@ -10,12 +11,13 @@ namespace Camellia_Management_System
     {
         private List<CamelliaClient> _camelliaClients = new List<CamelliaClient>();
         private readonly List<CamelliaClient> _usedClients = new List<CamelliaClient>();
-
+        private readonly SignProvider _signProvider;
         public int ClientsLeft => _camelliaClients.Count;
 
         public CamelliaClientProvider(SignProvider signProvider, IWebProxy webProxy = null, 
             int handlerTimeout = 20000, int numOfTries = 5)
         {
+            _signProvider = signProvider;
             //TODO (SEVERAL PROXIES)
             while (signProvider.SignsLeft > 0)
             {
@@ -34,19 +36,41 @@ namespace Camellia_Management_System
                         // ignored
                     }
                 }
-                
-                
             }
 
 
             if (_camelliaClients.Count == 0)
-                throw new InvalidDataException("No clients has been loaded");
+                // throw new InvalidDataException("No clients has been loaded");
+                Console.WriteLine("No clients has been loaded");
         }
 
         public CamelliaClient GetNextClient()
         {
+            
             if (_camelliaClients.Count == 0)
             {
+                if (_usedClients.Count == 0)
+                {
+                    _signProvider.GetNextSign();
+                    while (_signProvider.SignsLeft > 0)
+                    {
+                        var sign = _signProvider.GetNextSign();
+
+                        for (var i = 0; i < 3; i++)
+                        {
+                            try
+                            {
+                                var client = new CamelliaClient(sign);
+                                _camelliaClients.Add(client);
+                                i = 3;
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
+                        }
+                    }
+                }
                 _camelliaClients = ShuffleList(_usedClients);
                 _usedClients.Clear();
             }
