@@ -49,7 +49,11 @@ namespace Camellia_Management_System.SignManage
             _fullSign = ShuffleList(LoadSigns());
         }
 
-
+        public void ReloadSigns()
+        {
+            _fullSign = LoadSigns();
+        }
+        
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:25:57
         /// @version 1.0

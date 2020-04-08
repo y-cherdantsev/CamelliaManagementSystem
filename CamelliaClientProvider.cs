@@ -51,7 +51,7 @@ namespace Camellia_Management_System
             {
                 if (_usedClients.Count == 0)
                 {
-                    _signProvider.GetNextSign();
+                    _signProvider.ReloadSigns();
                     while (_signProvider.SignsLeft > 0)
                     {
                         var sign = _signProvider.GetNextSign();
