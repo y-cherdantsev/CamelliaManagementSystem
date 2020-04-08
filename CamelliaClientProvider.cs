@@ -73,6 +73,10 @@ namespace Camellia_Management_System
                 }
                 _camelliaClients = ShuffleList(_usedClients);
                 _usedClients.Clear();
+                if (_camelliaClients.Count<1 && _usedClients.Count<1)
+                {
+                    throw new InvalidDataException("Can't load clients");
+                }
             }
 
             CamelliaClient result;
