@@ -21,31 +21,34 @@ namespace Camellia_Management_System
             _webProxies = webProxies;
             _signProvider = signProvider;
             //TODO (SEVERAL PROXIES)
-            while (signProvider.SignsLeft > 0)
+            Task.Run(() =>
             {
-                var sign = signProvider.GetNextSign();
-
-                for (var i = 0; i < numOfTries; i++)
+                while (signProvider.SignsLeft > 0)
                 {
-                    try
+                    var sign = signProvider.GetNextSign();
+
+                    for (var i = 0; i < numOfTries; i++)
                     {
-                        var client = new CamelliaClient(sign, _webProxies.Current, handlerTimeout);
-                        if (!_webProxies.MoveNext())
-                            _webProxies.Reset();
-                        _camelliaClients.Add(client);
-                        i = numOfTries;
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
+                        try
+                        {
+                            var client = new CamelliaClient(sign, _webProxies.Current, handlerTimeout);
+                            if (!_webProxies.MoveNext())
+                                _webProxies.Reset();
+                            _camelliaClients.Add(client);
+                            i = numOfTries;
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
                     }
                 }
-            }
 
 
-            if (_camelliaClients.Count == 0)
-                // throw new InvalidDataException("No clients has been loaded");
-                Console.WriteLine("No clients has been loaded");
+                if (_camelliaClients.Count == 0)
+                    // throw new InvalidDataException("No clients has been loaded");
+                    Console.WriteLine("No clients has been loaded");
+            });
         }
 
         public CamelliaClient GetNextClient()
