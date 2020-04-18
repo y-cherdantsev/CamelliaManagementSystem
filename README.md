@@ -11,7 +11,7 @@
 
 ## Versioning
 #### Last version:
-* 1.0.19 - Improved FoundersPdfParse
+* 1.0.26 - Async CamelliaClientProvider loading
 
 ###### Older versions:
 * 1.0.0 - Initial version
@@ -30,6 +30,7 @@
 * 1.0.16 - Added CamelliaClientProvider
 * 1.0.17 - Added selection of timeout and number of tries to connection
 * 1.0.18 - 
+* 1.0.19 - Improved FoundersPdfParse
 
 ## Authors
 
