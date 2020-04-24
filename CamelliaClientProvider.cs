@@ -18,6 +18,8 @@ namespace Camellia_Management_System
         public CamelliaClientProvider(SignProvider signProvider, IEnumerator<IWebProxy> webProxies = null,
             int handlerTimeout = 20000, int numOfTries = 5)
         {
+            if (webProxies == null)
+                webProxies = new List<IWebProxy>() { null}.GetEnumerator();
             _webProxies = webProxies;
             _signProvider = signProvider;
             //TODO (SEVERAL PROXIES)
@@ -46,9 +48,13 @@ namespace Camellia_Management_System
 
 
                 if (_camelliaClients.Count == 0)
+                {
                     // throw new InvalidDataException("No clients has been loaded");
                     Console.WriteLine("No clients has been loaded");
+                    return;
+                }
             });
+            while (_camelliaClients.Count == 0);
         }
 
         public CamelliaClient GetNextClient()
