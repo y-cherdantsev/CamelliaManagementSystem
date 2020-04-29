@@ -13,8 +13,6 @@ namespace Camellia_Management_System.FileManage
     /// </summary>
     public class FoundersPdfParse : PdfParse
     {
-
-
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:31:22
         /// @version 1.0
@@ -41,7 +39,8 @@ namespace Camellia_Management_System.FileManage
             var flag = false;
             foreach (var element in elements)
             {
-                if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty).All(char.IsUpper) &&
+                if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
+                        .All(char.IsUpper) &&
                     element.Contains(" "))
                 {
                     founders.Add(element);
@@ -61,12 +60,26 @@ namespace Camellia_Management_System.FileManage
                         founders.Add(element);
                     }
 
-                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty).EndsWith("\""))
+                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
+                        .EndsWith("\""))
                     {
                         flag = false;
                     }
 
-                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty).EndsWith("»"))
+                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
+                        .EndsWith("»"))
+                    {
+                        flag = false;
+                    }
+
+                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
+                        .EndsWith(")"))
+                    {
+                        flag = false;
+                    }
+
+                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
+                        .EndsWith("."))
                     {
                         flag = false;
                     }
@@ -83,12 +96,6 @@ namespace Camellia_Management_System.FileManage
                 throw new InvalidDataException("No information were found in the reference");
             return result;
         }
-
-
-
-
-        
-
 
 
         /// @author Yevgeniy Cherdantsev
