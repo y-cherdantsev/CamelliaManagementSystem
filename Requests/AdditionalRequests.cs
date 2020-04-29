@@ -26,7 +26,7 @@
             var res = camelliaClient.HttpClient.GetStringAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}")
                 .GetAwaiter()
                 .GetResult();
-            return !res.Contains("\"code\":\"031\"");
+            return !(res.Contains("\"code\":\"031\"") || res.Contains("\"code\":\"034\""));
         }
     }
 }
