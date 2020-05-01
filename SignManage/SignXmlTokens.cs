@@ -69,7 +69,7 @@ namespace Camellia_Management_System.SignManage
 
             if (EDSError > 0)
             {
-                throw new ExternalException("Some error occured while signing the token");
+                throw new ExternalException("Some error occured while signing the token, possible reason: shortage of bin length");
             }
 
             var outData = OutSign.Replace("\n", "\r\n");

@@ -23,6 +23,7 @@ namespace Camellia_Management_System.Requests
         
         public IEnumerable<ResultForDownload> GetReference(string input, string captchaApiKey, int delay = 1000, int timeout = 60000, int numOfCaptchaTries = 5)
         {
+            input = input.PadLeft(12, '0');
             if (input.Length==12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, input))
                 throw new InvalidDataException("This bin is not registered");
             var captcha = "https://egov.kz/services/P30.03/captcha?"+(long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
