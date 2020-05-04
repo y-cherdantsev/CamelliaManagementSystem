@@ -145,9 +145,16 @@ namespace Camellia_Management_System
         /// </summary>
         public void Logout()
         {
-            HttpClient.GetAsync("https://egov.kz/cms/ru/auth/logout")
-                .GetAwaiter()
-                .GetResult();
+            try
+            {
+                HttpClient.GetAsync("https://egov.kz/cms/ru/auth/logout")
+                    .GetAwaiter()
+                    .GetResult();
+            }
+            catch (Exception e)
+            {
+                //ignore
+            }
         }
 
 
