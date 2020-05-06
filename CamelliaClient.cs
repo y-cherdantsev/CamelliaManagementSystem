@@ -57,6 +57,10 @@ namespace Camellia_Management_System
                 var camelliaClient = new CamelliaClient(new FullSign {AuthSign = sign}, webProxy);
                 return camelliaClient.UserInformation.uin.PadLeft(12, '0') == bin;
             }
+            catch (FileNotFoundException e)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 if (e.Message == "Some error occured while loading the key storage")
