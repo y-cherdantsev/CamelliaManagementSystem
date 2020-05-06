@@ -58,7 +58,7 @@ namespace Camellia_Management_System
             catch (Exception e)
             {
                 if (e.Message == "Some error occured while loading the key storage")
-                    return false;
+                    throw new InvalidDataException("Incorrect password");
                 throw new InvalidDataException("Service unavaliable");
             }
         }
