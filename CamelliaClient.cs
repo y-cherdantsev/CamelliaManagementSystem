@@ -49,6 +49,7 @@ namespace Camellia_Management_System
 
         public static bool IsCorrect(Sign sign, string bin, IWebProxy webProxy = null)
         {
+            //TODO (enum)
             try
             {
                 if (!new FileInfo(sign.FilePath).Exists)
