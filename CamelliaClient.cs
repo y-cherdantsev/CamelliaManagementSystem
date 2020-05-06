@@ -51,6 +51,8 @@ namespace Camellia_Management_System
         {
             try
             {
+                if (!new FileInfo(sign.FilePath).Exists)
+                    throw new FileNotFoundException();
                 bin = bin.PadLeft(12, '0');
                 var camelliaClient = new CamelliaClient(new FullSign {AuthSign = sign}, webProxy);
                 return camelliaClient.UserInformation.uin.PadLeft(12, '0') == bin;
