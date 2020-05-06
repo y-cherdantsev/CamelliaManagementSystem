@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -23,7 +24,6 @@ namespace Camellia_Management_System
         internal readonly FullSign FullSign;
 
 
-
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:14:34
         /// @version 1.0
@@ -37,7 +37,9 @@ namespace Camellia_Management_System
             FullSign = fullSign;
             Proxy = webProxy;
             HttpClientHandler handler;
-            handler = webProxy!= null ? new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = webProxy} : new HttpClientHandler {AllowAutoRedirect = true};
+            handler = webProxy != null
+                ? new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = webProxy}
+                : new HttpClientHandler {AllowAutoRedirect = true};
             CookieContainer = handler.CookieContainer;
             HttpClient = new HttpClient(handler);
             HttpClient.Timeout = TimeSpan.FromMilliseconds(httpClientTimeout);
@@ -45,6 +47,21 @@ namespace Camellia_Management_System
             UserInformation = GetUserInformation();
         }
 
+        public static bool IsCorrect(Sign sign, string bin, IWebProxy webProxy = null)
+        {
+            try
+            {
+                bin = bin.PadLeft(12, '0');
+                var camelliaClient = new CamelliaClient(new FullSign {AuthSign = sign}, webProxy);
+                return camelliaClient.UserInformation.uin.PadLeft(12, '0') == bin;
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "Some error occured while loading the key storage")
+                    return false;
+                throw new InvalidDataException("Service unavaliable");
+            }
+        }
 
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:15:18

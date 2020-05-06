@@ -36,7 +36,7 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        internal Sign()
+        public Sign()
         {
         }
 
