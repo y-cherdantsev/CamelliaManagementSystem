@@ -13,6 +13,7 @@ namespace Camellia_Management_System
         private readonly List<CamelliaClient> _usedClients = new List<CamelliaClient>();
         private readonly SignProvider _signProvider;
         private readonly IEnumerator<IWebProxy> _webProxies;
+        private bool _isReloading = false;
         public int ClientsLeft => _camelliaClients.Count;
 
         public CamelliaClientProvider(SignProvider signProvider, IEnumerator<IWebProxy> webProxies = null,
@@ -59,8 +60,10 @@ namespace Camellia_Management_System
 
         public CamelliaClient GetNextClient()
         {
+            while (_isReloading);
             if (_camelliaClients.Count == 0)
             {
+                _isReloading = true;
                 if (_usedClients.Count == 0)
                 {
                     _signProvider.ReloadSigns();
@@ -88,6 +91,7 @@ namespace Camellia_Management_System
 
                 _camelliaClients = ShuffleList(_usedClients);
                 _usedClients.Clear();
+                _isReloading = false;
             }
 
             CamelliaClient result;
