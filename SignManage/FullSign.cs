@@ -1,4 +1,6 @@
-﻿namespace Camellia_Management_System.SignManage
+﻿using System.IO;
+
+namespace Camellia_Management_System.SignManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 10:31:15
@@ -29,6 +31,8 @@
         /// Password for the sign
         /// </summary>
         public string Password { get; set; }
+        
+        public string name => new FileInfo(FilePath).Directory?.Name;
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:34:30

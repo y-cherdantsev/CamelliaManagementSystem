@@ -21,7 +21,8 @@ namespace Camellia_Management_System
         public UserInformation UserInformation;
         public CookieContainer CookieContainer;
         internal readonly IWebProxy Proxy;
-        internal readonly FullSign FullSign;
+        public readonly FullSign FullSign;
+        public string name => new FileInfo(FullSign.AuthSign.FilePath).Directory?.Name;
 
 
         /// @author Yevgeniy Cherdantsev
