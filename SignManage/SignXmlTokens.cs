@@ -49,7 +49,7 @@ namespace Camellia_Management_System.SignManage
 
             if (EDSError > 0)
             {
-                throw new ExternalException("Some error occured while loading the key storage");
+                throw new ExternalException($"Some error occured while loading the key storage '{sign.FilePath}'");
             }
 
             var Alias = "";
@@ -69,7 +69,7 @@ namespace Camellia_Management_System.SignManage
 
             if (EDSError > 0)
             {
-                throw new ExternalException("Some error occured while signing the token, possible reason: shortage of bin length");
+                throw new ExternalException("Some error occured while signing the token, possible reason: shortage of bin length '{sign.FilePath}'");
             }
 
             var outData = OutSign.Replace("\n", "\r\n");
