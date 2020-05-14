@@ -42,5 +42,10 @@ namespace Camellia_Management_System.Requests
         {
             return "https://egov.kz/services/P30.11/";
         }
+
+        protected override BiinType TypeOfBiin()
+        {
+            return BiinType.BIN;
+        }
     }
 }

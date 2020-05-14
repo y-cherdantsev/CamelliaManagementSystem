@@ -13,9 +13,9 @@ namespace Camellia_Management_System.Requests
     /// <code>
     /// 
     /// </code>
-    public sealed class ParticipationReference : SingleInputCaptchaRequest
+    public sealed class ULParticipationReference : SingleInputCaptchaRequest
     {
-        public ParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
+        public ULParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {
         }
 
@@ -32,6 +32,11 @@ namespace Camellia_Management_System.Requests
         protected override string RequestLink()
         {
             return "https://egov.kz/services/P30.03/";
+        }
+
+        protected override BiinType TypeOfBiin()
+        {
+            return BiinType.BIN;
         }
     }
 }

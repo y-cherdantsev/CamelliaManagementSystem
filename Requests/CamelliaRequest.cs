@@ -25,6 +25,7 @@ namespace Camellia_Management_System.Requests
         }
 
         protected abstract string RequestLink();
+        protected abstract BiinType TypeOfBiin();
 
         private ReadinessStatus GetReadinessStatus(string requestNumber)
         {
@@ -89,7 +90,7 @@ namespace Camellia_Management_System.Requests
             }
         }
 
-        protected string GetToken(string bin)
+        protected string GetToken(string biin)
         {
             using var request = new HttpRequestMessage(new HttpMethod("POST"),
                 $"{RequestLink()}/rest/app/xml");
@@ -103,12 +104,23 @@ namespace Camellia_Management_System.Requests
             request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
             request.Headers.Add("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
 
-            var json = JsonSerializer.Serialize(new BinDeclarant(bin, CamelliaClient.UserInformation.uin));
+            string json;
+                if(TypeOfBiin() == BiinType.BIN)
+                    json = JsonSerializer.Serialize(new BinDeclarant(biin, CamelliaClient.UserInformation.uin));
+                else
+                    json = JsonSerializer.Serialize(new IinDeclarant(biin, CamelliaClient.UserInformation.uin));
+                
 
             request.Content =
                 new StringContent(json, Encoding.UTF8, "application/json");
             var response = CamelliaClient.HttpClient.SendAsync(request).GetAwaiter().GetResult();
             return response.Content.ReadAsStringAsync().Result;
         }
+    }
+
+    public enum BiinType
+    {
+        BIN,
+        IIN
     }
 }

@@ -20,7 +20,7 @@
     /// </summary>
     public class Info
     {
-        public Person person { get; set; } = new Person();
+        public PersonInfo person { get; set; } = new PersonInfo();
     }
 
     /// @author Yevgeniy Cherdantsev
@@ -29,7 +29,7 @@
     /// <summary>
     /// Person json objects
     /// </summary>
-    public class Person
+    public class PersonInfo
     {
         public string iin { get; set; } = "";
     }
