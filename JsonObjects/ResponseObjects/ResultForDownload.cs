@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 
 namespace Camellia_Management_System.JsonObjects.ResponseObjects
@@ -29,7 +30,7 @@ namespace Camellia_Management_System.JsonObjects.ResponseObjects
             }
 
             using var webClient = new WebClient();
-            webClient.DownloadFileTaskAsync(url, $"{path}\\{fileName}.pdf").GetAwaiter().GetResult();
+            webClient.DownloadFileTaskAsync(url, $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf").GetAwaiter().GetResult();
             return $"{path}\\{fileName}.pdf";
         }
     }

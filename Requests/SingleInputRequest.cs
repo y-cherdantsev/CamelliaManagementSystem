@@ -36,7 +36,15 @@ namespace Camellia_Management_System.Requests
             }
 
             var token = GetToken(input);
-            token = JsonSerializer.Deserialize<TokenResponse>(token).xml;
+            try
+            {
+                token = JsonSerializer.Deserialize<TokenResponse>(token).xml;
+            }
+            catch (Exception e)
+            {
+                throw new InvalidDataException("Not allowed or some problem with egov occured");
+            }
+           
             var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);
             var requestNumber = SendPdfRequest(signedToken);
             var readinessStatus = WaitResult(requestNumber, delay, timeout);
