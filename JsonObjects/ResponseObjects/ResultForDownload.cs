@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace Camellia_Management_System.JsonObjects.RequestObjects
+namespace Camellia_Management_System.JsonObjects.ResponseObjects
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:18:34
