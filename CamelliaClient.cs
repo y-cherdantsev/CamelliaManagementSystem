@@ -48,28 +48,7 @@ namespace Camellia_Management_System
             UserInformation = GetUserInformation();
         }
 
-        public static bool IsCorrect(Sign sign, string bin, IWebProxy webProxy = null)
-        {
-            //TODO (enum)
-            try
-            {
-                if (!new FileInfo(sign.FilePath).Exists)
-                    throw new FileNotFoundException();
-                bin = bin.PadLeft(12, '0');
-                var camelliaClient = new CamelliaClient(new FullSign {AuthSign = sign}, webProxy);
-                return camelliaClient.UserInformation.uin.PadLeft(12, '0') == bin;
-            }
-            catch (FileNotFoundException e)
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                if (e.Message == "Some error occured while loading the key storage")
-                    throw new InvalidDataException("Incorrect password");
-                throw new InvalidDataException("Service unavailable");
-            }
-        }
+       
 
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:15:18

@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Net;
 using System.Text.Json;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
+using Camellia_Management_System.SignManage;
 
 namespace Camellia_Management_System.Requests
 {
@@ -51,6 +54,29 @@ namespace Camellia_Management_System.Requests
             if (organization.status.code == "031" || organization.status.code == "034")
                 throw new InvalidDataException("This company doesn't presented in camellia system");
             return organization;
+        }
+        
+        public static bool IsSignCorrect(Sign sign, string bin, IWebProxy webProxy = null)
+        {
+            //TODO (enum)
+            try
+            {
+                if (!new FileInfo(sign.FilePath).Exists)
+                    throw new FileNotFoundException();
+                bin = bin.PadLeft(12, '0');
+                var camelliaClient = new CamelliaClient(new FullSign {AuthSign = sign}, webProxy);
+                return camelliaClient.UserInformation.uin.PadLeft(12, '0') == bin;
+            }
+            catch (FileNotFoundException e)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "Some error occured while loading the key storage")
+                    throw new InvalidDataException("Incorrect password");
+                throw new InvalidDataException("Service unavailable");
+            }
         }
     }
 }
