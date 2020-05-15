@@ -28,11 +28,16 @@ namespace Camellia_Management_System.FileManage
         protected static string MinimizeReferenceText(string text)
 
         {
+            //TODO(ПОДХОДИТ НЕ ДЛЯ ВСЕХ СПРАВОК)
             text = text.Trim();
             var to = "<b>Наименование";
-            var position = text.ToLower().IndexOf(to.ToLower(), StringComparison.Ordinal);
-            text = text.Substring(position,
-                text.Length - position);
+            try
+            {
+                var position = text.ToLower().IndexOf(to.ToLower(), StringComparison.Ordinal);
+                text = text.Substring(position,
+                    text.Length - position);
+            }catch(Exception){}
+
             while (true)
             {
                 try

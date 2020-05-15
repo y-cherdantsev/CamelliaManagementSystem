@@ -59,9 +59,11 @@ namespace Camellia_Management_System.Requests
             {
                 token = JsonSerializer.Deserialize<TokenResponse>(token).xml;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw new InvalidDataException("Not allowed or some problem with egov occured");
+                if (token.Contains("<h1>405 Not Allowed</h1>"))
+                    throw new InvalidDataException("Not allowed or some problem with egov occured");
+                throw;
             }
 
             var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);

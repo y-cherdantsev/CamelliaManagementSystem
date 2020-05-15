@@ -42,7 +42,9 @@ namespace Camellia_Management_System.Requests
             }
             catch (Exception e)
             {
-                throw new InvalidDataException("Not allowed or some problem with egov occured");
+                if (token.Contains("<h1>405 Not Allowed</h1>"))
+                    throw new InvalidDataException("Not allowed or some problem with egov occured");
+                throw;
             }
            
             var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);
