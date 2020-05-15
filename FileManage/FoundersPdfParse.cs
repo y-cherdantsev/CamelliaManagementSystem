@@ -29,7 +29,7 @@ namespace Camellia_Management_System.FileManage
                 return founders;
             var minimized = MinimizeReferenceText(textFromPdf);
 
-            var from = "Учредители (участники):</b>";
+            var from = ":</bУчредители (участники)>";
             var to = "<b>";
             var fromPosition = minimized.ToLower().IndexOf(from.ToLower(), StringComparison.Ordinal);
             minimized = minimized.Substring(fromPosition + from.Length, minimized.Length - fromPosition - from.Length);

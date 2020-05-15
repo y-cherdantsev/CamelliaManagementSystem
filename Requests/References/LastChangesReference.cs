@@ -1,4 +1,4 @@
-﻿namespace Camellia_Management_System.Requests
+﻿namespace Camellia_Management_System.Requests.References
 {
     public class LastChangesReference : SingleInputRequest
     {

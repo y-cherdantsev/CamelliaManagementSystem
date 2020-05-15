@@ -2,7 +2,7 @@
 using System.Linq;
 using Camellia_Management_System.FileManage;
 
-namespace Camellia_Management_System.Requests
+namespace Camellia_Management_System.Requests.References
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 11:03:28

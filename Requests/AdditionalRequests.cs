@@ -85,7 +85,7 @@ namespace Camellia_Management_System.Requests
                 .GetResult();
             var organization = JsonSerializer.Deserialize<Organization>(res);
             if (organization.status.code == "031" || organization.status.code == "034")
-                throw new InvalidDataException("This company doesn't presented in camellia system");
+                throw new InvalidDataException("This company isn't presented in camellia system");
             return organization;
         }
         
