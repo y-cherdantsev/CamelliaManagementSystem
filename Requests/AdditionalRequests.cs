@@ -33,7 +33,7 @@ namespace Camellia_Management_System.Requests
                 .GetAwaiter()
                 .GetResult();
             var organization = JsonSerializer.Deserialize<Organization>(res);
-            return organization.status.code != "031" && organization.status.code != "034";
+            return organization.status.code != "031" && organization.status.code != "034" && organization.status.code != "035";
         }
         
         /// @author Yevgeniy Cherdantsev

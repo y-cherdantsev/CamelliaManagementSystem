@@ -49,10 +49,21 @@ namespace Camellia_Management_System.Requests
                 if (solvedCaptcha.Equals(""))
                     continue;
 
-                if (CheckCaptcha(solvedCaptcha))
-                    break;
-            }
+                for (var j = 0; j < 3; j++)
+                {
 
+                    try
+                    {
+                        if (CheckCaptcha(solvedCaptcha))
+                            goto gotoFlag;
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+                }
+            }
+            gotoFlag:
             var token = GetToken(input);
             
             try
