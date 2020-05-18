@@ -83,11 +83,6 @@ namespace Camellia_Management_System
                 .GetResult();
             var document = new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response)).Result;
             response = document.All.First(m => m.GetAttribute("id")=="xmlToSign").GetAttribute("value");
-            // response = response.Substring(response.IndexOf("id=\"xmlToSign\" value=\"", StringComparison.Ordinal) + "id=\"xmlToSign\" value=\"".Length);
-            // response = response.Substring(0, response.IndexOf("\" />"));
-            // response = response.Replace("&lt;", "<");
-            // response = response.Replace("&gt;", ">");
-            // response = response.Replace("&quot;", "" + "\"");
             return response;
         }
 
