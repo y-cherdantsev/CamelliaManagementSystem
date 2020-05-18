@@ -36,7 +36,11 @@ namespace Camellia_Management_System.FileManage
                 var position = text.ToLower().IndexOf(to.ToLower(), StringComparison.Ordinal);
                 text = text.Substring(position,
                     text.Length - position);
-            }catch(Exception){}
+            }
+            catch (Exception)
+            {
+                //  
+            }
 
             while (true)
             {

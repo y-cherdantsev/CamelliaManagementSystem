@@ -17,9 +17,20 @@ namespace Camellia_Management_System.SignManage
     /// </code>
     public class SignProvider
     {
+        /// <summary>
+        /// Path to the signs folder
+        /// </summary>
         private readonly string _pathToSignFolders;
+        
+        /// <summary>
+        /// List of loaded signs
+        /// </summary>
         private List<FullSign> _fullSign;
-        public int SignsLeft => _fullSign.Count;
+        
+        /// <summary>
+        /// List of left signs
+        /// </summary>
+        public int signsLeft => _fullSign.Count;
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:23:09

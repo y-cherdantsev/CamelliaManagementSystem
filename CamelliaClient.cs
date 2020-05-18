@@ -21,11 +21,34 @@ namespace Camellia_Management_System
     /// </summary>
     public class CamelliaClient : IDisposable
     {
+        /// <summary>
+        /// Http client
+        /// </summary>
         public HttpClient HttpClient;
+        
+        /// <summary>
+        /// Information about user
+        /// </summary>
         public UserInformation UserInformation;
+        
+        /// <summary>
+        /// Container of cookies
+        /// </summary>
         public CookieContainer CookieContainer;
+        
+        /// <summary>
+        /// Proxy if need
+        /// </summary>
         internal readonly IWebProxy Proxy;
+        
+        /// <summary>
+        /// Sign of a client
+        /// </summary>
         public readonly FullSign FullSign;
+        
+        /// <summary>
+        /// Name of the folder with sign
+        /// </summary>
         public string name => new FileInfo(FullSign.AuthSign.FilePath).Directory?.Name;
 
 
@@ -60,7 +83,6 @@ namespace Camellia_Management_System
         /// <summary>
         /// Connects to the cammelia system using handler
         /// </summary>
-        /// <param name="handler"></param>
         private void Connect()
         {
             HttpClient.GetStringAsync("https://www.egov.kz")
@@ -110,6 +132,12 @@ namespace Camellia_Management_System
             HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content).GetAwaiter().GetResult();
         }
 
+        /// @author Yevgeniy Cherdantsev
+        /// @version 1.0
+        /// <summary>
+        /// Get the information about connection of the client to the system
+        /// </summary>
+        /// <returns>true if the user logged in</returns>
         public bool IsLogged()
         {
             try
@@ -155,7 +183,7 @@ namespace Camellia_Management_System
                     .GetAwaiter()
                     .GetResult();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //ignore
             }

@@ -75,11 +75,23 @@ namespace Camellia_Management_System.FileManage
             return FoundersPdfParse.GetFounders(_innerText);
         }
         
+        /// @author Yevgeniy Cherdantsev
+        /// @version 1.0
+        /// <summary>
+        /// Parsing of participation ul reference and getting of child companies from it
+        /// </summary>
+        /// <returns>IEnumerable - list of child companies</returns>
         public IEnumerable<string> GetChildCompanies()
         {
             return ChildCompaniesPdfParse.GetChildCompanies(_innerText);
         }
         
+        /// @author Yevgeniy Cherdantsev
+        /// @version 1.0
+        /// <summary>
+        /// Parsing of participation fl reference and getting of companies from it
+        /// </summary>
+        /// <returns>IEnumerable - list of companies where person is head</returns>
         public IEnumerable<string> GetWherePersonIsHead()
         {
             return WhereIsHeadPdfParse.GetWhereIsHead(_innerText);

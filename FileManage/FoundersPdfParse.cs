@@ -21,6 +21,7 @@ namespace Camellia_Management_System.FileManage
         /// </summary>
         /// <param name="innerText">Text of a pdf file</param>
         /// <returns>IEnumerable - List of founders</returns>
+        /// /// <exception cref="InvalidDataException">If no information were found</exception>
         public static IEnumerable<string> GetFounders(string innerText)
         {
             var founders = new List<string>();

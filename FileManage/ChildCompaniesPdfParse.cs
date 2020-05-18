@@ -10,8 +10,14 @@ namespace Camellia_Management_System.FileManage
     /// <summary>
     /// Gets bins of all child companies
     /// </summary>
-    public class ChildCompaniesPdfParse : PdfParse
+    public sealed class ChildCompaniesPdfParse : PdfParse
     {
+        /// <summary>
+        /// Get list of child companies from the reference
+        /// </summary>
+        /// <param name="innerText">text of the reference</param>
+        /// <returns>IEnumerable - list of child companies</returns>
+        /// <exception cref="InvalidDataException">If no information were found</exception>
         public static IEnumerable<string> GetChildCompanies(string innerText)
         {
             var childCompanies = new List<string>();

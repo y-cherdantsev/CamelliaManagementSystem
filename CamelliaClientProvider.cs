@@ -7,26 +7,66 @@ using Camellia_Management_System.SignManage;
 
 namespace Camellia_Management_System
 {
+    /// @author Yevgeniy Cherdantsev
+    /// @version 1.0
+    /// <summary>
+    /// Controller and provider of camellia clients
+    /// </summary>
     public class CamelliaClientProvider
     {
+        
+        /// <summary>
+        /// List of ready clients in the current cycle
+        /// </summary>
         private List<CamelliaClient> _camelliaClients = new List<CamelliaClient>();
+        
+        /// <summary>
+        /// List of used clients in the current cycle
+        /// </summary>
         private readonly List<CamelliaClient> _usedClients = new List<CamelliaClient>();
+        
+        /// <summary>
+        /// Sign provider
+        /// </summary>
         private readonly SignProvider _signProvider;
+        
+        /// <summary>
+        /// List of proxies
+        /// </summary>
         private readonly IEnumerator<IWebProxy> _webProxies;
-        private bool _isReloading = false;
-        public int ClientsLeft => _camelliaClients.Count;
+        
+        /// <summary>
+        /// Tracks if the ClientProvider is reloading now
+        /// </summary>
+        private bool _isReloading;
+        
+        /// <summary>
+        /// Return the number of left clients before the next shuffle
+        /// </summary>
+        public int clientsLeft => _camelliaClients.Count;
 
+        /// @author Yevgeniy Cherdantsev
+        /// @date 18.02.2020 10:31:53
+        /// @version 1.0
+        /// <summary>
+        /// Creates clients from the given signs
+        /// </summary>
+        /// <param name="signProvider">Sign provider</param>
+        /// <param name="webProxies">Proxy if need</param>
+        /// <param name="handlerTimeout">Timeout</param>
+        /// <param name="numOfTries">Number Of Tries</param>
+        /// <returns>List - Shuffled list</returns>
         public CamelliaClientProvider(SignProvider signProvider, IEnumerator<IWebProxy> webProxies = null,
             int handlerTimeout = 20000, int numOfTries = 5)
         {
             if (webProxies == null)
-                webProxies = new List<IWebProxy>() { null}.GetEnumerator();
+                webProxies = new List<IWebProxy>{ null}.GetEnumerator();
             _webProxies = webProxies;
             _signProvider = signProvider;
             //TODO (SEVERAL PROXIES)
             Task.Run(() =>
             {
-                while (signProvider.SignsLeft > 0)
+                while (signProvider.signsLeft > 0)
                 {
                     var sign = signProvider.GetNextSign();
 
@@ -58,6 +98,12 @@ namespace Camellia_Management_System
             while (_camelliaClients.Count == 0);
         }
 
+        /// @author Yevgeniy Cherdantsev
+        /// @version 1.0
+        /// <summary>
+        /// Get next client from provider
+        /// </summary>
+        /// <returns>CamelliaClient - returns connected client</returns>
         public CamelliaClient GetNextClient()
         {
             while (_isReloading);
@@ -67,7 +113,7 @@ namespace Camellia_Management_System
                 if (_usedClients.Count == 0)
                 {
                     _signProvider.ReloadSigns();
-                    while (_signProvider.SignsLeft > 0)
+                    while (_signProvider.signsLeft > 0)
                     {
                         var sign = _signProvider.GetNextSign();
 
