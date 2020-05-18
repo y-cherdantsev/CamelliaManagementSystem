@@ -11,7 +11,7 @@
 
 ## Versioning
 #### Last version:
-* 1.0.26 - Async CamelliaClientProvider loading
+* 1.1.0 - Major changes, added dozen of references, new logging to the system
 
 ###### Older versions:
 * 1.0.0 - Initial version
@@ -29,8 +29,9 @@
 * 1.0.15 - External exception while signing the token
 * 1.0.16 - Added CamelliaClientProvider
 * 1.0.17 - Added selection of timeout and number of tries to connection
-* 1.0.18 - 
 * 1.0.19 - Improved FoundersPdfParse
+* 1.0.26 - Async CamelliaClientProvider loading
+* 1.0.39 - Last version with previous logging
 
 ## Authors
 

@@ -48,12 +48,12 @@ namespace Camellia_Management_System
                 }
 
 
-                if (_camelliaClients.Count == 0)
-                {
+                // if (_camelliaClients.Count == 0)
+                // {
                     // throw new InvalidDataException("No clients has been loaded");
-                    Console.WriteLine("No clients has been loaded");
-                    return;
-                }
+                    // Console.WriteLine("No clients has been loaded");
+                    // return;
+                // }
             });
             while (_camelliaClients.Count == 0);
         }
