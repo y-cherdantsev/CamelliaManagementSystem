@@ -50,7 +50,7 @@ namespace Camellia_Management_System.Requests
                     break;
             }
 
-            var token = GetToken(input);
+            var token = GetToken(input, stringDate);
             
             try
             {

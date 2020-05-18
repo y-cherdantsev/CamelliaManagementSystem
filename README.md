@@ -12,7 +12,7 @@
 
 ## Versioning
 #### Last version:
-* 1.1.0 - Major changes, added dozen of references, new logging to the system
+* 1.1.1 - RegisteredDateReference working
 
 ###### Older versions:
 * 1.0.0 - Initial version
@@ -33,6 +33,7 @@
 * 1.0.19 - Improved FoundersPdfParse
 * 1.0.26 - Async CamelliaClientProvider loading
 * 1.0.39 - Last version with previous logging
+* 1.1.0 - Major changes, added dozen of references, new logging to the system
 
 ## Authors
 

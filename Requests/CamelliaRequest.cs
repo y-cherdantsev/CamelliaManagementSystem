@@ -116,6 +116,33 @@ namespace Camellia_Management_System.Requests
             var response = CamelliaClient.HttpClient.SendAsync(request).GetAwaiter().GetResult();
             return response.Content.ReadAsStringAsync().Result;
         }
+        
+        protected string GetToken(string biin, string stringDate)
+        {
+            using var request = new HttpRequestMessage(new HttpMethod("POST"),
+                $"{RequestLink()}/rest/app/xml");
+            request.Headers.Add("Connection", "keep-alive");
+            request.Headers.Add("Cache-Control", "max-age=0");
+            request.Headers.Add("Origin", "https://idp.egov.kz");
+            request.Headers.Add("User-Agent", "Mozilla5.0 Windows NT 10.0");
+            request.Headers.Add("Sec-Fetch-Site", "same-origin");
+            request.Headers.Add("Sec-Fetch-Mode", "navigate");
+            request.Headers.Add("Referer", "https://idp.egov.kz/idp/sign-in");
+            request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
+            request.Headers.Add("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
+
+            string json;
+            if(TypeOfBiin() == BiinType.BIN)
+                json = JsonSerializer.Serialize(new BinDateDeclarant(biin, stringDate, CamelliaClient.UserInformation.uin));
+            else
+                json = JsonSerializer.Serialize(new BinDateDeclarant(biin, stringDate, CamelliaClient.UserInformation.uin));
+                
+
+            request.Content =
+                new StringContent(json, Encoding.UTF8, "application/json");
+            var response = CamelliaClient.HttpClient.SendAsync(request).GetAwaiter().GetResult();
+            return response.Content.ReadAsStringAsync().Result;
+        }
     }
 
     public enum BiinType
