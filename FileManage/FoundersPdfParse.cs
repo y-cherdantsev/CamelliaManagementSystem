@@ -84,6 +84,12 @@ namespace Camellia_Management_System.FileManage
                     {
                         flag = false;
                     }
+                    
+                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
+                        .ToUpper().EndsWith("CORPORATION"))
+                    {
+                        flag = false;
+                    }
 
                     if (!element.Contains(" "))
                     {
