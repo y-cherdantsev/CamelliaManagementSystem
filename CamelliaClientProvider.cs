@@ -74,9 +74,12 @@ namespace Camellia_Management_System
                     {
                         try
                         {
-                            var client = new CamelliaClient(sign, _webProxies.Current, handlerTimeout);
                             if (!_webProxies.MoveNext())
+                            {
                                 _webProxies.Reset();
+                                _webProxies.MoveNext();
+                            }
+                            var client = new CamelliaClient(sign, _webProxies.Current, handlerTimeout);
                             _camelliaClients.Add(client);
                             i = numOfTries;
                         }
