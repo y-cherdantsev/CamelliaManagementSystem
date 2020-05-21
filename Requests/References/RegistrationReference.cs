@@ -34,7 +34,7 @@ namespace Camellia_Management_System.Requests.References
 
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
-                return new PdfParser(temp.SaveFile("./"), deleteFile).GetFounders();
+                return new PdfParser(temp.SaveFile("./", proxy: CamelliaClient.Proxy), deleteFile).GetFounders();
             return null;
         }
 

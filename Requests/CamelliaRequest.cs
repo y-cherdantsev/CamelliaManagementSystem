@@ -17,7 +17,7 @@ namespace Camellia_Management_System.Requests
     /// </summary>
     public abstract class CamelliaRequest
     {
-        protected readonly CamelliaClient CamelliaClient;
+        internal readonly CamelliaClient CamelliaClient;
 
         public CamelliaRequest(CamelliaClient camelliaClient)
         {

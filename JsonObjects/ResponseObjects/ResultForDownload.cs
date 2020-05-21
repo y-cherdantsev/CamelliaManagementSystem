@@ -19,18 +19,25 @@ namespace Camellia_Management_System.JsonObjects.ResponseObjects
         public string language { get; set; } = "";
         public string name { get; set; } = "";
 
-        public string SaveFile(string path, string fileName = null)
+        public string SaveFile(string path, string fileName = null, IWebProxy proxy = null)
         {
             if (fileName == null)
             {
                 fileName = $"{nameEn} - {DateTime.Now.Ticks}";
-            }else
+            }
+            else
             {
                 fileName = fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
             }
 
             using var webClient = new WebClient();
-            webClient.DownloadFileTaskAsync(url, $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf").GetAwaiter().GetResult();
+            if (proxy != null)
+            {
+                webClient.Proxy = proxy;
+            }
+            webClient.Proxy = proxy;
+            webClient.DownloadFileTaskAsync(url, $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf").GetAwaiter()
+                .GetResult();
             return $"{path}\\{fileName}.pdf";
         }
     }
