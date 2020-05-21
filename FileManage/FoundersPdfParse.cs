@@ -35,7 +35,7 @@ namespace Camellia_Management_System.FileManage
             var fromPosition = minimized.ToLower().IndexOf(from.ToLower(), StringComparison.Ordinal);
             minimized = minimized.Substring(fromPosition + from.Length, minimized.Length - fromPosition - from.Length);
             minimized = minimized.Substring(0, minimized.ToLower().IndexOf(to, StringComparison.Ordinal)).Trim();
-            var elements = minimized.Split("\n");
+            var elements = minimized.Split(new char[]{'\n','/'});
 
             var flag = false;
             foreach (var element in elements)
@@ -63,6 +63,18 @@ namespace Camellia_Management_System.FileManage
 
                     if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
                         .EndsWith("\""))
+                    {
+                        flag = false;
+                    }
+                    
+                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
+                        .EndsWith("”"))
+                    {
+                        flag = false;
+                    }
+                    
+                    if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
+                        .EndsWith("LLC"))
                     {
                         flag = false;
                     }
