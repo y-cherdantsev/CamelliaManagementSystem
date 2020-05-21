@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 
 namespace Camellia_Management_System.JsonObjects.ResponseObjects
 {
@@ -29,15 +30,39 @@ namespace Camellia_Management_System.JsonObjects.ResponseObjects
             {
                 fileName = fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
             }
-
+            
             using var webClient = new WebClient();
             if (proxy != null)
             {
                 webClient.Proxy = proxy;
             }
             webClient.Proxy = proxy;
-            webClient.DownloadFileTaskAsync(url, $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf").GetAwaiter()
-                .GetResult();
+            var fullName = $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf";
+
+            for (var i = 0; i < 10; i++)
+            {
+                if (!new FileInfo(fullName).Exists || new FileInfo(fullName).Length<10000)
+                {
+                    try
+                    {
+                        new FileInfo(fullName).Delete();
+
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+
+                    webClient.DownloadFileTaskAsync(url, fullName).GetAwaiter()
+                        .GetResult();
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+
             return $"{path}\\{fileName}.pdf";
         }
     }
