@@ -27,7 +27,15 @@ namespace Camellia_Management_System.FileManage
         public PdfParser(string path, bool deleteFile = true)
         {
             var file = new FileInfo(path);
-            _innerText = GetTextFromPdf(file);
+            try
+            {
+                _innerText = GetTextFromPdf(file);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
             if (deleteFile)
                 file.Delete();
         }

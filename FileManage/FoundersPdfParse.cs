@@ -49,6 +49,12 @@ namespace Camellia_Management_System.FileManage
                 }
                 else
                 {
+                    if (element.StartsWith("Товарищество с ограниченной ответственностью"))
+                    {
+                        flag = true;
+                        founders.Add(element);
+                        continue;
+                    }
                     if (flag)
                     {
                         var founder = founders.Last();
