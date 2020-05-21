@@ -49,7 +49,13 @@ namespace Camellia_Management_System.FileManage
                 }
                 else
                 {
-                    if (element.StartsWith("Товарищество с ограниченной ответственностью"))
+                    if (element.ToLower().Trim().StartsWith("товариществосограниченнойответственностью"))
+                    {
+                        flag = true;
+                        founders.Add(element);
+                        continue;
+                    }
+                    if (element.ToLower().Trim().StartsWith("акционерноеобщество"))
                     {
                         flag = true;
                         founders.Add(element);
