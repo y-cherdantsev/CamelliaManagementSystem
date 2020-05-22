@@ -105,9 +105,9 @@ namespace Camellia_Management_System.FileManage
             return WhereIsHeadPdfParse.GetWhereIsHead(_innerText);
         }   
         
-        public IEnumerable<string> GetActivitiesDates()
+        public List<ActivitiesDatePdfParse.DateActivity> GetActivitiesDates()
         {
-            return ActivitiesDatePdfParse.GetDates(_innerText);
+            return ActivitiesDatePdfParse.GetDatesChanges(_innerText);
         }
         
         

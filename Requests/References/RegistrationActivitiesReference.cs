@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Camellia_Management_System.FileManage;
@@ -11,7 +12,7 @@ namespace Camellia_Management_System.Requests.References
         {
         }
         
-        public IEnumerable<string> GetActivitiesDates(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
+        public List<ActivitiesDatePdfParse.DateActivity> GetActivitiesDates(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
         {
             var reference = GetReference(bin, delay, timeout);
 
