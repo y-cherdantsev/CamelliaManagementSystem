@@ -20,6 +20,47 @@ namespace Camellia_Management_System.JsonObjects.ResponseObjects
         public string language { get; set; } = "";
         public string name { get; set; } = "";
 
-        
+        public string SaveFile(string path, HttpClient client, string fileName = null)
+        {
+            if (fileName == null)
+            {
+                fileName = $"{nameEn} - {DateTime.Now.Ticks}";
+            }
+            else
+            {
+                fileName = fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
+            }
+
+
+            var fullName = $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf";
+
+            for (int i = 0; i < 10; ++i)
+            {
+                if (!new FileInfo(fullName).Exists || new FileInfo(fullName).Length < 10000)
+                {
+                    try
+                    {
+                        new FileInfo(fullName).Delete();
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+                    using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                    using Stream contentStream = (client.SendAsync(request).GetAwaiter().GetResult()).Content
+                            .ReadAsStreamAsync().GetAwaiter().GetResult(),
+                        stream = new FileStream(fullName, FileMode.Create, FileAccess.Write, FileShare.None,
+                            4000000, true);
+                    contentStream.CopyToAsync(stream).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+
+            return $"{path}\\{fileName}.pdf";
+        }
     }
 }

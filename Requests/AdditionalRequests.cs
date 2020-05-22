@@ -28,15 +28,16 @@ namespace Camellia_Management_System.Requests
         /// <returns>bool - true if company registered</returns>
         public static bool IsBinRegistered(CamelliaClient camelliaClient, string bin)
         {
-            bin = bin.PadLeft(12,'0');
+            bin = bin.PadLeft(12, '0');
             var res = camelliaClient.HttpClient
                 .GetStringAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}")
                 .GetAwaiter()
                 .GetResult();
             var organization = JsonSerializer.Deserialize<Organization>(res);
-            return organization.status.code != "031" && organization.status.code != "034" && organization.status.code != "035";
+            return organization.status.code != "031" && organization.status.code != "034" &&
+                   organization.status.code != "035";
         }
-        
+
         /// @author Yevgeniy Cherdantsev
         /// @date 14.05.2020 14:59:56
         /// @version 1.0
@@ -48,7 +49,7 @@ namespace Camellia_Management_System.Requests
         /// <returns>bool - true if person registered</returns>
         public static bool IsIinRegistered(CamelliaClient camelliaClient, string iin)
         {
-            iin = iin.PadLeft(12,'0');
+            iin = iin.PadLeft(12, '0');
             try
             {
                 var res = camelliaClient.HttpClient
@@ -68,8 +69,8 @@ namespace Camellia_Management_System.Requests
                 throw;
             }
         }
-        
-        
+
+
         /// <summary>
         /// Gets information about organization
         /// </summary>
@@ -79,7 +80,7 @@ namespace Camellia_Management_System.Requests
         /// <exception cref="InvalidDataException">If company doesn't presented in the system</exception>
         public static Organization GetOrganizationInfo(CamelliaClient camelliaClient, string bin)
         {
-            bin = bin.PadLeft(12,'0');
+            bin = bin.PadLeft(12, '0');
             var res = camelliaClient.HttpClient
                 .GetStringAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}")
                 .GetAwaiter()
@@ -89,7 +90,7 @@ namespace Camellia_Management_System.Requests
                 throw new InvalidDataException("This company isn't presented in camellia system");
             return organization;
         }
-        
+
         public static bool IsSignCorrect(Sign sign, string bin, IWebProxy webProxy = null)
         {
             //TODO (enum)
@@ -112,53 +113,7 @@ namespace Camellia_Management_System.Requests
                 throw new InvalidDataException("Service unavailable");
             }
         }
+
         
-        public static string SaveFile(ResultForDownload resultForDownload, string path, string fileName = null, IEnumerator <IWebProxy> proxy = null)
-        {
-            if (fileName == null)
-            {
-                fileName = $"{resultForDownload.nameEn} - {DateTime.Now.Ticks}";
-            }
-            else
-            {
-                fileName = fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
-            }
-            
-            
-            var fullName = $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf";
-
-            while (proxy.MoveNext())
-            {
-                using var webClient = new WebClient();
-                if (proxy != null)
-                {
-                    
-                    webClient.Proxy = proxy.Current;
-                }
-
-                if (!new FileInfo(fullName).Exists || new FileInfo(fullName).Length<10000)
-                {
-                    try
-                    {
-                        new FileInfo(fullName).Delete();
-
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
-
-                    webClient.DownloadFileTaskAsync(resultForDownload.url, fullName).GetAwaiter()
-                        .GetResult();
-                }
-                else
-                {
-                    break;
-                }
-            }
-            
-
-            return $"{path}\\{fileName}.pdf";
-        }
     }
 }

@@ -56,7 +56,7 @@ namespace Camellia_Management_System.Requests
             if (readinessStatus.status.Equals("APPROVED"))
                 return readinessStatus;
 
-            throw new Exception($"Readiness status equals {readinessStatus.status}");
+            throw new InvalidDataException($"Readiness status equals {readinessStatus.status}");
         }
 
         protected string SendPdfRequest(string signedToken, string solvedCaptcha = null)

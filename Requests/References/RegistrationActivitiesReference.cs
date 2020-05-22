@@ -11,13 +11,13 @@ namespace Camellia_Management_System.Requests.References
         {
         }
         
-        public IEnumerable<string> GetActivitiesDates(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000,IEnumerator <IWebProxy> proxy = null)
+        public IEnumerable<string> GetActivitiesDates(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
         {
             var reference = GetReference(bin, delay, timeout);
 
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
-                return new PdfParser(AdditionalRequests.SaveFile(temp,"./", proxy:proxy ), deleteFile).GetActivitiesDates();
+                return new PdfParser(temp.SaveFile("./", CamelliaClient.HttpClient), deleteFile).GetActivitiesDates();
             return null;
         }
 

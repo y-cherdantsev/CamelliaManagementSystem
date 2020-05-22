@@ -22,12 +22,12 @@ namespace Camellia_Management_System.Requests.References
         }
         
         public IEnumerable<string> GetWherePersonIsHead(string iin, string captchaApiKey, int delay = 1000,
-            bool deleteFile = true, int timeout = 60000,IEnumerator <IWebProxy> proxy = null )
+            bool deleteFile = true, int timeout = 60000)
         {
             var reference = GetReference(iin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
-                return new PdfParser(AdditionalRequests.SaveFile(temp, "./",proxy:proxy), deleteFile).GetWherePersonIsHead();
+                return new PdfParser(temp.SaveFile("./", CamelliaClient.HttpClient), deleteFile).GetWherePersonIsHead();
             return null;
         }
     }

@@ -29,13 +29,13 @@ namespace Camellia_Management_System.Requests.References
         /// <param name="deleteFile">If the file should be deleted after parsing</param>
         /// <param name="timeout">Timeout</param>
         /// <returns>IEnumerable - list of founders</returns>
-        public IEnumerable<string> GetFounders(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000,IEnumerator <IWebProxy> proxy = null)
+        public IEnumerable<string> GetFounders(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
         {
             var reference = GetReference(bin, delay, timeout);
 
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
-                return new PdfParser(AdditionalRequests.SaveFile(temp, "./", proxy:proxy), deleteFile).GetFounders();
+                return new PdfParser(temp.SaveFile("./", CamelliaClient.HttpClient), deleteFile).GetFounders();
             return null;
         }
 
