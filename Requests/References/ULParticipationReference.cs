@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Camellia_Management_System.FileManage;
 
 namespace Camellia_Management_System.Requests.References
@@ -20,12 +21,12 @@ namespace Camellia_Management_System.Requests.References
         }
 
         public IEnumerable<string> GetChildCompanies(string bin, string captchaApiKey, int delay = 1000,
-            bool deleteFile = true, int timeout = 60000)
+            bool deleteFile = true, int timeout = 60000,IEnumerator <IWebProxy> proxy = null)
         {
             var reference = GetReference(bin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
-                return new PdfParser(temp.SaveFile("./"), deleteFile).GetChildCompanies();
+                return new PdfParser(AdditionalRequests.SaveFile(temp, "./",proxy:proxy), deleteFile).GetChildCompanies();
             return null;
         }
 

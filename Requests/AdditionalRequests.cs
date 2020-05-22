@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -110,6 +111,54 @@ namespace Camellia_Management_System.Requests
                     throw new InvalidDataException("Incorrect password");
                 throw new InvalidDataException("Service unavailable");
             }
+        }
+        
+        public static string SaveFile(ResultForDownload resultForDownload, string path, string fileName = null, IEnumerator <IWebProxy> proxy = null)
+        {
+            if (fileName == null)
+            {
+                fileName = $"{resultForDownload.nameEn} - {DateTime.Now.Ticks}";
+            }
+            else
+            {
+                fileName = fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
+            }
+            
+            
+            var fullName = $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf";
+
+            while (proxy.MoveNext())
+            {
+                using var webClient = new WebClient();
+                if (proxy != null)
+                {
+                    
+                    webClient.Proxy = proxy.Current;
+                }
+
+                if (!new FileInfo(fullName).Exists || new FileInfo(fullName).Length<10000)
+                {
+                    try
+                    {
+                        new FileInfo(fullName).Delete();
+
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+
+                    webClient.DownloadFileTaskAsync(resultForDownload.url, fullName).GetAwaiter()
+                        .GetResult();
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+
+            return $"{path}\\{fileName}.pdf";
         }
     }
 }

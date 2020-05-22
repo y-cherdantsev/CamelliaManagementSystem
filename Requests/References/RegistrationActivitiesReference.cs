@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Camellia_Management_System.FileManage;
 
 namespace Camellia_Management_System.Requests.References
@@ -10,13 +11,13 @@ namespace Camellia_Management_System.Requests.References
         {
         }
         
-        public IEnumerable<string> GetActivitiesDates(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
+        public IEnumerable<string> GetActivitiesDates(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000,IEnumerator <IWebProxy> proxy = null)
         {
             var reference = GetReference(bin, delay, timeout);
 
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
-                return new PdfParser(temp.SaveFile("./", proxy: CamelliaClient.Proxy), deleteFile).GetActivitiesDates();
+                return new PdfParser(AdditionalRequests.SaveFile(temp,"./", proxy:proxy ), deleteFile).GetActivitiesDates();
             return null;
         }
 
