@@ -103,6 +103,11 @@ namespace Camellia_Management_System.FileManage
         public IEnumerable<string> GetWherePersonIsHead()
         {
             return WhereIsHeadPdfParse.GetWhereIsHead(_innerText);
+        }   
+        
+        public IEnumerable<string> GetActivitiesDates()
+        {
+            return ActivitiesDatePdfParse.GetDates(_innerText);
         }
         
         
