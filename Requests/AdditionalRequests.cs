@@ -118,11 +118,11 @@ namespace Camellia_Management_System.Requests
             }
         }
 
-        public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin, string captchaToken)
+        public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin, string captchaToken, int delay = 1000, bool deleteFiles = true, int timeout = 20000)
         {
             var changes = new List<CompanyChange>();
             var registrationActivitiesReference = new RegistrationActivitiesReference(client);
-            var activitiesDates = registrationActivitiesReference.GetActivitiesDates(bin);
+            var activitiesDates = registrationActivitiesReference.GetActivitiesDates(bin, delay: delay, timeout:timeout);
             var dirName = $"{bin}-{DateTime.UtcNow.Ticks.ToString()}";
             var directoryWithReferences = new DirectoryInfo(dirName);
             directoryWithReferences.Create();
@@ -133,7 +133,7 @@ namespace Camellia_Management_System.Requests
                     try
                     {
                         var tempDateRef = new RegisteredDateReference(client);
-                        foreach (var tempReference in tempDateRef.GetReference(bin, activitiesDate.date, captchaToken))
+                        foreach (var tempReference in tempDateRef.GetReference(bin, activitiesDate.date, captchaToken, delay: delay, timeout:timeout))
                             if (tempReference.language.Contains("ru"))
                                 tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
                                     $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
@@ -188,7 +188,9 @@ namespace Camellia_Management_System.Requests
                     name = newName;
                 }
             }
-            directoryWithReferences.Delete(true);
+            if (deleteFiles)
+                directoryWithReferences.Delete(true);
+
 
             return changes.OrderBy(x=> x.date).ToList();
         }
