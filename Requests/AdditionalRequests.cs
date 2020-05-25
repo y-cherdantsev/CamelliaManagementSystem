@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using Camellia_Management_System.FileManage;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
+using Camellia_Management_System.Requests.References;
 using Camellia_Management_System.SignManage;
 
 namespace Camellia_Management_System.Requests
@@ -114,6 +117,82 @@ namespace Camellia_Management_System.Requests
             }
         }
 
-        
+        public static List<string> GetCompanyChanges(CamelliaClient client, string bin, string captchaToken)
+        {
+            var changes = new List<string>();
+            var registrationActivitiesReference = new RegistrationActivitiesReference(client);
+            var activitiesDates = registrationActivitiesReference.GetActivitiesDates(bin);
+            var dirName = $"{bin}-{DateTime.UtcNow.Ticks.ToString()}";
+            var directoryWithReferences = new DirectoryInfo(dirName);
+            directoryWithReferences.Create();
+            foreach (var activitiesDate in activitiesDates)
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        var tempDateRef = new RegisteredDateReference(client);
+                        foreach (var tempReference in tempDateRef.GetReference(bin, activitiesDate.date, captchaToken))
+                            if (tempReference.language.Contains("ru"))
+                                tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
+                                    $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
+                        break;
+
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+
+            
+            var headChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение руководителя"));
+            if (headChanges!=null)
+            {
+                var head =
+                    new PdfParser(
+                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf", false).GetHead();
+                foreach (var dateActivity in headChanges)
+                {
+                    var newHead = new PdfParser(
+                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetHead();
+                    changes.Add($"{dateActivity.date.Day}.{dateActivity.date.Month}.{dateActivity.date.Year}: Изменение руководителя с '{head}' на '{newHead}'");
+                    head = newHead;
+                }
+            }
+            
+            var placeChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение местонахождения"));
+            if (placeChanges!=null)
+            {
+                var place =
+                    new PdfParser(
+                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf", false).GetPlace();
+                foreach (var dateActivity in headChanges)
+                {
+                    var newPlace = new PdfParser(
+                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetPlace();
+                    changes.Add($"{dateActivity.date.Day}.{dateActivity.date.Month}.{dateActivity.date.Year}: Изменение местоположения с '{place}' на '{newPlace}'");
+                    place = newPlace;
+                }
+            }
+            
+            var nameChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение местонахождения"));
+            if (nameChanges!=null)
+            {
+                var name =
+                    new PdfParser(
+                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf", false).GetName();
+                foreach (var dateActivity in headChanges)
+                {
+                    var newName = new PdfParser(
+                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetPlace();
+                    changes.Add($"{dateActivity.date.Day}.{dateActivity.date.Month}.{dateActivity.date.Year}: Изменение названия с '{name}' на '{newName}'");
+                    name = newName;
+                }
+            }
+            directoryWithReferences.Delete(true);
+
+            return changes;
+        }
     }
 }

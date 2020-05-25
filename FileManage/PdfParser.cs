@@ -110,6 +110,26 @@ namespace Camellia_Management_System.FileManage
             return ActivitiesDatePdfParse.GetDatesChanges(_innerText);
         }
         
+        public string GetHead()
+        {
+            return RegisteredDateParse.GetHead(_innerText);
+        }
+        
+        public string GetName()
+        {
+            return RegisteredDateParse.GetName(_innerText);
+        }
+        
+        public string GetPlace()
+        {
+            return RegisteredDateParse.GetPlace(_innerText);
+        }
+        
+        public string CountFounders()
+        {
+            return RegisteredDateParse.CountFounders(_innerText);
+        }
+        
         
         
     }
