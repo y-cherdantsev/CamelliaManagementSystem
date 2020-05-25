@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using Camellia_Management_System.FileManage;
+using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 using Camellia_Management_System.Requests.References;
 using Camellia_Management_System.SignManage;
@@ -117,9 +118,9 @@ namespace Camellia_Management_System.Requests
             }
         }
 
-        public static List<string> GetCompanyChanges(CamelliaClient client, string bin, string captchaToken)
+        public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin, string captchaToken)
         {
-            var changes = new List<string>();
+            var changes = new List<CompanyChange>();
             var registrationActivitiesReference = new RegistrationActivitiesReference(client);
             var activitiesDates = registrationActivitiesReference.GetActivitiesDates(bin);
             var dirName = $"{bin}-{DateTime.UtcNow.Ticks.ToString()}";
@@ -147,7 +148,6 @@ namespace Camellia_Management_System.Requests
 
             
             var headChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение руководителя"));
-            if (headChanges!=null)
             {
                 var head =
                     new PdfParser(
@@ -156,43 +156,43 @@ namespace Camellia_Management_System.Requests
                 {
                     var newHead = new PdfParser(
                         $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetHead();
-                    changes.Add($"{dateActivity.date.Day}.{dateActivity.date.Month}.{dateActivity.date.Year}: Изменение руководителя с '{head}' на '{newHead}'");
+                    changes.Add(new CompanyChange{date = dateActivity.date, type = "head", before = head, after = newHead});
                     head = newHead;
                 }
             }
-            
+
             var placeChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение местонахождения"));
-            if (placeChanges!=null)
             {
                 var place =
                     new PdfParser(
                         $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf", false).GetPlace();
-                foreach (var dateActivity in headChanges)
+                foreach (var dateActivity in placeChanges)
                 {
                     var newPlace = new PdfParser(
                         $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetPlace();
-                    changes.Add($"{dateActivity.date.Day}.{dateActivity.date.Month}.{dateActivity.date.Year}: Изменение местоположения с '{place}' на '{newPlace}'");
+                    changes.Add(new CompanyChange{date = dateActivity.date, type = "place", before = place, after = newPlace});
                     place = newPlace;
                 }
             }
-            
-            var nameChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение местонахождения"));
-            if (nameChanges!=null)
+
+            var nameChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение наименования"));
             {
                 var name =
                     new PdfParser(
                         $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf", false).GetName();
-                foreach (var dateActivity in headChanges)
+                foreach (var dateActivity in nameChanges)
                 {
                     var newName = new PdfParser(
-                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetPlace();
-                    changes.Add($"{dateActivity.date.Day}.{dateActivity.date.Month}.{dateActivity.date.Year}: Изменение названия с '{name}' на '{newName}'");
+                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetName();
+                    changes.Add(new CompanyChange{date = dateActivity.date, type = "name", before = name, after = newName});
                     name = newName;
                 }
             }
             directoryWithReferences.Delete(true);
 
-            return changes;
+            return changes.OrderBy(x=> x.date).ToList();
         }
+
+        
     }
 }
