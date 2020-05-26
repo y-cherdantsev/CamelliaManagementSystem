@@ -130,6 +130,11 @@ namespace Camellia_Management_System.FileManage
             return RegisteredDateParse.CountFounders(_innerText);
         }
         
+        public string GetOccupation()
+        {
+            return RegisteredDateParse.GetOccupation(_innerText);
+        }
+        
         
         
     }

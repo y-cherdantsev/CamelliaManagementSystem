@@ -81,7 +81,7 @@ namespace Camellia_Management_System.FileManage
                     }
 
                     if (
-                        elementTemp.EndsWith("\""))
+                        elementTemp.EndsWith("\"") && elementTemp.Trim().Replace(" ", string.Empty).ToLower()!="товариществосограниченнойответственностью\"")
 
                         flag = false;
 

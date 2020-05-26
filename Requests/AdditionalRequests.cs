@@ -118,11 +118,19 @@ namespace Camellia_Management_System.Requests
             }
         }
 
-        public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin, string captchaToken, int delay = 1000, bool deleteFiles = true, int timeout = 20000)
+        public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin, string captchaToken,
+            int delay = 1000, bool deleteFiles = true, int timeout = 20000)
         {
             var changes = new List<CompanyChange>();
             var registrationActivitiesReference = new RegistrationActivitiesReference(client);
-            var activitiesDates = registrationActivitiesReference.GetActivitiesDates(bin, delay: delay, timeout:timeout);
+            var activitiesDates =
+                registrationActivitiesReference.GetActivitiesDates(bin, delay: delay, timeout: timeout);
+            foreach (var activitiesDate in activitiesDates)
+                if (activitiesDate.activity.action != null)
+                    foreach (var s in activitiesDate.activity.action)
+                        Console.WriteLine(activitiesDate.date + " : " + s);
+
+
             var dirName = $"{bin}-{DateTime.UtcNow.Ticks.ToString()}";
             var directoryWithReferences = new DirectoryInfo(dirName);
             directoryWithReferences.Create();
@@ -133,12 +141,12 @@ namespace Camellia_Management_System.Requests
                     try
                     {
                         var tempDateRef = new RegisteredDateReference(client);
-                        foreach (var tempReference in tempDateRef.GetReference(bin, activitiesDate.date, captchaToken, delay: delay, timeout:timeout))
+                        foreach (var tempReference in tempDateRef.GetReference(bin, activitiesDate.date, captchaToken,
+                            delay: delay, timeout: timeout))
                             if (tempReference.language.Contains("ru"))
                                 tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
                                     $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
                         break;
-
                     }
                     catch (Exception)
                     {
@@ -146,55 +154,92 @@ namespace Camellia_Management_System.Requests
                 }
             }
 
-            
-            var headChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение руководителя"));
+
+            var headChanges = activitiesDates.Where(x =>
+                x.activity.action != null && x.activity.action.Contains("Изменение руководителя")).ToList();
             {
                 var head =
                     new PdfParser(
-                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf", false).GetHead();
+                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf",
+                        false).GetHead();
                 foreach (var dateActivity in headChanges)
                 {
                     var newHead = new PdfParser(
-                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetHead();
-                    changes.Add(new CompanyChange{date = dateActivity.date, type = "head", before = head, after = newHead});
+                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf",
+                        false).GetHead();
+                    if (head.Equals(newHead))
+                        continue;
+                    changes.Add(new CompanyChange
+                        {date = dateActivity.date, type = "head", before = head, after = newHead});
                     head = newHead;
                 }
             }
 
-            var placeChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение местонахождения"));
+            var placeChanges = activitiesDates.Where(x =>
+                x.activity.action != null && (x.activity.action.Contains("Изменение местонахождения (с изменением места регистрации)") 
+                                              || x.activity.action.Contains("Изменение места нахождения (без изменения места регистрации)"))).ToList();
             {
                 var place =
                     new PdfParser(
-                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf", false).GetPlace();
+                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf",
+                        false).GetPlace();
                 foreach (var dateActivity in placeChanges)
                 {
                     var newPlace = new PdfParser(
-                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetPlace();
-                    changes.Add(new CompanyChange{date = dateActivity.date, type = "place", before = place, after = newPlace});
+                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf",
+                        false).GetPlace();
+                    if (place.Equals(newPlace))
+                        continue;
+                        changes.Add(new CompanyChange
+                        {date = dateActivity.date, type = "place", before = place, after = newPlace});
                     place = newPlace;
                 }
             }
 
-            var nameChanges = activitiesDates.Where(x => x.activity.action!= null && x.activity.action.Contains("Изменение наименования"));
+            var nameChanges = activitiesDates.Where(x =>
+                x.activity.action != null && x.activity.action.Contains("Изменение наименования")).ToList();
             {
                 var name =
                     new PdfParser(
-                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf", false).GetName();
+                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf",
+                        false).GetName();
                 foreach (var dateActivity in nameChanges)
                 {
                     var newName = new PdfParser(
-                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf", false).GetName();
-                    changes.Add(new CompanyChange{date = dateActivity.date, type = "name", before = name, after = newName});
+                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf",
+                        false).GetName();
+                    if (name.Equals(newName))
+                        continue;
+                    changes.Add(new CompanyChange
+                        {date = dateActivity.date, type = "name", before = name, after = newName});
                     name = newName;
+                }
+            }
+
+            var occupationChanges = activitiesDates.Where(x =>
+                x.activity.action != null && x.activity.action.Contains("Изменение видов деятельности")).ToList();
+            {
+                var occupation =
+                    new PdfParser(
+                        $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf",
+                        false).GetOccupation();
+                foreach (var dateActivity in nameChanges)
+                {
+                    var newOccupation = new PdfParser(
+                        $"{directoryWithReferences}\\{bin}-{dateActivity.date.Year}-{dateActivity.date.Month}-{dateActivity.date.Day}.pdf",
+                        false).GetOccupation();
+                    if (occupation.Equals(newOccupation))
+                        continue;
+                    changes.Add(new CompanyChange
+                        {date = dateActivity.date, type = "occupation", before = occupation, after = newOccupation});
+                    occupation = newOccupation;
                 }
             }
             if (deleteFiles)
                 directoryWithReferences.Delete(true);
 
 
-            return changes.OrderBy(x=> x.date).ToList();
+            return changes.OrderBy(x => x.date).ToList();
         }
-
-        
     }
 }
