@@ -124,7 +124,8 @@ namespace Camellia_Management_System.Requests
             var changes = new List<CompanyChange>();
             var registrationActivitiesReference = new RegistrationActivitiesReference(client);
             var activitiesDates =
-                registrationActivitiesReference.GetActivitiesDates(bin, delay: delay, timeout: timeout);
+                registrationActivitiesReference.GetActivitiesDates(bin, delay: delay, timeout: timeout)
+                    .OrderBy(x => x.date).ToList();
             foreach (var activitiesDate in activitiesDates)
                 if (activitiesDate.activity.action != null)
                     foreach (var s in activitiesDate.activity.action)
@@ -143,9 +144,18 @@ namespace Camellia_Management_System.Requests
                         var tempDateRef = new RegisteredDateReference(client);
                         foreach (var tempReference in tempDateRef.GetReference(bin, activitiesDate.date, captchaToken,
                             delay: delay, timeout: timeout))
-                            if (tempReference.language.Contains("ru"))
-                                tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
-                                    $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
+                            if (activitiesDate.date == activitiesDates[0].date
+                                || activitiesDate.activity.action.Contains("Изменение руководителя")
+                                || activitiesDate.activity.action.Contains(
+                                    "Изменение местонахождения (с изменением места регистрации)")
+                                || activitiesDate.activity.action.Contains(
+                                    "Изменение места нахождения (без изменения места регистрации)")
+                                || activitiesDate.activity.action.Contains("Изменение наименования")
+                                || activitiesDate.activity.action.Contains("Изменение видов деятельности")
+                            )
+                                if (tempReference.language.Contains("ru"))
+                                    tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
+                                        $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
                         break;
                     }
                     catch (Exception)
@@ -170,14 +180,16 @@ namespace Camellia_Management_System.Requests
                     if (head.Equals(newHead))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "head", before = head, after = newHead});
+                        {date = dateActivity.date, type = "Изменение руководителя", before = head, after = newHead});
                     head = newHead;
                 }
             }
 
             var placeChanges = activitiesDates.Where(x =>
-                x.activity.action != null && (x.activity.action.Contains("Изменение местонахождения (с изменением места регистрации)") 
-                                              || x.activity.action.Contains("Изменение места нахождения (без изменения места регистрации)"))).ToList();
+                    x.activity.action != null &&
+                    (x.activity.action.Contains("Изменение местонахождения (с изменением места регистрации)")
+                     || x.activity.action.Contains("Изменение места нахождения (без изменения места регистрации)")))
+                .ToList();
             {
                 var place =
                     new PdfParser(
@@ -190,8 +202,8 @@ namespace Camellia_Management_System.Requests
                         false).GetPlace();
                     if (place.Equals(newPlace))
                         continue;
-                        changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "place", before = place, after = newPlace});
+                    changes.Add(new CompanyChange
+                        {date = dateActivity.date, type = "Изменение местонахождения", before = place, after = newPlace});
                     place = newPlace;
                 }
             }
@@ -211,7 +223,7 @@ namespace Camellia_Management_System.Requests
                     if (name.Equals(newName))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "name", before = name, after = newName});
+                        {date = dateActivity.date, type = "Изменение наименования", before = name, after = newName});
                     name = newName;
                 }
             }
@@ -231,7 +243,7 @@ namespace Camellia_Management_System.Requests
                     if (occupation.Equals(newOccupation))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "occupation", before = occupation, after = newOccupation});
+                        {date = dateActivity.date, type = "Изменение видов деятельности", before = occupation, after = newOccupation});
                     occupation = newOccupation;
                 }
             }

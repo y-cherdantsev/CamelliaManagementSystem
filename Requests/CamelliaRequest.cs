@@ -29,12 +29,20 @@ namespace Camellia_Management_System.Requests
 
         private ReadinessStatus GetReadinessStatus(string requestNumber)
         {
-            var res = CamelliaClient.HttpClient
-                .GetStringAsync($"{RequestLink()}/rest/request-states/{requestNumber}")
-                .GetAwaiter()
-                .GetResult();
-            var readinessStatus = JsonSerializer.Deserialize<ReadinessStatus>(res);
-            return readinessStatus;
+            try
+            {
+                var res = CamelliaClient.HttpClient
+                    .GetStringAsync($"{RequestLink()}/rest/request-states/{requestNumber}")
+                    .GetAwaiter()
+                    .GetResult();
+                var readinessStatus = JsonSerializer.Deserialize<ReadinessStatus>(res);
+                return readinessStatus;
+            }
+            catch (Exception)
+            {
+                throw new InvalidDataException("It seems that camellia rejected request");
+            }
+            
         }
 
 
