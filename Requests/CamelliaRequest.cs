@@ -57,6 +57,10 @@ namespace Camellia_Management_System.Requests
             {
                 if (wait-- <= 0)
                     throw new InvalidDataException($"Timeout '{timeout}' exceeded");
+                // if (wait < timeout / delay /2 && IsDenied(requestNumber))
+                // {
+                    // throw new InvalidDataException("Request denied");
+                // }
                 Thread.Sleep(delay);
                 readinessStatus = GetReadinessStatus(requestNumber);
             }
@@ -67,6 +71,14 @@ namespace Camellia_Management_System.Requests
             throw new InvalidDataException($"Readiness status equals {readinessStatus.status}");
         }
 
+
+        protected bool IsDenied(string requestNumber)
+        {
+            var response = CamelliaClient.HttpClient.GetStringAsync($"https://egov.kz/services/P30.03/rest/like/{requestNumber}/{CamelliaClient.UserInformation.uin}")
+                .GetAwaiter()
+                .GetResult();
+            return response.Contains("DENIED");
+        }
         protected string SendPdfRequest(string signedToken, string solvedCaptcha = null)
         {
             string requestUri = solvedCaptcha == null
