@@ -130,9 +130,9 @@ namespace Camellia_Management_System
                                 _camelliaClients.Add(client);
                                 i = 3;
                             }
-                            catch (Exception)
+                            catch (Exception e)
                             {
-                                // ignored
+                                Console.WriteLine(e.StackTrace);
                             }
                         }
                     }
@@ -152,6 +152,7 @@ namespace Camellia_Management_System
                 }
                 catch (Exception)
                 {
+                    throw;
                     throw new InvalidDataException("Client manager has no loaded clients; Reason: service unavaliable");
                 }
 
