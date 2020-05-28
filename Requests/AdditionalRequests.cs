@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Camellia_Management_System.FileManage;
 using Camellia_Management_System.JsonObjects;
@@ -95,16 +96,27 @@ namespace Camellia_Management_System.Requests
             return organization;
         }
 
-        public static bool IsSignCorrect(Sign sign, string bin, IWebProxy webProxy = null)
+        
+        /// <summary>
+        /// Checks if the bin equals to the biin from sign
+        /// </summary>
+        /// <param name="sign">Sign</param>
+        /// <param name="bin">BIIN</param>
+        /// <param name="webProxy">Proxy if needed</param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException">If the sign hasn't been found</exception>
+        /// <exception cref="InvalidDataException">If the password is incorrect</exception>
+        /// <exception cref="ExternalException">If service unavaliable</exception>
+        public static bool IsSignCorrect(Sign sign, string biin, IWebProxy webProxy = null)
         {
             //TODO (enum)
             try
             {
                 if (!new FileInfo(sign.FilePath).Exists)
                     throw new FileNotFoundException();
-                bin = bin.PadLeft(12, '0');
+                biin = biin.PadLeft(12, '0');
                 var camelliaClient = new CamelliaClient(new FullSign {AuthSign = sign}, webProxy);
-                return camelliaClient.UserInformation.uin.PadLeft(12, '0') == bin;
+                return camelliaClient.UserInformation.uin.PadLeft(12, '0') == biin;
             }
             catch (FileNotFoundException e)
             {
@@ -114,10 +126,22 @@ namespace Camellia_Management_System.Requests
             {
                 if (e.Message == "Some error occured while loading the key storage")
                     throw new InvalidDataException("Incorrect password");
-                throw new InvalidDataException("Service unavailable");
+                throw new ExternalException("Service unavailable");
             }
         }
 
+        /// <summary>
+        /// Gets changes of the company
+        /// </summary>
+        /// <param name="client">Camellia Client</param>
+        /// <param name="bin">BIN of the company</param>
+        /// <param name="captchaToken">Captcha token</param>
+        /// <param name="delay">Delay for the waiting of references</param>
+        /// <param name="deleteFiles">If the references should be deleted after parsing</param>
+        /// <param name="timeout">Timeout of waiting of the sign</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">If camellia system doesn't contain such information</exception>
+        /// <exception cref="ExternalException">If service unavaliable</exception>
         public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin, string captchaToken,
             int delay = 1000, bool deleteFiles = true, int timeout = 20000)
         {
@@ -160,6 +184,7 @@ namespace Camellia_Management_System.Requests
                     }
                     catch (Exception)
                     {
+                        // ignored
                     }
                 }
             }
