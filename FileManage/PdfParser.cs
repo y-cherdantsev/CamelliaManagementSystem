@@ -105,31 +105,56 @@ namespace Camellia_Management_System.FileManage
             return WhereIsHeadPdfParse.GetWhereIsHead(_innerText);
         }   
         
-        public List<ActivitiesDatePdfParse.DateActivity> GetActivitiesDates()
+        /// <summary>
+        /// Parsing of dates and changes
+        /// </summary>
+        /// <returns>IEnumerable - list of changes with dates</returns>
+        public IEnumerable<ActivitiesDatePdfParse.DateActivity> GetActivitiesDates()
         {
             return ActivitiesDatePdfParse.GetDatesChanges(_innerText);
         }
         
+        /// <summary>
+        /// Parsing of heads from registered date reference
+        /// </summary>
+        /// <returns>string - head of the company</returns>
         public string GetHead()
         {
             return RegisteredDateParse.GetHead(_innerText);
         }
         
+        
+        /// <summary>
+        /// Parsing of company names from registered date reference
+        /// </summary>
+        /// <returns>string - name of the company</returns>
         public string GetName()
         {
             return RegisteredDateParse.GetName(_innerText);
         }
         
+        /// <summary>
+        /// Parsing of company address from registered date reference
+        /// </summary>
+        /// <returns>string - address of the company</returns>
         public string GetPlace()
         {
             return RegisteredDateParse.GetPlace(_innerText);
         }
         
-        public string CountFounders()
+        /// <summary>
+        /// Parse nimber of founders from registered date reference
+        /// </summary>
+        /// <returns>int - number of the founders</returns>
+        public int CountFounders()
         {
-            return RegisteredDateParse.CountFounders(_innerText);
+            return Convert.ToInt32(RegisteredDateParse.CountFounders(_innerText));
         }
         
+        /// <summary>
+        /// Parsing occupation of the company from registered date reference
+        /// </summary>
+        /// <returns>string - occupation of the company</returns>
         public string GetOccupation()
         {
             return RegisteredDateParse.GetOccupation(_innerText);

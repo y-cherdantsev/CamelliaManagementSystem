@@ -7,13 +7,8 @@ namespace Camellia_Management_System.FileManage
     /// @date 14.03.2020 14:50:59
     /// @version 1.0
     /// <summary>
-    /// INPUT
+    /// Parsing pdf references
     /// </summary>
-    /// <code>
-    /// 
-    /// </code>
-
-
     public abstract class PdfParse
     {
         
@@ -21,9 +16,9 @@ namespace Camellia_Management_System.FileManage
         /// @date 10.03.2020 10:32:28
         /// @version 1.0
         /// <summary>
-        /// Minimization of a text and removing of unneccesary symbols before using it
+        /// Minimization of a text and removing of unnecessary symbols before using it
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="text">Text that should be minimized</param>
         /// <returns>string - minimized text</returns>
         protected static string MinimizeReferenceText(string text)
 

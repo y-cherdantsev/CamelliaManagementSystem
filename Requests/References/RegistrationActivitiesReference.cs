@@ -12,7 +12,7 @@ namespace Camellia_Management_System.Requests.References
         {
         }
         
-        public List<ActivitiesDatePdfParse.DateActivity> GetActivitiesDates(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
+        public IEnumerable<ActivitiesDatePdfParse.DateActivity> GetActivitiesDates(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
         {
             var reference = GetReference(bin, delay, timeout);
 

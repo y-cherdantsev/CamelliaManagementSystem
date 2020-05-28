@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AngleSharp.Text;
 
 namespace Camellia_Management_System.FileManage
 {
+    
+    /// <summary>
+    /// Get activities with dates
+    /// </summary>
     public class ActivitiesDatePdfParse : PdfParse
     {
-        public static List<DateActivity> GetDatesChanges(string innerText)
+        
+        public static IEnumerable<DateActivity> GetDatesChanges(string innerText)
         {
             var result = new List<DateActivity>();
             innerText = MinimizeReferenceText(innerText);
@@ -67,7 +71,7 @@ namespace Camellia_Management_System.FileManage
                 }
                 catch (Exception)
                 {
-                   
+                    // ignored
                 }
 
                 result.Add(new DateActivity(date, activity));
@@ -76,7 +80,8 @@ namespace Camellia_Management_System.FileManage
             return Normalize(result);
         }
 
-        private static List<DateActivity> Normalize(List<DateActivity> dateActivities)
+        
+        private static IEnumerable<DateActivity> Normalize(IEnumerable<DateActivity> dateActivities)
         {
             //Removing same values
             var result = dateActivities.ToList();
@@ -88,6 +93,9 @@ namespace Camellia_Management_System.FileManage
             return result.Where(x => x != null).OrderBy(x => x.date).ToList();
         }
 
+        /// <summary>
+        /// Date with activities
+        /// </summary>
         public class DateActivity
         {
             internal DateActivity(DateTime date, Activity activity)
@@ -96,16 +104,29 @@ namespace Camellia_Management_System.FileManage
                 this.activity = activity;
             }
 
+            /// <summary>
+            /// Date of activity
+            /// </summary>
             public DateTime date { get; set; }
+            
+            /// <summary>
+            /// Activity
+            /// </summary>
             public Activity activity { get; set; }
         }
+        
+        /// <summary>
+        /// Activity type with list of actions
+        /// </summary>
         public class Activity
         {
-            public Activity()
-            {
-            }
-
-            public string type;
+            /// <summary>
+            /// Type of activity
+            /// </summary>
+            public string type { get; set; }
+            /// <summary>
+            /// List of actions
+            /// </summary>
             public List<string> action { get; set; }
         }
     }
