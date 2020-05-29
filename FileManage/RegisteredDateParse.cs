@@ -28,16 +28,17 @@ namespace Camellia_Management_System.FileManage
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();
             return result;
         }
-        
+
         public static string GetPlace(string innerText)
         {
             innerText = MinimizeReferenceText(innerText);
             innerText = innerText.Substring(innerText.IndexOf("<b>Местонахождение:</b>") + 23,
                 innerText.Length - innerText.IndexOf("<b>Местонахождение:</b>") - 23);
-            var result = innerText.Substring(0, innerText.IndexOf("Электрондық")).Replace("\r", " ").Replace("\n", " ").Trim();
+            var result = innerText.Substring(0, innerText.IndexOf("Электрондық")).Replace("\r", " ").Replace("\n", " ")
+                .Trim();
             return result;
         }
-        
+
         public static string CountFounders(string innerText)
         {
             innerText = MinimizeReferenceText(innerText);
@@ -46,10 +47,12 @@ namespace Camellia_Management_System.FileManage
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();
             return result;
         }
-        
+
         public static string GetOccupation(string innerText)
         {
             innerText = MinimizeReferenceText(innerText);
+            if (innerText.IndexOf("<b>Виды деятельности:</b>") == -1)
+                return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Виды деятельности:</b>") + 25,
                 innerText.Length - innerText.IndexOf("<b>Виды деятельности:</b>") - 25);
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();

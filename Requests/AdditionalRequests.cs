@@ -150,10 +150,10 @@ namespace Camellia_Management_System.Requests
             var activitiesDates =
                 registrationActivitiesReference.GetActivitiesDates(bin, delay: delay, timeout: timeout)
                     .OrderBy(x => x.date).ToList();
-            foreach (var activitiesDate in activitiesDates)
-                if (activitiesDate.activity.action != null)
-                    foreach (var s in activitiesDate.activity.action)
-                        Console.WriteLine(activitiesDate.date + " : " + s);
+            // foreach (var activitiesDate in activitiesDates)
+                // if (activitiesDate.activity.action != null)
+                    // foreach (var s in activitiesDate.activity.action)
+                        // Console.WriteLine(activitiesDate.date + " : " + s);
 
 
             var dirName = $"{bin}-{DateTime.UtcNow.Ticks.ToString()}";

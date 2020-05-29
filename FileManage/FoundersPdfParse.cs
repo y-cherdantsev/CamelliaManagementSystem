@@ -111,9 +111,8 @@ namespace Camellia_Management_System.FileManage
                         flag = false;
 
 
-                    if (elementTemp.ToUpper().EndsWith("CORPORATION"))
-
-                        flag = false;
+                    // if (elementTemp.ToUpper().EndsWith("CORPORATION"))
+                        // flag = false;
 
 
                     if (!element.Contains(" "))
