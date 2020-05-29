@@ -9,6 +9,8 @@ namespace Camellia_Management_System.FileManage
         {
             var result = "";
             innerText = MinimizeReferenceText(innerText);
+            if (innerText.IndexOf("<b>Руководитель:</b>") == -1)
+                return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Руководитель:</b>") + 20,
                 innerText.Length - innerText.IndexOf("<b>Руководитель:</b>") - 20);
             var elements = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ")
@@ -23,6 +25,8 @@ namespace Camellia_Management_System.FileManage
         public static string GetName(string innerText)
         {
             innerText = MinimizeReferenceText(innerText);
+            if (innerText.IndexOf("<b>Наименование:</b>") == -1)
+                return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Наименование:</b>") + 20,
                 innerText.Length - innerText.IndexOf("<b>Наименование:</b>") - 20);
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();
@@ -32,6 +36,8 @@ namespace Camellia_Management_System.FileManage
         public static string GetPlace(string innerText)
         {
             innerText = MinimizeReferenceText(innerText);
+            if (innerText.IndexOf("<b>Местонахождение:</b>") == -1)
+                return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Местонахождение:</b>") + 23,
                 innerText.Length - innerText.IndexOf("<b>Местонахождение:</b>") - 23);
             var result = innerText.Substring(0, innerText.IndexOf("Электрондық")).Replace("\r", " ").Replace("\n", " ")
@@ -42,6 +48,8 @@ namespace Camellia_Management_System.FileManage
         public static string CountFounders(string innerText)
         {
             innerText = MinimizeReferenceText(innerText);
+            if (innerText.IndexOf("<b>Количество участников (членов):</b>") == -1)
+                return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Количество участников (членов):</b>") + 38,
                 innerText.Length - innerText.IndexOf("<b>Количество участников (членов):</b>") - 38);
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();
