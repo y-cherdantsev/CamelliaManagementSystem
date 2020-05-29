@@ -16,7 +16,7 @@ namespace Camellia_Management_System.FileManage
             var elements = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ")
                 .Split(' ');
             foreach (var element in elements)
-                if (element.All(char.IsUpper) && element.All(x => "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭУЯ".Contains(x)))
+                if (element.All(char.IsUpper) && element.All(x => "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭУЯӘІҢҒҮҰҚӨҺ".Contains(x)))
                     result += element + " ";
 
             return result.Trim();
