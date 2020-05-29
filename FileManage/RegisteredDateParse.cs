@@ -13,7 +13,7 @@ namespace Camellia_Management_System.FileManage
                 return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Руководитель:</b>") + 20,
                 innerText.Length - innerText.IndexOf("<b>Руководитель:</b>") - 20);
-            var elements = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ")
+            var elements = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Replace(".", " ")
                 .Split(' ');
             foreach (var element in elements)
                 if (element.All(char.IsUpper) && element.All(x => "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭУЯӘІҢҒҮҰҚӨҺ".Contains(x)))
