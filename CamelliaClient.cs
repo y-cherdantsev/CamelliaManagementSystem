@@ -71,7 +71,24 @@ namespace Camellia_Management_System
             CookieContainer = handler.CookieContainer;
             HttpClient = new HttpClient(handler);
             HttpClient.Timeout = TimeSpan.FromMilliseconds(httpClientTimeout);
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate, br");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Referer", "https://idp.egov.kz/idp/sign-in");
+            //
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Origin", "https://idp.egov.kz");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Dest", "document");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Mode", "navigate");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Upgrade-Insecure-Requests", "1");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Connection", "keep-alive");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Host", "idp.egov.kz");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Cache-Control", "max-age=0");
             Connect();
+            Authorize();
+            // GetUser();
             UserInformation = GetUserInformation();
         }
 
@@ -118,7 +135,7 @@ namespace Camellia_Management_System
         private void Authorize()
         {
             var signedToken = SignXmlTokens.SignToken(GetToken(), FullSign.AuthSign);
-
+            
             var values = new Dictionary<string, string>
             {
                 {"certificate", $"{signedToken}"},
@@ -142,7 +159,7 @@ namespace Camellia_Management_System
         {
             try
             {
-                GetUserInformation();
+                // GetUserInformation();
                 return true;
             }
             catch (Exception e)
@@ -161,7 +178,27 @@ namespace Camellia_Management_System
         /// <returns>UserInformation - Information about authorized user</returns>
         private UserInformation GetUserInformation()
         {
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate, br");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Dest", "document");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Mode", "navigate");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Site", "none");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-User", "?1");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Upgrade-Insecure-Requests", "1");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Connection", "keep-alive");
+            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Cache-Control", "max-age=0");
             var res = HttpClient.GetStringAsync("https://egov.kz/services/P30.11/rest/current-user")
+                .GetAwaiter()
+                .GetResult();
+            var userInformation = JsonSerializer.Deserialize<UserInformation>(res);
+            return userInformation;
+        }
+        
+        private UserInformation GetUser()
+        {
+            var res = HttpClient.GetStringAsync("https://egov.kz/cms/auth/user.json")
                 .GetAwaiter()
                 .GetResult();
             var userInformation = JsonSerializer.Deserialize<UserInformation>(res);
