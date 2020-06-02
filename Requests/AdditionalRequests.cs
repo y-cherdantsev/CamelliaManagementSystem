@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Threading;
 using Camellia_Management_System.FileManage;
 using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
@@ -39,7 +40,7 @@ namespace Camellia_Management_System.Requests
             HttpResponseMessage response;
             var responseString = "";
 
-            for (var i = 0; i < 7; i++)
+            for (var i = 0; i < 10; i++)
             {
                 try
                 {
@@ -53,8 +54,9 @@ namespace Camellia_Management_System.Requests
                 catch (Exception e)
                 {
                 }
-                if (i == 6)
+                if (i == 9)
                     throw new Exception("No connection could be made because the target machine actively refused it");
+                Thread.Sleep(500);
             }
 
 
