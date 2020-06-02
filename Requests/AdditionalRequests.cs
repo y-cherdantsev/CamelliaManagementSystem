@@ -33,12 +33,33 @@ namespace Camellia_Management_System.Requests
         /// <returns>bool - true if company registered</returns>
         public static bool IsBinRegistered(CamelliaClient camelliaClient, string bin)
         {
+            //response.Content : response.Content is null No connection could be made because the target machine actively refused it.
             bin = bin.PadLeft(12, '0');
-            var res = camelliaClient.HttpClient
-                .GetStringAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}")
-                .GetAwaiter()
-                .GetResult();
-            var organization = JsonSerializer.Deserialize<Organization>(res);
+
+            HttpResponseMessage response;
+            var responseString = "";
+
+            for (var i = 0; i < 7; i++)
+            {
+                try
+                {
+                    response = camelliaClient.HttpClient
+                        .GetAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}")
+                        .GetAwaiter()
+                        .GetResult();
+                    responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    break;
+                }
+                catch (Exception e)
+                {
+                }
+                if (i == 6)
+                    throw new Exception("No connection could be made because the target machine actively refused it");
+            }
+
+
+            var organization = JsonSerializer.Deserialize<Organization>(responseString);
+
             return organization.status.code != "031" && organization.status.code != "034" &&
                    organization.status.code != "035";
         }
@@ -96,7 +117,7 @@ namespace Camellia_Management_System.Requests
             return organization;
         }
 
-        
+
         /// <summary>
         /// Checks if the bin equals to the biin from sign
         /// </summary>
@@ -151,9 +172,9 @@ namespace Camellia_Management_System.Requests
                 registrationActivitiesReference.GetActivitiesDates(bin, delay: delay, timeout: timeout)
                     .OrderBy(x => x.date).ToList();
             // foreach (var activitiesDate in activitiesDates)
-                // if (activitiesDate.activity.action != null)
-                    // foreach (var s in activitiesDate.activity.action)
-                        // Console.WriteLine(activitiesDate.date + " : " + s);
+            // if (activitiesDate.activity.action != null)
+            // foreach (var s in activitiesDate.activity.action)
+            // Console.WriteLine(activitiesDate.date + " : " + s);
 
 
             var dirName = $"{bin}-{DateTime.UtcNow.Ticks.ToString()}";
@@ -228,7 +249,9 @@ namespace Camellia_Management_System.Requests
                     if (place.Equals(newPlace))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "Изменение местонахождения", before = place, after = newPlace});
+                    {
+                        date = dateActivity.date, type = "Изменение местонахождения", before = place, after = newPlace
+                    });
                     place = newPlace;
                 }
             }
@@ -268,7 +291,10 @@ namespace Camellia_Management_System.Requests
                     if (occupation.Equals(newOccupation))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "Изменение видов деятельности", before = occupation, after = newOccupation});
+                    {
+                        date = dateActivity.date, type = "Изменение видов деятельности", before = occupation,
+                        after = newOccupation
+                    });
                     occupation = newOccupation;
                 }
             }

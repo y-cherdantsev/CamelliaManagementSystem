@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-	<PackageVersion>1.1.27</PackageVersion>
-	<Version>1.1.27</Version>
+	<PackageVersion>1.1.28.9-test</PackageVersion>
+	<Version>1.1.28.9-test</Version>
     <RootNamespace>Camellia_Management_System</RootNamespace>
     <PackageTags>camellia management wisk zhekacher</PackageTags>
     <Company>Wisk Telecom Solutions</Company>
@@ -21,27 +20,21 @@
     <ApplicationIcon>camellia.ico</ApplicationIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\Users\zheka\RiderProjects\Camellia Management System\Camellia Management System\Camellia Management System.xml</DocumentationFile>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>C:\Users\zheka\RiderProjects\Camellia Management System\Camellia Management System\Camellia Management System.xml</DocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="camellia.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.0.0-alpha-822" />
     <PackageReference Include="InteropKalkanCryptCOMLib" Version="1.0.1" />
     <PackageReference Include="RestSharp" Version="106.10.1" />
   </ItemGroup>
-  
-
 </Project>

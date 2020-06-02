@@ -196,13 +196,12 @@ namespace Camellia_Management_System
             return userInformation;
         }
         
-        private UserInformation GetUser()
+        private string GetUser()
         {
             var res = HttpClient.GetStringAsync("https://egov.kz/cms/auth/user.json")
                 .GetAwaiter()
                 .GetResult();
-            var userInformation = JsonSerializer.Deserialize<UserInformation>(res);
-            return userInformation;
+            return res;
         }
 
 
