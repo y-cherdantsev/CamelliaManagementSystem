@@ -149,6 +149,8 @@ namespace Camellia_Management_System
                 try
                 {
                     result = _camelliaClients[0];
+                    result.Logout();
+                    result = new CamelliaClient(result.FullSign, result.Proxy, result.HttpClientTimeout);
                 }
                 catch (Exception)
                 {

@@ -47,6 +47,11 @@ namespace Camellia_Management_System
         public readonly FullSign FullSign;
         
         /// <summary>
+        /// Client Timeout
+        /// </summary>
+        public readonly int HttpClientTimeout;
+        
+        /// <summary>
         /// Name of the folder with sign
         /// </summary>
         public string name => new FileInfo(FullSign.AuthSign.FilePath).Directory?.Name;
@@ -64,6 +69,7 @@ namespace Camellia_Management_System
         {
             FullSign = fullSign;
             Proxy = webProxy;
+            HttpClientTimeout = httpClientTimeout;
             HttpClientHandler handler;
             handler = webProxy != null
                 ? new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = webProxy}

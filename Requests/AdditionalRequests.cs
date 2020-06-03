@@ -39,8 +39,8 @@ namespace Camellia_Management_System.Requests
 
             HttpResponseMessage response;
             var responseString = "";
-
-            for (var i = 0; i < 10; i++)
+            var organization = new Organization();
+            for (var i = 0; i < 15; i++)
             {
                 try
                 {
@@ -49,18 +49,23 @@ namespace Camellia_Management_System.Requests
                         .GetAwaiter()
                         .GetResult();
                     responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    organization = JsonSerializer.Deserialize<Organization>(responseString);
                     break;
                 }
-                catch (Exception e)
+                catch (JsonException e)
                 {
+                    throw new JsonException("'" + responseString + "' " + e);
                 }
-                if (i == 9)
-                    throw new Exception("No connection could be made because the target machine actively refused it");
+                catch (Exception)
+                {
+                    if (i == 14)
+                        throw;
+                }
                 Thread.Sleep(500);
             }
 
 
-            var organization = JsonSerializer.Deserialize<Organization>(responseString);
+            
 
             return organization.status.code != "031" && organization.status.code != "034" &&
                    organization.status.code != "035";
@@ -228,7 +233,7 @@ namespace Camellia_Management_System.Requests
                     if (head.Equals(newHead))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "Изменение руководителя", before = head, after = newHead});
+                        {date = dateActivity.date, type = "fullname_director-", before = head, after = newHead});
                     head = newHead;
                 }
             }
@@ -259,7 +264,7 @@ namespace Camellia_Management_System.Requests
             }
 
             var nameChanges = activitiesDates.Where(x =>
-                x.activity.action != null && x.activity.action.Contains("Изменение наименования")).ToList();
+                x.activity.action != null && x.activity.action.Contains("legal_address-")).ToList();
             {
                 var name =
                     new PdfParser(
@@ -273,7 +278,7 @@ namespace Camellia_Management_System.Requests
                     if (name.Equals(newName))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "Изменение наименования", before = name, after = newName});
+                        {date = dateActivity.date, type = "name_ru-", before = name, after = newName});
                     name = newName;
                 }
             }
@@ -294,7 +299,7 @@ namespace Camellia_Management_System.Requests
                         continue;
                     changes.Add(new CompanyChange
                     {
-                        date = dateActivity.date, type = "Изменение видов деятельности", before = occupation,
+                        date = dateActivity.date, type = "occupation-", before = occupation,
                         after = newOccupation
                     });
                     occupation = newOccupation;
