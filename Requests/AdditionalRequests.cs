@@ -257,7 +257,7 @@ namespace Camellia_Management_System.Requests
                         continue;
                     changes.Add(new CompanyChange
                     {
-                        date = dateActivity.date, type = "Изменение местонахождения", before = place, after = newPlace
+                        date = dateActivity.date, type = "legal_address-", before = place, after = newPlace
                     });
                     place = newPlace;
                 }
