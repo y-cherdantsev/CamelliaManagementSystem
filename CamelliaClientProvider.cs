@@ -188,10 +188,10 @@ namespace Camellia_Management_System
         {
             var shuffledList = new List<TE>();
 
-            var r = new Random(DateTime.UtcNow.Millisecond);
+            var random = new Random(DateTime.UtcNow.Millisecond);
             while (inputList.Count > 0)
             {
-                var randomIndex = r.Next(0, inputList.Count);
+                var randomIndex = random.Next(0, inputList.Count);
                 shuffledList.Add(inputList[randomIndex]);
                 inputList.RemoveAt(randomIndex);
             }
