@@ -49,6 +49,8 @@ namespace Camellia_Management_System.Requests
                         .GetAwaiter()
                         .GetResult();
                     responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    if (responseString.Contains("Number of connections exceeded"))
+                        throw new Exception("Number of connections exceeded");
                     organization = JsonSerializer.Deserialize<Organization>(responseString);
                     break;
                 }
