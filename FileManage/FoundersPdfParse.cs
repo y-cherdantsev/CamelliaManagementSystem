@@ -32,6 +32,8 @@ namespace Camellia_Management_System.FileManage
 
             var from = "<b>Учредители (участники):</b>";
             var to = "<b>";
+            if(minimized.ToLower().IndexOf(from.ToLower())== -1)
+                throw new InvalidDataException("No information were found in the reference");
             var fromPosition = minimized.ToLower().IndexOf(from.ToLower(), StringComparison.Ordinal);
             minimized = minimized.Substring(fromPosition + from.Length, minimized.Length - fromPosition - from.Length);
             minimized = minimized.Substring(0, minimized.ToLower().IndexOf(to, StringComparison.Ordinal)).Trim();

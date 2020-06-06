@@ -49,8 +49,12 @@ namespace Camellia_Management_System.Requests
                         .GetAwaiter()
                         .GetResult();
                     responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                    if (responseString.Contains("Number of connections exceeded"))
-                        throw new Exception($"Number of connections exceeded {responseString.Substring(responseString.IndexOf("<div class=\"x-text\"><p class=\"text_style\">\""))}");
+                    if (!string.IsNullOrEmpty(responseString))
+                        if (responseString.Contains("Number of connections exceeded"))
+                            throw new Exception(
+                                $"Number of connections exceeded {responseString.Substring(responseString.IndexOf("<div class=\"x-text\"><p class=\"text_style\">\""))}");
+
+
                     organization = JsonSerializer.Deserialize<Organization>(responseString);
                     break;
                 }
@@ -63,11 +67,10 @@ namespace Camellia_Management_System.Requests
                     if (i == 14)
                         throw;
                 }
+
                 Thread.Sleep(500);
             }
 
-
-            
 
             return organization.status.code != "031" && organization.status.code != "034" &&
                    organization.status.code != "035";
@@ -235,7 +238,7 @@ namespace Camellia_Management_System.Requests
                     if (head.Equals(newHead))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "fullname_director-", before = head, after = newHead});
+                        {date = dateActivity.date, type = "fullname_director", before = head, after = newHead});
                     head = newHead;
                 }
             }
@@ -259,7 +262,7 @@ namespace Camellia_Management_System.Requests
                         continue;
                     changes.Add(new CompanyChange
                     {
-                        date = dateActivity.date, type = "legal_address-", before = place, after = newPlace
+                        date = dateActivity.date, type = "legal_address", before = place, after = newPlace
                     });
                     place = newPlace;
                 }
@@ -280,7 +283,7 @@ namespace Camellia_Management_System.Requests
                     if (name.Equals(newName))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "name_ru-", before = name, after = newName});
+                        {date = dateActivity.date, type = "name_ru", before = name, after = newName});
                     name = newName;
                 }
             }
@@ -301,7 +304,7 @@ namespace Camellia_Management_System.Requests
                         continue;
                     changes.Add(new CompanyChange
                     {
-                        date = dateActivity.date, type = "occupation-", before = occupation,
+                        date = dateActivity.date, type = "occupation", before = occupation,
                         after = newOccupation
                     });
                     occupation = newOccupation;

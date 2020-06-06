@@ -14,32 +14,31 @@ namespace Camellia_Management_System
     /// </summary>
     public class CamelliaClientProvider
     {
-        
         /// <summary>
         /// List of ready clients in the current cycle
         /// </summary>
         private List<CamelliaClient> _camelliaClients = new List<CamelliaClient>();
-        
+
         /// <summary>
         /// List of used clients in the current cycle
         /// </summary>
         private readonly List<CamelliaClient> _usedClients = new List<CamelliaClient>();
-        
+
         /// <summary>
         /// Sign provider
         /// </summary>
         private readonly SignProvider _signProvider;
-        
+
         /// <summary>
         /// List of proxies
         /// </summary>
         private readonly IEnumerator<IWebProxy> _webProxies;
-        
+
         /// <summary>
         /// Tracks if the ClientProvider is reloading now
         /// </summary>
         private bool _isReloading;
-        
+
         /// <summary>
         /// Return the number of left clients before the next shuffle
         /// </summary>
@@ -60,7 +59,7 @@ namespace Camellia_Management_System
             int handlerTimeout = 20000, int numOfTries = 5)
         {
             if (webProxies == null)
-                webProxies = new List<IWebProxy>{ null}.GetEnumerator();
+                webProxies = new List<IWebProxy> {null}.GetEnumerator();
             _webProxies = webProxies;
             _signProvider = signProvider;
             //TODO (SEVERAL PROXIES)
@@ -79,6 +78,7 @@ namespace Camellia_Management_System
                                 _webProxies.Reset();
                                 _webProxies.MoveNext();
                             }
+
                             var client = new CamelliaClient(sign, _webProxies.Current, handlerTimeout);
                             _camelliaClients.Add(client);
                             i = numOfTries;
@@ -93,9 +93,9 @@ namespace Camellia_Management_System
 
                 // if (_camelliaClients.Count == 0)
                 // {
-                    // throw new InvalidDataException("No clients has been loaded");
-                    // Console.WriteLine("No clients has been loaded");
-                    // return;
+                // throw new InvalidDataException("No clients has been loaded");
+                // Console.WriteLine("No clients has been loaded");
+                // return;
                 // }
             });
             while (_camelliaClients.Count == 0);
@@ -109,7 +109,7 @@ namespace Camellia_Management_System
         /// <returns>CamelliaClient - returns connected client</returns>
         public CamelliaClient GetNextClient()
         {
-            while (_isReloading);
+            while (_isReloading) ;
             if (_camelliaClients.Count == 0)
             {
                 _isReloading = true;
@@ -149,8 +149,8 @@ namespace Camellia_Management_System
                 try
                 {
                     result = _camelliaClients[0];
-                    result.Logout();
-                    result = new CamelliaClient(result.FullSign, result.Proxy, result.HttpClientTimeout);
+                    // result.Logout();
+                    // result = new CamelliaClient(result.FullSign, result.Proxy, result.HttpClientTimeout);
                 }
                 catch (Exception)
                 {
