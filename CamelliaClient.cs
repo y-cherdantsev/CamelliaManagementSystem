@@ -93,8 +93,6 @@ namespace Camellia_Management_System
             // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Host", "idp.egov.kz");
             // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Cache-Control", "max-age=0");
             Connect();
-            Authorize();
-            // GetUser();
             UserInformation = GetUserInformation();
         }
 
@@ -111,6 +109,10 @@ namespace Camellia_Management_System
             HttpClient.GetStringAsync("https://www.egov.kz")
                 .GetAwaiter()
                 .GetResult();
+            HttpClient.GetStringAsync("https://idp.egov.kz/idp/login?lvl=2&url=https://egov.kz/cms/callback/auth/cms/")
+                .GetAwaiter()
+                .GetResult();
+            
             Authorize();
         }
 
@@ -146,7 +148,7 @@ namespace Camellia_Management_System
             {
                 {"certificate", $"{signedToken}"},
                 {"username", ""},
-                {"lvl", "7"},
+                {"lvl", "2"},
                 {"url", ""},
             };
 
