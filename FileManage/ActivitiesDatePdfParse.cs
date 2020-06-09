@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Camellia_Management_System.FileManage
 {
@@ -36,7 +37,7 @@ namespace Camellia_Management_System.FileManage
                 elements[i] = "";
             }
 
-            elements = elements.Where(x => !x.Equals("")).ToArray();
+            elements = elements.Where(x => !x.Equals("") && Regex.IsMatch(x,@".{0,}[0-3]{1}[0-9]{1}\.(0|1)[0-9]\.(1|2)(0|9)[0-9]{2}.{0,}")).ToArray();
             foreach (var element in elements)
             {
                 var dateString = element.Substring(element.IndexOf("<b>") + 3, element.IndexOf("</b>") - 3).Trim();

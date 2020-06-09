@@ -167,7 +167,7 @@ namespace Camellia_Management_System
         {
             try
             {
-                // GetUserInformation();
+                GetUserInformation();
                 return true;
             }
             catch (Exception e)

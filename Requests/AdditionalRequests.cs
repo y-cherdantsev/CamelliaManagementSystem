@@ -40,6 +40,8 @@ namespace Camellia_Management_System.Requests
             HttpResponseMessage response;
             var responseString = "";
             var organization = new Organization();
+            
+            
             for (var i = 0; i < 15; i++)
             {
                 try
@@ -64,6 +66,8 @@ namespace Camellia_Management_System.Requests
                 }
                 catch (Exception)
                 {
+                    if (camelliaClient.IsLogged() != true)
+                        
                     if (i == 14)
                         throw;
                 }
