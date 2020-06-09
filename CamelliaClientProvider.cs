@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Camellia_Management_System.SignManage;
 
@@ -98,7 +99,7 @@ namespace Camellia_Management_System
                 // return;
                 // }
             });
-            while (_camelliaClients.Count == 0);
+            while (_camelliaClients.Count == 0) ;
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -140,7 +141,13 @@ namespace Camellia_Management_System
 
                 _camelliaClients = ShuffleList(_usedClients);
                 _usedClients.Clear();
-                _isReloading = false;
+                if (_camelliaClients.Count > 0)
+                    _isReloading = false;
+                else
+                {
+                    Thread.Sleep(15000);
+                    throw new Exception("Client manager has no loaded clients; Reason: service unavaliable");
+                }
             }
 
             CamelliaClient result;
@@ -154,8 +161,8 @@ namespace Camellia_Management_System
                 }
                 catch (Exception)
                 {
-                    throw;
-                    throw new InvalidDataException("Client manager has no loaded clients; Reason: service unavaliable");
+                    // throw;
+                    throw new Exception("Client manager has no loaded clients; Reason: service unavaliable");
                 }
 
                 _usedClients.Add(result);
