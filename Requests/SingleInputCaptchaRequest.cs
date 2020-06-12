@@ -26,12 +26,12 @@ namespace Camellia_Management_System.Requests
             input = input.PadLeft(12, '0');
             if (TypeOfBiin() == BiinType.BIN)
             {
-                if (input.Length == 12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, input))
+                if (!AdditionalRequests.IsBinRegistered(CamelliaClient, input))
                     throw new InvalidDataException("This bin is not registered");
             }
             else
             {
-                if (input.Length == 12 && !AdditionalRequests.IsIinRegistered(CamelliaClient, input))
+                if (!AdditionalRequests.IsIinRegistered(CamelliaClient, input))
                     throw new InvalidDataException("This Iin is not registered");
             }
 

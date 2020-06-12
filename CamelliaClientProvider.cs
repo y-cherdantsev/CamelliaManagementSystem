@@ -153,18 +153,7 @@ namespace Camellia_Management_System
             CamelliaClient result;
             lock (_camelliaClients)
             {
-                try
-                {
-                    result = _camelliaClients[0];
-                    // result.Logout();
-                    // result = new CamelliaClient(result.FullSign, result.Proxy, result.HttpClientTimeout);
-                }
-                catch (Exception)
-                {
-                    // throw;
-                    throw new Exception("Client manager has no loaded clients; Reason: service unavaliable");
-                }
-
+                result = _camelliaClients[0];
                 _usedClients.Add(result);
                 _camelliaClients.Remove(result);
                 if (!result.IsLogged())

@@ -58,7 +58,16 @@ namespace Camellia_Management_System.Requests
                 request.AddParameter("undefined", $"method=base64&key={apiKey}&body={base64}",
                     ParameterType.RequestBody);
                 var response = client.Execute(request);
-                return response.Content.Split('|')[1];
+                if (response.Content.ToUpper().Contains("IP"))
+                    throw new Exception($"Invalid, viruby VPN '{response.Content}'");
+                try
+                {
+                    return response.Content.Split('|')[1];
+                }
+                catch (Exception e)
+                {
+                    throw new NullReferenceException($"2captcha answer: '{response.Content}'");
+                }
             }
             catch (IndexOutOfRangeException)
             {
