@@ -58,13 +58,15 @@ namespace Camellia_Management_System.Requests
                 request.AddParameter("undefined", $"method=base64&key={apiKey}&body={base64}",
                     ParameterType.RequestBody);
                 var response = client.Execute(request);
-                if (response.Content.ToUpper().Contains("IP"))
-                    throw new Exception($"Invalid, viruby VPN '{response.Content}'");
+                if (response.Content.ToUpper().Contains("ERROR_IP_NOT_ALLOWED"))
+                    throw new Exception($"CAPTCHA: Invalid, viruby VPN '{response.Content}'");
+                if (response.Content.ToUpper().Contains("ERROR_ZERO_BALANCE"))
+                    throw new Exception($"CAPTCHA: Error zero balance");
                 try
                 {
                     return response.Content.Split('|')[1];
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     throw new NullReferenceException($"2captcha answer: '{response.Content}'");
                 }

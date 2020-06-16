@@ -16,8 +16,15 @@ namespace Camellia_Management_System.FileManage
             var elements = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Replace(".", " ")
                 .Split(' ');
             foreach (var element in elements)
-                if (element.All(char.IsUpper) && element.All(x => "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭУЯӘІҢҒҮҰҚӨҺ".Contains(x)))
+            {
+                if (element.All(char.IsUpper) && 
+                    !element.Equals("И") &&
+                    !element.Equals("ТОО") &&
+                    !element.Equals("АО") &&
+                    !element.Equals("КОО") &&
+                    element.All(x => "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭУЯӘІҢҒҮҰҚӨҺ".Contains(x)))
                     result += element + " ";
+            }
 
             return result.Trim();
         }

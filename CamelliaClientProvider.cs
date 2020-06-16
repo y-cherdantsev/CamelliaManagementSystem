@@ -153,7 +153,12 @@ namespace Camellia_Management_System
             CamelliaClient result;
             lock (_camelliaClients)
             {
+                if (_camelliaClients.Count < 1)
+                    return GetNextClient();
+
+
                 result = _camelliaClients[0];
+
                 _usedClients.Add(result);
                 _camelliaClients.Remove(result);
                 if (!result.IsLogged())
