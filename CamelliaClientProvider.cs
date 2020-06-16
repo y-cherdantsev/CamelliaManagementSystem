@@ -110,71 +110,70 @@ namespace Camellia_Management_System
         /// <returns>CamelliaClient - returns connected client</returns>
         public CamelliaClient GetNextClient()
         {
-            while (_isReloading) ;
-            if (_camelliaClients.Count == 0)
+            lock (_camelliaClients)
             {
-                _isReloading = true;
-                if (_usedClients.Count == 0)
+                while (_isReloading) ;
+                if (_camelliaClients.Count == 0)
                 {
-                    _signProvider.ReloadSigns();
-                    while (_signProvider.signsLeft > 0)
+                    _isReloading = true;
+                    if (_usedClients.Count == 0)
                     {
-                        var sign = _signProvider.GetNextSign();
-
-                        for (var i = 0; i < 3; i++)
+                        _signProvider.ReloadSigns();
+                        while (_signProvider.signsLeft > 0)
                         {
-                            try
+                            var sign = _signProvider.GetNextSign();
+
+                            for (var i = 0; i < 3; i++)
                             {
-                                var client = new CamelliaClient(sign, _webProxies.Current);
-                                if (!_webProxies.MoveNext())
-                                    _webProxies.Reset();
-                                _camelliaClients.Add(client);
-                                i = 3;
+                                try
+                                {
+                                    var client = new CamelliaClient(sign, _webProxies.Current);
+                                    if (!_webProxies.MoveNext())
+                                        _webProxies.Reset();
+                                    _camelliaClients.Add(client);
+                                    i = 3;
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(e.StackTrace);
+                                }
                             }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e.StackTrace);
-                            }
+                        }
+                    }
+
+                    _camelliaClients = ShuffleList(_usedClients);
+                    _usedClients.Clear();
+                    if (_camelliaClients.Count > 0)
+                        _isReloading = false;
+                    else
+                    {
+                        Thread.Sleep(15000);
+                        throw new Exception("Client manager has no loaded clients; Reason: service unavaliable");
+                    }
+                }
+
+                CamelliaClient result;
+                lock (_camelliaClients)
+                {
+                    result = _camelliaClients[0];
+
+                    _usedClients.Add(result);
+                    _camelliaClients.Remove(result);
+                    if (!result.IsLogged())
+                    {
+                        try
+                        {
+                            result = new CamelliaClient(result.FullSign, result.Proxy);
+                        }
+                        catch (Exception)
+                        {
+                            return GetNextClient();
                         }
                     }
                 }
 
-                _camelliaClients = ShuffleList(_usedClients);
-                _usedClients.Clear();
-                if (_camelliaClients.Count > 0)
-                    _isReloading = false;
-                else
-                {
-                    Thread.Sleep(15000);
-                    throw new Exception("Client manager has no loaded clients; Reason: service unavaliable");
-                }
+                return result;
             }
-
-            CamelliaClient result;
-            lock (_camelliaClients)
-            {
-                if (_camelliaClients.Count < 1)
-                    return GetNextClient();
-
-
-                result = _camelliaClients[0];
-
-                _usedClients.Add(result);
-                _camelliaClients.Remove(result);
-                if (!result.IsLogged())
-                {
-                    try
-                    {
-                        result = new CamelliaClient(result.FullSign, result.Proxy);
-                    }
-                    catch (Exception)
-                    {
-                        return GetNextClient();
-                    }
-                }
-            }
-
-            return result;
         }
 
         /// @author Yevgeniy Cherdantsev
