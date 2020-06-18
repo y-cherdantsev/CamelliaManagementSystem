@@ -42,22 +42,29 @@ namespace Camellia_Management_System.FileManage
             var flag = false;
             foreach (var element in elements)
             {
+                
                 if (element.Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty)
                         .All(char.IsUpper) &&
-                    element.Contains(" "))
+                    element.Contains(" ") && !element.Contains("\"") && !element.ToLower().Replace(" ", "").Replace("\r", "").Equals("обществосограниченной"))
                 {
                     founders.Add(element);
                     flag = false;
                 }
                 else
                 {
-                    if (element.ToLower().Trim().StartsWith("товариществосограниченнойответственностью"))
+                    if (element.ToLower().Trim().Replace(" ", "").StartsWith("товариществосограниченнойответственностью"))
                     {
                         flag = true;
                         founders.Add(element);
                         continue;
                     }
-                    if (element.ToLower().Trim().StartsWith("акционерноеобщество"))
+                    if (element.ToLower().Trim().Replace(" ", "").StartsWith("обществосограниченной"))
+                    {
+                        flag = true;
+                        founders.Add(element);
+                        continue;
+                    }
+                    if (element.ToLower().Trim().Replace(" ", "").StartsWith("акционерноеобщество"))
                     {
                         flag = true;
                         founders.Add(element);
