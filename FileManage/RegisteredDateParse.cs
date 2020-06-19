@@ -42,7 +42,6 @@ namespace Camellia_Management_System.FileManage
             innerText = innerText.Substring(innerText.IndexOf("<b>Наименование:</b>") + 20,
                 innerText.Length - innerText.IndexOf("<b>Наименование:</b>") - 20);
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();
-            result = Regex.Replace(result, "[ ]+", "");
             return result;
         }
 
@@ -80,7 +79,6 @@ namespace Camellia_Management_System.FileManage
             innerText = innerText.Substring(innerText.IndexOf("<b>Виды деятельности:</b>") + 25,
                 innerText.Length - innerText.IndexOf("<b>Виды деятельности:</b>") - 25);
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();
-            result = Regex.Replace(result, "[ ]+", "");
             return result;
         }
     }
