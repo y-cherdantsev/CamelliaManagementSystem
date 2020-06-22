@@ -28,9 +28,11 @@ namespace Camellia_Management_System.FileManage
                     !element.Equals("АО") &&
                     !element.Equals("КОО") &&
                     element.All(x => "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯӘІҢҒҮҰҚӨҺƏ".Contains(x)))
-                    result += element + " ";
+                    result += element.Trim() + " ";
             }
-
+            // result = Regex.Replace(result, "[ ]+", "");
+            while (result.IndexOf("  ") != -1)
+                result = result.Replace("  ", " ");
             return result.Trim();
         }
 
