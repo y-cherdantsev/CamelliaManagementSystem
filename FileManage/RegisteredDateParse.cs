@@ -16,7 +16,7 @@ namespace Camellia_Management_System.FileManage
             innerText = innerText.Substring(innerText.IndexOf("<b>Руководитель:</b>") + 20,
                 innerText.Length - innerText.IndexOf("<b>Руководитель:</b>") - 20);
             var elements = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ")
-                .Replace(".", " ")
+                .Replace(".", " ").Replace(",", " ")
                 .Split(' ');
             foreach (var element in elements)
             {
@@ -27,7 +27,8 @@ namespace Camellia_Management_System.FileManage
                     !element.Equals("ТОО") &&
                     !element.Equals("АО") &&
                     !element.Equals("КОО") &&
-                    element.All(x => "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯӘІҢҒҮҰҚӨҺƏ".Contains(x)))
+                    !element.Equals("ЗАО") &&
+                    element.All(x => "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯІҢҒҮҰҚӨҺƏӘ".Contains(x)))
                     result += element.Trim() + " ";
             }
             // result = Regex.Replace(result, "[ ]+", "");

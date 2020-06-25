@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using Camellia_Management_System.FileManage;
@@ -40,8 +41,8 @@ namespace Camellia_Management_System.Requests
             HttpResponseMessage response;
             var responseString = "";
             var organization = new Organization();
-            
-            
+
+
             for (var i = 0; i < 15; i++)
             {
                 try
@@ -67,9 +68,9 @@ namespace Camellia_Management_System.Requests
                 catch (Exception)
                 {
                     if (camelliaClient.IsLogged() != true)
-                        
-                    if (i == 14)
-                        throw;
+
+                        if (i == 14)
+                            throw;
                 }
 
                 Thread.Sleep(500);
@@ -135,10 +136,27 @@ namespace Camellia_Management_System.Requests
 
 
         /// <summary>
-        /// Checks if the bin equals to the biin from sign
+        /// Checks if there is no organization with presented name
+        /// </summary>
+        /// <param name="camelliaClient">Camellia CLient</param>
+        /// <param name="name">Name of the company</param>
+        /// <returns>True or false</returns>
+        public static bool IsCompanyNameEmpty(CamelliaClient camelliaClient, string name)
+        {
+            var content = new StringContent("{\"nameKz\":\"" + name + "\"}", Encoding.UTF8, "application/json");
+            var res = camelliaClient.HttpClient
+                .PostAsync(new Uri("https://egov.kz/services/Com03/rest/app/checkNames"), content).Result.Content
+                .ReadAsStringAsync().GetAwaiter().GetResult();
+            if (res.Contains("005"))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the biin equals to the biin from sign
         /// </summary>
         /// <param name="sign">Sign</param>
-        /// <param name="bin">BIIN</param>
+        /// <param name="biin">BIIN</param>
         /// <param name="webProxy">Proxy if needed</param>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException">If the sign hasn't been found</exception>
@@ -210,9 +228,12 @@ namespace Camellia_Management_System.Requests
                                 || activitiesDate.activity.action.Contains(
                                     "Изменение местонахождения (с изменением места регистрации)")
                                 || activitiesDate.activity.action.Contains(
+                                    "Изменение состава участников")
+                                || activitiesDate.activity.action.Contains(
                                     "Изменение места нахождения (без изменения места регистрации)")
                                 || activitiesDate.activity.action.Contains("Изменение наименования")
                                 || activitiesDate.activity.action.Contains("Изменение видов деятельности")
+                                || activitiesDate.date == activitiesDates.Last().date
                             )
                                 if (tempReference.language.Contains("ru"))
                                     tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
@@ -226,9 +247,8 @@ namespace Camellia_Management_System.Requests
                 }
             }
 
-
             var headChanges = activitiesDates.Where(x =>
-                x.activity.action != null && x.activity.action.Contains("Изменение руководителя")).ToList();
+                x.activity.action != null && (x.activity.action.Contains("Изменение руководителя") || x.activity.action.Contains("Изменение состава участников")) ).ToList();
             {
                 var head =
                     new PdfParser(
@@ -245,6 +265,17 @@ namespace Camellia_Management_System.Requests
                         {date = dateActivity.date, type = "fullname_director", before = head, after = newHead});
                     head = newHead;
                 }
+
+                //TODO(Справки не существует)
+                // var lastHead =
+                //     new PdfParser(
+                //         $"{directoryWithReferences}\\{bin}-{activitiesDates.Last().date.Year}-{activitiesDates.Last().date.Month}-{activitiesDates.Last().date.Day}.pdf",
+                //         false).GetHead();
+                // if (!head.Equals(lastHead))
+                //     changes.Add(new CompanyChange
+                //     {
+                //         date = activitiesDates.Last().date, type = "fullname_director", before = head, after = lastHead
+                //     });
             }
 
             var placeChanges = activitiesDates.Where(x =>
