@@ -230,6 +230,10 @@ namespace Camellia_Management_System.Requests
                                 || activitiesDate.activity.action.Contains(
                                     "Изменение состава участников")
                                 || activitiesDate.activity.action.Contains(
+                                    "Изменение состава учредителей (членов, участников)")
+                                || activitiesDate.activity.type.Contains(
+                                    "Первичная регистрация")
+                                || activitiesDate.activity.action.Contains(
                                     "Изменение места нахождения (без изменения места регистрации)")
                                 || activitiesDate.activity.action.Contains("Изменение наименования")
                                 || activitiesDate.activity.action.Contains("Изменение видов деятельности")
@@ -248,12 +252,14 @@ namespace Camellia_Management_System.Requests
             }
 
             var headChanges = activitiesDates.Where(x =>
-                x.activity.action != null && (x.activity.action.Contains("Изменение руководителя") || x.activity.action.Contains("Изменение состава участников")) ).ToList();
+                x.activity.action != null && (x.activity.action.Contains("Изменение руководителя") || x.activity.action.Contains("Изменение состава участников") || x.activity.action.Contains("Изменение состава учредителей (членов, участников)")) ).ToList();
             {
                 var head =
                     new PdfParser(
                         $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf",
                         false).GetHead();
+                changes.Add(new CompanyChange
+                    {date = activitiesDates[0].date, type = "fullname_director", before = null, after = head});
                 foreach (var dateActivity in headChanges)
                 {
                     var newHead = new PdfParser(
