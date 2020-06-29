@@ -1,5 +1,4 @@
-﻿//TODO(REFACTOR)﻿
-namespace Camellia_Management_System.JsonObjects
+﻿namespace Camellia_Management_System.JsonObjects
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:19:42
@@ -9,7 +8,7 @@ namespace Camellia_Management_System.JsonObjects
     /// </summary>
     public class XMLToken
     {
-        public string xml { get; set; } = "";
+        public string xml { get; set; }
 
         public XMLToken(string xml)
         {

@@ -1,16 +1,19 @@
-﻿//TODO(REFACTOR)
-namespace Camellia_Management_System.JsonObjects.ResponseObjects
+﻿namespace Camellia_Management_System.JsonObjects.RequestObjects
 {
-    public class BinDateDeclarant
+    /// <inheritdoc />
+    public class BinDateDeclarant : BinDeclarant
     {
-        public string bin { get; set; } = "";
-        public string declarantUin { get; set; } = ""; 
-        public string innerdate { get; set; } = ""; 
-        public BinDateDeclarant(string bin, string declarantUin, string date)
+        public string innerdate { get; set; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="bin">BIN of the request target</param>
+        /// <param name="date">DateTime of the request target</param>
+        /// <param name="declarantUin">BIIN of the sender</param>
+        public BinDateDeclarant(string bin, string declarantUin, string date) : base(bin, declarantUin)
         {
-            this.bin = bin;
-            this.declarantUin = declarantUin;
-            this.innerdate = date;
+            innerdate = date;
         }
     }
 }

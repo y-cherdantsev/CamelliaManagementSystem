@@ -1,20 +1,18 @@
-﻿//TODO(REFACTOR)
-namespace Camellia_Management_System.JsonObjects.ResponseObjects
+﻿namespace Camellia_Management_System.JsonObjects.RequestObjects
 {
-    /// @author Yevgeniy Cherdantsev
-    /// @date 14.05.2020 16:21:40
-    /// @version 1.0
-    /// <summary>
-    /// Json object that should be send in order to get reference
-    /// </summary>
-    public class IinDeclarant
+    /// <inheritdoc />
+    public class IinDeclarant : Declarant
     {
-        public string iin { get; set; } = "";
-        public string declarantUin { get; set; } = ""; 
-        public IinDeclarant(string iin, string declarantUin)
+        public string iin { get; set; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="iin">IIN of the request target</param>
+        /// <param name="declarantUin">BIIN of the sender</param>
+        public IinDeclarant(string iin, string declarantUin) : base(declarantUin)
         {
             this.iin = iin;
-            this.declarantUin = declarantUin;
         }
     }
 }
