@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using EgovFoundersRequest.JsonObjects;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.Requests
 {
     /// @author Yevgeniy Cherdantsev

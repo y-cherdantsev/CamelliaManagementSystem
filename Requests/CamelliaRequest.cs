@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.Requests
 {
     /// @author Yevgeniy Cherdantsev

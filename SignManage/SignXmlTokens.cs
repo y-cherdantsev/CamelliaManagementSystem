@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
+//TODO(REFACTOR)
 namespace Camellia_Management_System.SignManage
 {
 
@@ -21,7 +23,7 @@ namespace Camellia_Management_System.SignManage
         /// <param name="inData">XML text</param>
         /// <param name="sign">Sign</param>
         /// <returns>string - signed token</returns>
-        public static string SignToken(string inData, Sign sign)
+        public async static Task<string> SignToken(string inData, Sign sign)
         {
             /*
              * Error status for electronic digital signature

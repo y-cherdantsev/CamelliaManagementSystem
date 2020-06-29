@@ -1,5 +1,5 @@
 ﻿using System;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.JsonObjects
 {
     public class CompanyChange

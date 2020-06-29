@@ -1,5 +1,5 @@
 ﻿using System.IO;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.SignManage
 {
     /// @author Yevgeniy Cherdantsev

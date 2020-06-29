@@ -13,7 +13,7 @@ using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 using Camellia_Management_System.Requests.References;
 using Camellia_Management_System.SignManage;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.Requests
 {
     /// @author Yevgeniy Cherdantsev

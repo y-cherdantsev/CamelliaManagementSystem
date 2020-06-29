@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.SignManage
 {
     /// @author Yevgeniy Cherdantsev

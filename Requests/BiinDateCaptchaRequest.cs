@@ -7,7 +7,7 @@ using System.Text.Json;
 using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 using Camellia_Management_System.SignManage;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.Requests
 {
     public abstract class BiinDateCaptchaRequest : CamelliaCaptchaRequest

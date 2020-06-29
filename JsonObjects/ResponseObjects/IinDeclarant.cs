@@ -1,4 +1,5 @@
-﻿namespace Camellia_Management_System.JsonObjects.ResponseObjects
+﻿//TODO(REFACTOR)
+namespace Camellia_Management_System.JsonObjects.ResponseObjects
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.05.2020 16:21:40

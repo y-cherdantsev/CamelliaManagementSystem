@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.JsonObjects.ResponseObjects
 {
     /// @author Yevgeniy Cherdantsev

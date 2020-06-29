@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Camellia_Management_System.FileManage;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.Requests.References
 {
     public class RegistrationActivitiesReference : SingleInputRequest

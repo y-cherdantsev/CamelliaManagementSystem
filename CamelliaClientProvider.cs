@@ -5,7 +5,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Camellia_Management_System.SignManage;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System
 {
     /// @author Yevgeniy Cherdantsev

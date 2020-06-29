@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
+//TODO(REFACTOR)
 namespace Camellia_Management_System.JsonObjects.ResponseObjects
 {
     /// @author Yevgeniy Cherdantsev

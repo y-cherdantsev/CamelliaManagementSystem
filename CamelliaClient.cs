@@ -4,13 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Io;
 using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.SignManage;
 
+//TODO(REFACTOR)
 namespace Camellia_Management_System
 {
     /// @author Yevgeniy Cherdantsev
@@ -25,32 +28,32 @@ namespace Camellia_Management_System
         /// Http client
         /// </summary>
         public HttpClient HttpClient;
-        
+
         /// <summary>
         /// Information about user
         /// </summary>
         public UserInformation UserInformation;
-        
+
         /// <summary>
         /// Container of cookies
         /// </summary>
         public CookieContainer CookieContainer;
-        
+
         /// <summary>
         /// Proxy if need
         /// </summary>
         internal readonly IWebProxy Proxy;
-        
+
         /// <summary>
         /// Sign of a client
         /// </summary>
         public readonly FullSign FullSign;
-        
+
         /// <summary>
         /// Client Timeout
         /// </summary>
         public readonly int HttpClientTimeout;
-        
+
         /// <summary>
         /// Name of the folder with sign
         /// </summary>
@@ -61,42 +64,38 @@ namespace Camellia_Management_System
         /// @date 10.03.2020 10:14:34
         /// @version 1.0
         /// <summary>
-        /// Constructor for creating Camellia client through proxy
+        /// Constructor for creating Camellia client with(out) proxy
         /// </summary>
-        /// <param name="fullSign"></param>
-        /// <param name="webProxy"></param>
+        /// <param name="fullSign">AUTH and RSA signs of the user</param>
+        /// <param name="webProxy">Proxy</param>
+        /// <param name="httpClientTimeout">Timeout of http client connected to the camellia system; Standard: 15000</param>
         public CamelliaClient(FullSign fullSign, IWebProxy webProxy = null, int httpClientTimeout = 15000)
         {
             FullSign = fullSign;
             Proxy = webProxy;
             HttpClientTimeout = httpClientTimeout;
-            HttpClientHandler handler;
-            handler = webProxy != null
-                ? new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = webProxy}
-                : new HttpClientHandler {AllowAutoRedirect = true};
-            CookieContainer = handler.CookieContainer;
-            HttpClient = new HttpClient(handler);
-            HttpClient.Timeout = TimeSpan.FromMilliseconds(httpClientTimeout);
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate, br");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Referer", "https://idp.egov.kz/idp/sign-in");
-            //
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Origin", "https://idp.egov.kz");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Dest", "document");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Mode", "navigate");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Upgrade-Insecure-Requests", "1");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Connection", "keep-alive");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Host", "idp.egov.kz");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Cache-Control", "max-age=0");
-            Connect();
-            UserInformation = GetUserInformation();
         }
 
-       
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 29.06.2020 9:35:56
+        /// @version 1.0
+        /// <summary>
+        /// Login to the camellia system
+        /// </summary>
+        /// <returns></returns>
+        public async Task Login()
+        {
+            //If proxy equals null creates object without proxy and vice versa
+            var handler = Proxy != null
+                ? new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = Proxy}
+                : new HttpClientHandler {AllowAutoRedirect = true};
+
+            CookieContainer = handler.CookieContainer;
+            HttpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMilliseconds(HttpClientTimeout)};
+
+            await Connect();
+        }
 
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:15:18
@@ -104,16 +103,25 @@ namespace Camellia_Management_System
         /// <summary>
         /// Connects to the cammelia system using handler
         /// </summary>
-        private void Connect()
+        private async Task Connect()
         {
-            HttpClient.GetStringAsync("https://www.egov.kz")
-                .GetAwaiter()
-                .GetResult();
-            HttpClient.GetStringAsync("https://idp.egov.kz/idp/login?lvl=2&url=https://egov.kz/cms/callback/auth/cms/")
-                .GetAwaiter()
-                .GetResult();
-            
-            Authorize();
+            //Addresses with necessary cookies for authorization
+            string[] cookieAddresses =
+            {
+                "https://www.egov.kz",
+                "https://idp.egov.kz/idp/login?lvl=2&url=https://egov.kz/cms/callback/auth/cms/"
+            };
+
+            //Getting cookies
+            foreach (var url in cookieAddresses)
+            {
+                await HttpClient.GetStringAsync(url);
+            }
+
+            //Runs authorization script
+            await Authorize();
+
+            UserInformation = GetUserInformation();
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -123,13 +131,18 @@ namespace Camellia_Management_System
         /// Request of the connection token
         /// </summary>
         /// <returns>string - Connection token</returns>
-        private string GetToken()
+        private async Task<string> GetToken()
         {
-            var response = HttpClient.GetStringAsync("https://idp.egov.kz/idp/sign-in")
-                .GetAwaiter()
-                .GetResult();
-            var document = new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response)).Result;
-            response = document.All.First(m => m.GetAttribute("id")=="xmlToSign").GetAttribute("value");
+            const string tokenUrl = "https://idp.egov.kz/idp/sign-in";
+
+            var response = await HttpClient.GetStringAsync(tokenUrl);
+
+            //Generates document for AngleSharp
+            var angleDocument = await new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response));
+
+            //Gets 'value' attribute of the page for authorization
+            response = angleDocument.All.First(m => m.GetAttribute("id") == "xmlToSign").GetAttribute("value");
+
             return response;
         }
 
@@ -140,21 +153,21 @@ namespace Camellia_Management_System
         /// <summary>
         /// Authorization to the system using sign
         /// </summary>
-        private void Authorize()
+        private async Task Authorize()
         {
-            var signedToken = SignXmlTokens.SignToken(GetToken(), FullSign.AuthSign);
-            
+            //Signing token from authorization page
+            var signedToken = await SignXmlTokens.SignToken(await GetToken(), FullSign.AuthSign);
+
             var values = new Dictionary<string, string>
             {
-                {"certificate", $"{signedToken}"},
-                {"username", ""},
-                {"lvl", "2"},
-                {"url", ""},
+                {"certificate", signedToken},
+                {"lvl", "2"}
             };
 
             var content = new FormUrlEncodedContent(values);
 
-            HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content).GetAwaiter().GetResult();
+            // Posting signed token to the camellia system
+            await HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content);
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -163,14 +176,16 @@ namespace Camellia_Management_System
         /// Get the information about connection of the client to the system
         /// </summary>
         /// <returns>true if the user logged in</returns>
-        public bool IsLogged()
+        public async Task<bool> IsLogged()
         {
+            //TODO(Rethink function, it shouldn't depend on errors. If error won't tide to logging information, it could be lost)
+            //Trying to get information about user, if error occured it's likely that client not logged in
             try
             {
-                GetUserInformation();
+                await GetUserInformation();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -184,26 +199,13 @@ namespace Camellia_Management_System
         /// Loading user information from camellia system
         /// </summary>
         /// <returns>UserInformation - Information about authorized user</returns>
-        private UserInformation GetUserInformation()
+        private async Task<UserInformation> GetUserInformation()
         {
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate, br");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Dest", "document");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Mode", "navigate");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-Site", "none");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Sec-Fetch-User", "?1");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Upgrade-Insecure-Requests", "1");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Connection", "keep-alive");
-            // HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Cache-Control", "max-age=0");
-            var res = HttpClient.GetStringAsync("https://egov.kz/services/P30.11/rest/current-user")
-                .GetAwaiter()
-                .GetResult();
+            var res = await HttpClient.GetStringAsync("https://egov.kz/services/P30.11/rest/current-user");
             var userInformation = JsonSerializer.Deserialize<UserInformation>(res);
             return userInformation;
         }
-        
+
         private string GetUser()
         {
             var res = HttpClient.GetStringAsync("https://egov.kz/cms/auth/user.json")
@@ -226,6 +228,8 @@ namespace Camellia_Management_System
                 HttpClient.GetAsync("https://egov.kz/cms/ru/auth/logout")
                     .GetAwaiter()
                     .GetResult();
+                CookieContainer = null;
+                UserInformation = null;
             }
             catch (Exception)
             {
@@ -244,7 +248,6 @@ namespace Camellia_Management_System
         {
             Logout();
             HttpClient = null;
-            UserInformation = null;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿namespace Camellia_Management_System.JsonObjects.ResponseObjects
+﻿//TODO(REFACTOR)
+namespace Camellia_Management_System.JsonObjects.ResponseObjects
 {
     public class BinDateDeclarant
     {

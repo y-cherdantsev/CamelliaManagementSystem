@@ -1,5 +1,5 @@
 ﻿using System;
-
+//TODO(REFACTOR)
 namespace EgovFoundersRequest.JsonObjects
 {
 
