@@ -28,10 +28,16 @@ namespace Camellia_Management_System.FileManage
                     !element.Equals("АО") &&
                     !element.Equals("КОО") &&
                     !element.Equals("ЗАО") &&
+                    !element.Equals("КОМПАС") &&
+                    !element.Equals("ФИНАНС") &&
+                    !element.Equals("С") &&
                     element.All(x => "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯІҢҒҮҰҚӨҺƏӘ".Contains(x)))
                     result += element.Trim() + " ";
             }
+
             // result = Regex.Replace(result, "[ ]+", "");
+            if (result.IndexOf("КОМПАНИЯ") != -1)
+                result = result.Substring(0, result.IndexOf("КОМПАНИЯ"));
             while (result.IndexOf("  ") != -1)
                 result = result.Replace("  ", " ");
             return result.Trim();
