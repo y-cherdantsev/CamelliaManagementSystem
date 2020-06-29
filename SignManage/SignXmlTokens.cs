@@ -1,81 +1,61 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 
-//TODO(REFACTOR)
 namespace Camellia_Management_System.SignManage
 {
-
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 10:35:27
-    /// @version 1.0
     /// <summary>
     /// Class that signs xml tokens
     /// </summary>
-    public class SignXmlTokens
+    public static class SignXmlTokens
     {
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:35:42
-        /// @version 1.0
         /// <summary>
         /// Signing of the xml token
         /// </summary>
         /// <param name="inData">XML text</param>
         /// <param name="sign">Sign</param>
         /// <returns>string - signed token</returns>
-        public async static Task<string> SignToken(string inData, Sign sign)
+        public static string SignToken(string inData, Sign sign)
         {
             /*
              * Error status for electronic digital signature
              * 0 - ok
              * any numers greater then 0 is error
              */
-            uint EDSError;
-
-            /* 
-             * Creating required parameters for using method
-             * FilePath - Electronic digital signature .p12 key
-             * Password - Password for key
-             */
-
 
             // Here calling COM and initialazing it
-            var kalkanComTest = new KalkanCryptCOMLib.KalkanCryptCOM();
-            kalkanComTest.Init();
+            var kalkanCom = new KalkanCryptCOMLib.KalkanCryptCOM();
+            kalkanCom.Init();
 
             // Loading hey with handling exception
-            kalkanComTest.LoadKeyStore((int) KalkanCryptCOMLib.KALKANCRYPTCOM_STORETYPE.KCST_PKCS12, sign.Password,
-                sign.FilePath,
+            kalkanCom.LoadKeyStore((int) KalkanCryptCOMLib.KALKANCRYPTCOM_STORETYPE.KCST_PKCS12, sign.password,
+                sign.filePath,
                 "");
-            EDSError = kalkanComTest.GetLastError();
+            var edsError = kalkanCom.GetLastError();
 
-            if (EDSError > 0)
-            {
-                throw new ExternalException($"Some error occured while loading the key storage '{sign.FilePath}'");
-            }
+            if (edsError > 0)
+                throw new ExternalException($"Some error occured while loading the key storage '{sign.filePath}'");
 
             var Alias = "";
             var SignNodeID = "";
             var ParentSignNode = "";
             var ParentNameSpace = "";
-            // string InData = "";
-            string OutSign = "", Error = "";
+            string OutSign, Error;
 
             // Signing XML
-            kalkanComTest.SignXML(Alias, 0, SignNodeID, ParentSignNode, ParentNameSpace,
-                // $"<?xml version=\"1.0\" encoding=\"UTF-8\"?><login><timeTicket>123456789</timeTicket></login>",
-                $"{inData}",
+            kalkanCom.SignXML(Alias, 0, SignNodeID, ParentSignNode, ParentNameSpace,
+                inData,
                 out OutSign);
-            // KalkanCOMTest.SignXML(Alias, 0, SignNodeID, ParentSignNode, ParentNameSpace, InData, out OutSign);
-            kalkanComTest.GetLastErrorString(out Error, out EDSError);
+            kalkanCom.GetLastErrorString(out Error, out edsError);
 
-            if (EDSError > 0)
-            {
-                throw new ExternalException("Some error occured while signing the token, possible reason: shortage of bin length '{sign.FilePath}'");
-            }
+            if (edsError > 0)
+                throw new ExternalException(
+                    $"Some error occured while signing the token:${Error}\n\nPossible reasons:\n1.Shortage of bin length (Should be 12);\n");
 
-            var outData = OutSign.Replace("\n", "\r\n");
-            return outData;
+            var result = OutSign.Replace("\n", "\r\n");
+            return result;
         }
     }
 }
