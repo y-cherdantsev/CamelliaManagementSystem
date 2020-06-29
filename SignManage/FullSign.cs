@@ -1,53 +1,71 @@
-﻿using System.IO;
-//TODO(REFACTOR)
+﻿using System;
+using System.IO;
 namespace Camellia_Management_System.SignManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 10:31:15
-    /// @version 1.0
     /// <summary>
     /// Class which contains all information about user signs
     /// </summary>
-    public class FullSign
+    public sealed class FullSign : IDisposable
     {
-        public Sign AuthSign { get; set; } = new Sign();
-        public Sign RsaSign { get; set; } = new Sign();
+
+        /// <summary>
+        /// AUTH sign container
+        /// </summary>
+        public Sign authSign { get; set; }
+        
+        /// <summary>
+        /// RSA sign container
+        /// </summary>
+        public Sign rsaSign { get; set; }
+        
+        
+        /// @author Yevgeniy Cherdantsev
+        /// @date 29.06.2020 12:16:27
+        /// <summary>
+        /// Constructor for creating full sign
+        /// </summary>
+        /// <param name="authSign">AUTH sign</param>
+        /// <param name="rsaSign">RSA sign</param>
+        public FullSign(Sign authSign, Sign rsaSign)
+        {
+            this.authSign = authSign;
+            this.rsaSign = rsaSign;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            authSign.Dispose();
+            rsaSign.Dispose();
+        }
     }
 
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 10:17:31
-    /// @version 1.0
     /// <summary>
-    /// Sign Object Creator
+    /// Sign object creator
     /// </summary>
-    public class Sign
+    public class Sign : IDisposable
     {
         /// <summary>
         /// Path to the sign file
         /// </summary>
-        public string FilePath { get; set; }
+        public string filePath { get; set; }
 
         /// <summary>
         /// Password for the sign
         /// </summary>
-        public string Password { get; set; }
+        public string password { get; set; }
         
-        public string name => new FileInfo(FilePath).Directory?.Name;
-
-        /// @author Yevgeniy Cherdantsev
-        /// @date 18.02.2020 10:34:30
-        /// @version 1.0
         /// <summary>
-        /// Constructor
+        /// Name of the folder containing sign
         /// </summary>
-        public Sign()
-        {
-        }
-
-
+        public string folderName => new FileInfo(filePath).Directory?.Name;
+        
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:34:30
-        /// @version 1.0
         /// <summary>
         /// Constructor
         /// </summary>
@@ -55,8 +73,15 @@ namespace Camellia_Management_System.SignManage
         /// <param name="password">Password for the sign</param>
         internal Sign(string filePath, string password)
         {
-            FilePath = filePath;
-            Password = password;
+            this.filePath = filePath;
+            this.password = password;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            filePath = null;
+            password = null;
         }
     }
 }
