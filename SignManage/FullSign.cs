@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+
 namespace Camellia_Management_System.SignManage
 {
     /// @author Yevgeniy Cherdantsev
@@ -9,18 +10,17 @@ namespace Camellia_Management_System.SignManage
     /// </summary>
     public sealed class FullSign : IDisposable
     {
-
         /// <summary>
         /// AUTH sign container
         /// </summary>
         public Sign authSign { get; set; }
-        
+
         /// <summary>
         /// RSA sign container
         /// </summary>
         public Sign rsaSign { get; set; }
-        
-        
+
+
         /// @author Yevgeniy Cherdantsev
         /// @date 29.06.2020 12:16:27
         /// <summary>
@@ -58,12 +58,12 @@ namespace Camellia_Management_System.SignManage
         /// Password for the sign
         /// </summary>
         public string password { get; set; }
-        
+
         /// <summary>
         /// Name of the folder containing sign
         /// </summary>
         public string folderName => new FileInfo(filePath).Directory?.Name;
-        
+
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:34:30
         /// <summary>
