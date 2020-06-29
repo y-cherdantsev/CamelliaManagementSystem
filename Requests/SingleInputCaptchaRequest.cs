@@ -68,7 +68,7 @@ namespace Camellia_Management_System.Requests
             
             try
             {
-                token = JsonSerializer.Deserialize<TokenResponse>(token).xml;
+                token = JsonSerializer.Deserialize<Token>(token).xml;
             }
             catch (Exception)
             {
@@ -77,7 +77,7 @@ namespace Camellia_Management_System.Requests
                 throw;
             }
 
-            var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);
+            var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.rsaSign);
             var requestNumber = SendPdfRequest(signedToken, solvedCaptcha);
             var readinessStatus = WaitResult(requestNumber, delay, timeout);
 

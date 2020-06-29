@@ -38,7 +38,7 @@ namespace Camellia_Management_System.Requests
             var token = GetToken(input);
             try
             {
-                token = JsonSerializer.Deserialize<TokenResponse>(token).xml;
+                token = JsonSerializer.Deserialize<Token>(token).xml;
             }
             catch (Exception e)
             {
@@ -47,7 +47,7 @@ namespace Camellia_Management_System.Requests
                 throw;
             }
            
-            var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);
+            var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.rsaSign);
             var requestNumber = SendPdfRequest(signedToken);
             var readinessStatus = WaitResult(requestNumber, delay, timeout);
             if (readinessStatus.status.Equals("APPROVED"))

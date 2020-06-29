@@ -2,7 +2,8 @@
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using EgovFoundersRequest.JsonObjects;
+using Camellia_Management_System.JsonObjects.RequestObjects;
+
 //TODO(REFACTOR)
 namespace Camellia_Management_System.Requests
 {

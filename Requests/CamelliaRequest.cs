@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using Camellia_Management_System.JsonObjects;
+using Camellia_Management_System.JsonObjects.RequestObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 //TODO(REFACTOR)
 namespace Camellia_Management_System.Requests

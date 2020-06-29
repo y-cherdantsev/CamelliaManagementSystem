@@ -42,19 +42,18 @@ namespace Camellia_Management_System.SignManage
             var SignNodeID = "";
             var ParentSignNode = "";
             var ParentNameSpace = "";
-            string OutSign, Error;
 
             // Signing XML
             kalkanCom.SignXML(Alias, 0, SignNodeID, ParentSignNode, ParentNameSpace,
                 inData,
-                out OutSign);
-            kalkanCom.GetLastErrorString(out Error, out edsError);
+                out var outSign);
+            kalkanCom.GetLastErrorString(out var error, out edsError);
 
             if (edsError > 0)
                 throw new ExternalException(
-                    $"Some error occured while signing the token:${Error}\n\nPossible reasons:\n1.Shortage of bin length (Should be 12);\n");
+                    $"Some error occured while signing the token:${error}\n\nPossible reasons:\n1.Shortage of bin length (Should be 12);\n");
 
-            var result = OutSign.Replace("\n", "\r\n");
+            var result = outSign.Replace("\n", "\r\n");
             return result;
         }
     }

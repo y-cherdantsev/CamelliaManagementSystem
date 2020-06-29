@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using Camellia_Management_System.JsonObjects;
+using Camellia_Management_System.JsonObjects.RequestObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 using Camellia_Management_System.SignManage;
 //TODO(REFACTOR)
@@ -19,7 +20,6 @@ namespace Camellia_Management_System.Requests
         public IEnumerable<ResultForDownload> GetReference(string input, DateTime date, string captchaApiKey, int delay = 1000,
             int timeout = 60000, int numOfCaptchaTries = 5)
         {
-            var stringDate = $"{date.Year}-{date.Month}-{date.Day}T18:00:00.000Z";
             input = input.PadLeft(12, '0');
             if (TypeOfBiin() == BiinType.BIN)
             {
@@ -50,11 +50,11 @@ namespace Camellia_Management_System.Requests
                     break;
             }
 
-            var token = GetToken(input, stringDate);
+            var token = GetToken(input, date);
             
             try
             {
-                token = JsonSerializer.Deserialize<TokenResponse>(token).xml;
+                token = JsonSerializer.Deserialize<Token>(token).xml;
             }
             catch (Exception)
             {
@@ -63,7 +63,7 @@ namespace Camellia_Management_System.Requests
                 throw;
             }
 
-            var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.RsaSign);
+            var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.rsaSign);
             var requestNumber = SendPdfRequest(signedToken, solvedCaptcha);
             var readinessStatus = WaitResult(requestNumber, delay, timeout);
 
@@ -74,9 +74,10 @@ namespace Camellia_Management_System.Requests
 
             throw new InvalidDataException($"Readiness status equals {readinessStatus.status}");
         }
-        
-        protected string GetToken(string biin, string date)
+
+        private string GetToken(string biin, DateTime date)
         {
+            var stringDate = $"{date.Year}-{date.Month}-{date.Day}T18:00:00.000Z";
             using var request = new HttpRequestMessage(new HttpMethod("POST"),
                 $"{RequestLink()}/rest/app/xml");
             request.Headers.Add("Connection", "keep-alive");
@@ -89,9 +90,9 @@ namespace Camellia_Management_System.Requests
             request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
             request.Headers.Add("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
 
-            string json = "";
+            var json = "";
             if(TypeOfBiin() == BiinType.BIN)
-                json = JsonSerializer.Serialize(new BinDateDeclarant(biin, CamelliaClient.UserInformation.uin, date));
+                json = JsonSerializer.Serialize(new BinDateDeclarant(biin, CamelliaClient.UserInformation.uin, stringDate));
             // else
                 // json = JsonSerializer.Serialize(new IinDateDeclarant(biin, CamelliaClient.UserInformation.uin, date));
 

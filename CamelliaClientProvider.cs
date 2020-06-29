@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -108,7 +109,7 @@ namespace Camellia_Management_System
         /// Get next client from provider
         /// </summary>
         /// <returns>CamelliaClient - returns connected client</returns>
-        public CamelliaClient GetNextClient()
+        public async Task<CamelliaClient> GetNextClient()
         {
             lock (_camelliaClients)
             {
@@ -141,7 +142,7 @@ namespace Camellia_Management_System
                         }
                     }
 
-                    _camelliaClients = ShuffleList(_usedClients);
+                    _camelliaClients = _usedClients.OrderBy(x => new Random().NextDouble()).ToList();
                     _usedClients.Clear();
                     if (_camelliaClients.Count > 0)
                         _isReloading = false;
@@ -159,7 +160,7 @@ namespace Camellia_Management_System
 
                     _usedClients.Add(result);
                     _camelliaClients.Remove(result);
-                    if (!result.IsLogged())
+                    if (!result.IsLogged().Result)
                     {
                         try
                         {
@@ -167,36 +168,13 @@ namespace Camellia_Management_System
                         }
                         catch (Exception)
                         {
-                            return GetNextClient();
+                            return GetNextClient().Result;
                         }
                     }
                 }
 
                 return result;
             }
-        }
-
-        /// @author Yevgeniy Cherdantsev
-        /// @date 18.02.2020 10:31:53
-        /// @version 1.0
-        /// <summary>
-        /// Shuffles given list of objects
-        /// </summary>
-        /// <param name="inputList">List to shuffle</param>
-        /// <returns>List - Shuffled list</returns>
-        private static List<TE> ShuffleList<TE>(IList<TE> inputList)
-        {
-            var shuffledList = new List<TE>();
-
-            var random = new Random(DateTime.UtcNow.Millisecond);
-            while (inputList.Count > 0)
-            {
-                var randomIndex = random.Next(0, inputList.Count);
-                shuffledList.Add(inputList[randomIndex]);
-                inputList.RemoveAt(randomIndex);
-            }
-
-            return shuffledList;
         }
     }
 }

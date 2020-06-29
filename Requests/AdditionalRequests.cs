@@ -67,7 +67,7 @@ namespace Camellia_Management_System.Requests
                 }
                 catch (Exception)
                 {
-                    if (camelliaClient.IsLogged() != true)
+                    if (camelliaClient.IsLogged().Result != true)
 
                         if (i == 14)
                             throw;
@@ -99,7 +99,7 @@ namespace Camellia_Management_System.Requests
                     .GetStringAsync($"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short")
                     .GetAwaiter()
                     .GetResult();
-                var person = JsonSerializer.Deserialize<Person>(res);
+                var person = JsonSerializer.Deserialize<UserInformation.Info.Person>(res);
                 return true;
             }
             catch (HttpRequestException e)
@@ -167,10 +167,10 @@ namespace Camellia_Management_System.Requests
             //TODO (enum)
             try
             {
-                if (!new FileInfo(sign.FilePath).Exists)
+                if (!new FileInfo(sign.filePath).Exists)
                     throw new FileNotFoundException();
                 biin = biin.PadLeft(12, '0');
-                var camelliaClient = new CamelliaClient(new FullSign {AuthSign = sign}, webProxy);
+                var camelliaClient = new CamelliaClient(new FullSign(sign, null), webProxy);
                 return camelliaClient.UserInformation.uin.PadLeft(12, '0') == biin;
             }
             catch (FileNotFoundException e)
@@ -259,7 +259,7 @@ namespace Camellia_Management_System.Requests
                         $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf",
                         false).GetHead();
                 changes.Add(new CompanyChange
-                    {date = activitiesDates[0].date, type = "fullname_director", before = null, after = head});
+                    {Date = activitiesDates[0].date, Type = "fullname_director", Before = null, After = head});
                 foreach (var dateActivity in headChanges)
                 {
                     var newHead = new PdfParser(
@@ -268,7 +268,7 @@ namespace Camellia_Management_System.Requests
                     if (head.Equals(newHead))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "fullname_director", before = head, after = newHead});
+                        {Date = dateActivity.date, Type = "fullname_director", Before = head, After = newHead});
                     head = newHead;
                 }
 
@@ -303,7 +303,7 @@ namespace Camellia_Management_System.Requests
                         continue;
                     changes.Add(new CompanyChange
                     {
-                        date = dateActivity.date, type = "legal_address", before = place, after = newPlace
+                        Date = dateActivity.date, Type = "legal_address", Before = place, After = newPlace
                     });
                     place = newPlace;
                 }
@@ -324,7 +324,7 @@ namespace Camellia_Management_System.Requests
                     if (name.Equals(newName))
                         continue;
                     changes.Add(new CompanyChange
-                        {date = dateActivity.date, type = "name_ru", before = name, after = newName});
+                        {Date = dateActivity.date, Type = "name_ru", Before = name, After = newName});
                     name = newName;
                 }
             }
@@ -345,8 +345,8 @@ namespace Camellia_Management_System.Requests
                         continue;
                     changes.Add(new CompanyChange
                     {
-                        date = dateActivity.date, type = "occupation", before = occupation,
-                        after = newOccupation
+                        Date = dateActivity.date, Type = "occupation", Before = occupation,
+                        After = newOccupation
                     });
                     occupation = newOccupation;
                 }
@@ -355,7 +355,7 @@ namespace Camellia_Management_System.Requests
                 directoryWithReferences.Delete(true);
 
 
-            return changes.OrderBy(x => x.date).ToList();
+            return changes.OrderBy(x => x.Date).ToList();
         }
     }
 }
