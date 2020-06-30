@@ -71,7 +71,7 @@ namespace Camellia_Management_System.SignManage
         /// </summary>
         /// <param name="filePath">Path to the sign file</param>
         /// <param name="password">Password for the sign</param>
-        internal Sign(string filePath, string password)
+        public Sign(string filePath, string password)
         {
             this.filePath = filePath;
             this.password = password;

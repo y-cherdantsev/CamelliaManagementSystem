@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Camellia_Management_System.SignManage
 {
@@ -56,15 +57,14 @@ namespace Camellia_Management_System.SignManage
         public SignProvider(string pathToSignFolders)
         {
             _pathToSignFolders = pathToSignFolders;
-            _fullSigns = LoadRandomizedSigns();
         }
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:23:09
         /// <summary>
-        /// Forcibly reloads list of signs from the folder
+        /// Forcibly loads list of signs from the folder
         /// </summary>
-        public void ReloadSigns()
+        public void LoadSigns()
         {
             _fullSigns = LoadRandomizedSigns();
         }

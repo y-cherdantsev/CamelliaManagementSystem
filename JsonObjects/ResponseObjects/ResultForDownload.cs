@@ -8,33 +8,33 @@ namespace Camellia_Management_System.JsonObjects.ResponseObjects
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:18:34
-    /// @version 1.0
     /// <summary>
     /// ResultForDownload json object
     /// </summary>
-    public class ResultForDownload
+    public class ResultForDownload : IDisposable
     {
         public string nameKk { get; set; }
         public string nameRu { get; set; }
         public string nameEn { get; set; }
         public string url { get; set; }
         public string language { get; set; }
+        public string name { get; set; }
 
         public Languages lang
         {
             get
             {
                 if (language.Equals("ru"))
-                    return Languages.RU;
+                    return Languages.Ru;
 
                 if (language.Equals("kz"))
-                    return Languages.KZ;
+                    return Languages.Kz;
                 
-                return Languages.UNKNOWN;
+                return Languages.Unknown;
             }
         }
 
-        public string name { get; set; }
+        
 
         public string SaveFile(string path, HttpClient client, string fileName = null)
         {
@@ -81,11 +81,36 @@ namespace Camellia_Management_System.JsonObjects.ResponseObjects
         }
 
 
+        /// <summary>
+        /// Enumerates different languages of the reference
+        /// </summary>
         public enum Languages
         {
-            RU,
-            KZ,
-            UNKNOWN
+            /// <summary>
+            /// Russian language
+            /// </summary>
+            Ru,
+            
+            /// <summary>
+            /// Kazakh language 
+            /// </summary>
+            Kz,
+            
+            /// <summary>
+            /// Unknown language 
+            /// </summary>
+            Unknown
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            nameKk = null;
+            nameRu = null;
+            nameEn = null;
+            url = null;
+            language = null;
+            name = null;
         }
     }
 }

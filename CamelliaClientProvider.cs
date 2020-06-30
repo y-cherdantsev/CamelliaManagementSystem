@@ -6,11 +6,11 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Camellia_Management_System.SignManage;
+
 //TODO(REFACTOR)
 namespace Camellia_Management_System
 {
     /// @author Yevgeniy Cherdantsev
-    /// @version 1.0
     /// <summary>
     /// Controller and provider of camellia clients
     /// </summary>
@@ -37,9 +37,15 @@ namespace Camellia_Management_System
         private readonly IEnumerator<IWebProxy> _webProxies;
 
         /// <summary>
-        /// Tracks if the ClientProvider is reloading now
+        /// Handler timeout of created clients
         /// </summary>
-        private bool _isReloading;
+        private readonly int _handlerTimeout;
+
+        /// <summary>
+        /// Number of tries while creating clients
+        /// </summary>
+        private readonly int _numberOfTries;
+
 
         /// <summary>
         /// Return the number of left clients before the next shuffle
@@ -48,30 +54,48 @@ namespace Camellia_Management_System
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:31:53
-        /// @version 1.0
         /// <summary>
         /// Creates clients from the given signs
         /// </summary>
         /// <param name="signProvider">Sign provider</param>
         /// <param name="webProxies">Proxy if need</param>
         /// <param name="handlerTimeout">Timeout</param>
-        /// <param name="numOfTries">Number Of Tries</param>
+        /// <param name="numberOfTries">Number Of Tries</param>
         /// <returns>List - Shuffled list</returns>
-        public CamelliaClientProvider(SignProvider signProvider, IEnumerator<IWebProxy> webProxies = null,
-            int handlerTimeout = 20000, int numOfTries = 5)
+        public CamelliaClientProvider(SignProvider signProvider, List<IWebProxy> webProxies = null,
+            int handlerTimeout = 20000, int numberOfTries = 5)
         {
-            if (webProxies == null)
-                webProxies = new List<IWebProxy> {null}.GetEnumerator();
-            _webProxies = webProxies;
             _signProvider = signProvider;
-            //TODO (SEVERAL PROXIES)
+            _webProxies = webProxies.GetEnumerator();
+            _handlerTimeout = handlerTimeout;
+            _numberOfTries = numberOfTries;
+
             Task.Run(() =>
             {
-                while (signProvider.signsLeft > 0)
-                {
-                    var sign = signProvider.GetNextSign();
+                // if (_camelliaClients.Count == 0)
+                // {
+                // throw new InvalidDataException("No clients has been loaded");
+                // Console.WriteLine("No clients has been loaded");
+                // return;
+                // }
+            });
+        }
 
-                    for (var i = 0; i < numOfTries; i++)
+        /// @author Yevgeniy Cherdantsev
+        /// @date 30.06.2020 11:57:51
+        /// <summary>
+        /// Loads clients from the given signs
+        /// </summary>
+        /// <returns>List - Shuffled list</returns>
+        public void LoadClients()
+        {
+            lock (_camelliaClients)
+            {
+                while (_signProvider.signsLeft > 0)
+                {
+                    var sign = _signProvider.GetNextSign();
+
+                    for (var i = 0; i < _numberOfTries; i++)
                     {
                         try
                         {
@@ -81,99 +105,72 @@ namespace Camellia_Management_System
                                 _webProxies.MoveNext();
                             }
 
-                            var client = new CamelliaClient(sign, _webProxies.Current, handlerTimeout);
+                            Console.WriteLine($"Left to load {_signProvider.signsLeft + 1} clients");
+                            var client = new CamelliaClient(sign, _webProxies.Current, _handlerTimeout);
+                            client.Login().GetAwaiter().GetResult();
                             _camelliaClients.Add(client);
-                            i = numOfTries;
+                            break;
+                        }
+                        catch (SignXmlTokens.KalkanCryptException)
+                        {
+                            break;
                         }
                         catch (Exception)
                         {
-                            // ignored
+                            //ignore
                         }
                     }
                 }
 
+                _signProvider.LoadSigns();
 
-                // if (_camelliaClients.Count == 0)
-                // {
-                // throw new InvalidDataException("No clients has been loaded");
-                // Console.WriteLine("No clients has been loaded");
-                // return;
-                // }
-            });
-            while (_camelliaClients.Count == 0) ;
+                if (_camelliaClients.Count == 0)
+                    throw new InvalidDataException("No clients has been loaded");
+            }
         }
 
         /// @author Yevgeniy Cherdantsev
-        /// @version 1.0
         /// <summary>
         /// Get next client from provider
         /// </summary>
         /// <returns>CamelliaClient - returns connected client</returns>
-        public async Task<CamelliaClient> GetNextClient()
+        public CamelliaClient GetNextClient()
         {
             lock (_camelliaClients)
             {
-                while (_isReloading) ;
-                if (_camelliaClients.Count == 0)
+                var tries = _camelliaClients.Count + _usedClients.Count;
+                for (var i = 0; i <= tries; i++)
                 {
-                    _isReloading = true;
-                    if (_usedClients.Count == 0)
+                    if (_camelliaClients.Count == 0)
                     {
-                        _signProvider.ReloadSigns();
-                        while (_signProvider.signsLeft > 0)
-                        {
-                            var sign = _signProvider.GetNextSign();
+                        if (_usedClients.Count == 0)
+                            LoadClients();
 
-                            for (var i = 0; i < 3; i++)
-                            {
-                                try
-                                {
-                                    var client = new CamelliaClient(sign, _webProxies.Current);
-                                    if (!_webProxies.MoveNext())
-                                        _webProxies.Reset();
-                                    _camelliaClients.Add(client);
-                                    i = 3;
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e.StackTrace);
-                                }
-                            }
-                        }
+                        _camelliaClients = _usedClients.OrderBy(x => new Random().NextDouble()).ToList();
+                        _usedClients.Clear();
                     }
 
-                    _camelliaClients = _usedClients.OrderBy(x => new Random().NextDouble()).ToList();
-                    _usedClients.Clear();
-                    if (_camelliaClients.Count > 0)
-                        _isReloading = false;
-                    else
-                    {
-                        Thread.Sleep(15000);
-                        throw new Exception("Client manager has no loaded clients; Reason: service unavaliable");
-                    }
-                }
+                    var client = _camelliaClients[0];
 
-                CamelliaClient result;
-                lock (_camelliaClients)
-                {
-                    result = _camelliaClients[0];
-
-                    _usedClients.Add(result);
-                    _camelliaClients.Remove(result);
-                    if (!result.IsLogged().Result)
+                    _usedClients.Add(client);
+                    _camelliaClients.Remove(client);
+                    if (!client.IsLogged().Result)
                     {
                         try
                         {
-                            result = new CamelliaClient(result.FullSign, result.Proxy);
+                            client.Login().GetAwaiter().GetResult();
                         }
                         catch (Exception)
                         {
-                            return GetNextClient().Result;
+                            _usedClients.Remove(client);
+                            continue;
                         }
                     }
+
+                    return client;
                 }
 
-                return result;
+                throw new Exception("Can't find working client");
             }
         }
     }

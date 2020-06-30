@@ -1,12 +1,13 @@
-﻿namespace Camellia_Management_System.JsonObjects.ResponseObjects
+﻿using System;
+
+namespace Camellia_Management_System.JsonObjects.ResponseObjects
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:18:07
-    /// @version 1.0
     /// <summary>
     /// Organization json object
     /// </summary>
-    public class Organization
+    public class Organization : IDisposable
     {
         public string address { get; set; }
         public string bin { get; set; }
@@ -23,27 +24,55 @@
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 12:18:07
-        /// @version 1.0
         /// <summary>
         /// Status json object
         /// </summary>
-        public class Status
+        public class Status : IDisposable
         {
             public string code { get; set; }
             public Description description { get; set; }
 
             /// @author Yevgeniy Cherdantsev
             /// @date 18.02.2020 12:18:07
-            /// @version 1.0
             /// <summary>
             /// Description json object
             /// </summary>
-            public class Description
+            public class Description : IDisposable
             {
                 public string en { get; set; }
                 public string kk { get; set; }
                 public string ru { get; set; }
+
+                /// <inheritdoc />
+                public void Dispose()
+                {
+                    en = null;
+                    kk = null;
+                    ru = null;
+                }
             }
+
+            /// <inheritdoc />
+            public void Dispose()
+            {
+                code = null;
+                description.Dispose();
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            address = null;
+            bin = null;
+            fullName = null;
+            fullNameEn = null;
+            fullNameKk = null;
+            incorporationCountry = null;
+            shortName = null;
+            shortNameEn = null;
+            shortNameKk = null;
+            status.Dispose();
         }
     }
 }

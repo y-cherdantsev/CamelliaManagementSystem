@@ -1,7 +1,9 @@
-﻿namespace Camellia_Management_System.JsonObjects.RequestObjects
+﻿using System;
+
+namespace Camellia_Management_System.JsonObjects.RequestObjects
 {
     /// <inheritdoc />
-    public class IinDeclarant : Declarant
+    public class IinDeclarant : Declarant, IDisposable
     {
         public string iin { get; set; }
 
@@ -13,6 +15,13 @@
         public IinDeclarant(string iin, string declarantUin) : base(declarantUin)
         {
             this.iin = iin;
+        }
+
+        /// <inheritdoc />
+        public new void Dispose()
+        {
+            iin = null;
+            base.Dispose();
         }
     }
 }

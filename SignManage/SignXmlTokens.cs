@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Camellia_Management_System.SignManage
 {
@@ -36,7 +37,7 @@ namespace Camellia_Management_System.SignManage
             var edsError = kalkanCom.GetLastError();
 
             if (edsError > 0)
-                throw new ExternalException($"Some error occured while loading the key storage '{sign.filePath}'");
+                throw new KalkanCryptException($"Some error occured while loading the key storage '{sign.filePath}'");
 
             var Alias = "";
             var SignNodeID = "";
@@ -50,11 +51,35 @@ namespace Camellia_Management_System.SignManage
             kalkanCom.GetLastErrorString(out var error, out edsError);
 
             if (edsError > 0)
-                throw new ExternalException(
+                throw new KalkanCryptException(
                     $"Some error occured while signing the token:${error}\n\nPossible reasons:\n1.Shortage of bin length (Should be 12);\n");
 
             var result = outSign.Replace("\n", "\r\n");
             return result;
+        }
+
+        /// <summary>
+        /// Custom KalkanCryptCOMLib exception
+        /// </summary>
+        [Serializable]
+        public class KalkanCryptException : Exception
+        {
+            /// <inheritdoc />
+            public KalkanCryptException()
+            {
+            }
+
+            /// <inheritdoc />
+            public KalkanCryptException(string message)
+                : base(message)
+            {
+            }
+
+            /// <inheritdoc />
+            public KalkanCryptException(string message, Exception innerException)
+                : base(message, innerException)
+            {
+            }
         }
     }
 }

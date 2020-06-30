@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using AngleSharp;
 using Camellia_Management_System.JsonObjects;
@@ -73,7 +74,7 @@ namespace Camellia_Management_System
             CookieContainer = handler.CookieContainer;
             HttpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMilliseconds(httpClientTimeout)};
         }
-        
+
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:15:18
         /// <summary>
@@ -129,6 +130,10 @@ namespace Camellia_Management_System
         /// </summary>
         private async Task Authorize()
         {
+            //Check if provided sign exists
+            if (!new FileInfo(FullSign.authSign.filePath).Exists)
+                throw new FileNotFoundException($"Can't find '{FullSign.authSign.filePath}'");
+
             //Signing token from authorization page
             var signedToken = SignXmlTokens.SignToken(await GetToken(), FullSign.authSign);
 
@@ -152,11 +157,10 @@ namespace Camellia_Management_System
         public async Task<bool> IsLogged()
         {
             //TODO(Rethink function, it shouldn't depend on errors. If error won't tide to logging information, it could be lost)
-            
             //Trying to get information about user, if error occured it's likely that client not logged in
             try
             {
-                await GetUserInformation();
+                await GetUserInformation(1);
                 return true;
             }
             catch (Exception)
@@ -171,12 +175,31 @@ namespace Camellia_Management_System
         /// <summary>
         /// Loading user information from camellia system
         /// </summary>
+        /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
+        /// <param name="delay">Time in millis between requests</param>
         /// <returns>UserInformation - Information about authorized user</returns>
-        private async Task<UserInformation> GetUserInformation()
+        private async Task<UserInformation> GetUserInformation(int numberOfTries = 3, int delay = 500)
         {
-            var result = await HttpClient.GetStringAsync("https://egov.kz/services/P30.11/rest/current-user");
-            var userInformation = JsonSerializer.Deserialize<UserInformation>(result);
-            return userInformation;
+            var response = new HttpResponseMessage();
+            for (var i = 0; i < numberOfTries; i++)
+            {
+                response = await HttpClient.GetAsync("https://egov.kz/services/P30.11/rest/current-user");
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Redirect:
+                        Thread.Sleep(delay);
+                        continue;
+                    case HttpStatusCode.OK:
+                        var result = await response.Content.ReadAsStringAsync();
+                        var userInformation = JsonSerializer.Deserialize<UserInformation>(result);
+                        return userInformation;
+                    default:
+                        throw new HttpRequestException(
+                            $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
+                }
+            }
+            throw new HttpRequestException(
+                $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
         }
 
         /// @author Yevgeniy Cherdantsev

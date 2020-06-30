@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 using Camellia_Management_System.SignManage;
@@ -20,18 +21,18 @@ namespace Camellia_Management_System.Requests
         {
         }
 
-        public IEnumerable<ResultForDownload> GetReference(string input, string captchaApiKey, int delay = 1000,
+        public async Task<IEnumerable<ResultForDownload>> GetReference(string input, string captchaApiKey, int delay = 1000,
             int timeout = 60000, int numOfCaptchaTries = 5)
         {
             input = input.PadLeft(12, '0');
             if (TypeOfBiin() == BiinType.BIN)
             {
-                if (!AdditionalRequests.IsBinRegistered(CamelliaClient, input))
+                if (!await AdditionalRequests.IsBinRegistered(CamelliaClient, input))
                     throw new InvalidDataException("This bin is not registered");
             }
             else
             {
-                if (!AdditionalRequests.IsIinRegistered(CamelliaClient, input))
+                if (!await AdditionalRequests.IsIinRegistered(CamelliaClient, input))
                     throw new InvalidDataException("This Iin is not registered");
             }
 

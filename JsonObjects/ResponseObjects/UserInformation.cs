@@ -3,7 +3,6 @@
     //TODO(IMPLEMENT LEFT FIELDS)
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:20:02
-    /// @version 1.0
     /// <summary>
     /// UserInformation json objects
     /// </summary>
@@ -19,7 +18,6 @@
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 12:20:42
-        /// @version 1.0
         /// <summary>
         /// Info json objects
         /// </summary>
@@ -29,7 +27,6 @@
 
             /// @author Yevgeniy Cherdantsev
             /// @date 18.02.2020 12:21:02
-            /// @version 1.0
             /// <summary>
             /// Person json objects
             /// </summary>
@@ -49,7 +46,6 @@
 
                 /// @author Yevgeniy Cherdantsev
                 /// @date 18.02.2020 12:21:02
-                /// @version 1.0
                 /// <summary>
                 /// Name json objects
                 /// </summary>
@@ -62,7 +58,6 @@
 
                 /// @author Yevgeniy Cherdantsev
                 /// @date 18.02.2020 12:21:02
-                /// @version 1.0
                 /// <summary>
                 /// Nationality json objects
                 /// </summary>
@@ -77,7 +72,6 @@
 
         /// @author Yevgeniy Cherdantsev
         /// @date 19.06.2020 16:39:09
-        /// @version 1.0
         /// <summary>
         /// PhoneInfo json objects
         /// </summary>
@@ -89,7 +83,6 @@
 
         /// @author Yevgeniy Cherdantsev
         /// @date 19.06.2020 16:42:32
-        /// @version 1.0
         /// <summary>
         /// Availability json objects
         /// </summary>

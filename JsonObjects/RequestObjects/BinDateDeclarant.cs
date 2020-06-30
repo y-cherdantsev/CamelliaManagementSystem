@@ -1,7 +1,9 @@
-﻿namespace Camellia_Management_System.JsonObjects.RequestObjects
+﻿using System;
+
+namespace Camellia_Management_System.JsonObjects.RequestObjects
 {
     /// <inheritdoc />
-    public class BinDateDeclarant : BinDeclarant
+    public class BinDateDeclarant : BinDeclarant, IDisposable
     {
         public string innerdate { get; set; }
 
@@ -14,6 +16,13 @@
         public BinDateDeclarant(string bin, string declarantUin, string date) : base(bin, declarantUin)
         {
             innerdate = date;
+        }
+
+        /// <inheritdoc />
+        public new void Dispose()
+        {
+            innerdate = null;
+            base.Dispose();
         }
     }
 }

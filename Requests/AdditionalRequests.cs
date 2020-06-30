@@ -5,14 +5,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using Camellia_Management_System.FileManage;
 using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 using Camellia_Management_System.Requests.References;
 using Camellia_Management_System.SignManage;
+
 //TODO(REFACTOR)
 namespace Camellia_Management_System.Requests
 {
@@ -26,59 +29,63 @@ namespace Camellia_Management_System.Requests
     {
         /// @author Yevgeniy Cherdantsev
         /// @date 11.03.2020 16:19:56
-        /// @version 1.0
         /// <summary>
-        /// Returns boolean if the bin is registered in camellia system
+        /// Returns true if the given bin registered in camellia system
+        /// Client should be logged in to work properly
         /// </summary>
         /// <param name="camelliaClient">Camellia client</param>
         /// <param name="bin">bin of the company</param>
+        /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
+        /// <param name="delay">Time in millis between requests</param>
         /// <returns>bool - true if company registered</returns>
-        public static bool IsBinRegistered(CamelliaClient camelliaClient, string bin)
+        public static async Task<bool> IsBinRegistered(CamelliaClient camelliaClient, string bin,
+            int numberOfTries = 15, int delay = 500)
         {
-            //response.Content : response.Content is null No connection could be made because the target machine actively refused it.
+            //Padding BIN to 12 symbols
             bin = bin.PadLeft(12, '0');
 
-            HttpResponseMessage response;
-            var responseString = "";
-            var organization = new Organization();
+            //Codes send from system that means that bin is not registered
+            string[] knownErrorCodes = {"031", "034", "035"};
 
 
-            for (var i = 0; i < 15; i++)
+            for (var i = 0; i < numberOfTries; i++)
             {
+                var response = await camelliaClient.HttpClient
+                    .GetAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}");
+
+                // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
+                if (response.StatusCode == HttpStatusCode.Redirect)
+                {
+                    if (camelliaClient.IsLogged().Result != true)
+                        throw new AuthenticationException(
+                            $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
+
+                    Thread.Sleep(delay);
+                    continue;
+                }
+
+                var result = "";
+
+                if (response.Content != null)
+                    result = await response.Content.ReadAsStringAsync();
+                else if (response.ReasonPhrase != null)
+                    throw new HttpRequestException(
+                        $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
+
                 try
                 {
-                    response = camelliaClient.HttpClient
-                        .GetAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}")
-                        .GetAwaiter()
-                        .GetResult();
-                    responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                    if (!string.IsNullOrEmpty(responseString))
-                        if (responseString.Contains("Number of connections exceeded"))
-                            throw new Exception(
-                                $"Number of connections exceeded {responseString.Substring(responseString.IndexOf("<div class=\"x-text\"><p class=\"text_style\">\""))}");
-
-
-                    organization = JsonSerializer.Deserialize<Organization>(responseString);
-                    break;
+                    var organization = JsonSerializer.Deserialize<Organization>(result);
+                    return !knownErrorCodes.Contains(organization.status.code);
                 }
                 catch (JsonException e)
                 {
-                    throw new JsonException("'" + responseString + "' " + e);
+                    throw new JsonException(
+                        $"Json error while deserializing next string '{result}' of the '{bin}' company to organization object",
+                        e);
                 }
-                catch (Exception)
-                {
-                    if (camelliaClient.IsLogged().Result != true)
-
-                        if (i == 14)
-                            throw;
-                }
-
-                Thread.Sleep(500);
             }
 
-
-            return organization.status.code != "031" && organization.status.code != "034" &&
-                   organization.status.code != "035";
+            throw new Exception($"{numberOfTries} tries with delay={delay} exceeded");
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -89,49 +96,44 @@ namespace Camellia_Management_System.Requests
         /// </summary>
         /// <param name="camelliaClient">Camellia client</param>
         /// <param name="iin">iin of the person</param>
+        /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
+        /// <param name="delay">Time in millis between requests</param>
         /// <returns>bool - true if person registered</returns>
-        public static bool IsIinRegistered(CamelliaClient camelliaClient, string iin)
+        public static async Task<bool> IsIinRegistered(CamelliaClient camelliaClient, string iin,
+            int numberOfTries = 15, int delay = 500)
         {
+            //Padding IIN to 12 symbols
             iin = iin.PadLeft(12, '0');
-            try
+
+            /*
+            *
+            * Returns UserInformation.Info.Person in json
+            * Can be deserialized var person = JsonSerializer.Deserialize<UserInformation.Info.Person>(response.Content.ReadAsStringAsync());
+            * 
+            */
+            for (var i = 0; i < numberOfTries; i++)
             {
-                var res = camelliaClient.HttpClient
-                    .GetStringAsync($"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short")
-                    .GetAwaiter()
-                    .GetResult();
-                var person = JsonSerializer.Deserialize<UserInformation.Info.Person>(res);
-                return true;
-            }
-            catch (HttpRequestException e)
-            {
-                if (e.Message.Contains("Response status code does not indicate success: 404 (Not Found)"))
+                var response = await camelliaClient.HttpClient.GetAsync(
+                    $"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short");
+                switch (response.StatusCode)
                 {
-                    return false;
+                    case HttpStatusCode.NotFound:
+                        return false;
+
+                    // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
+                    case HttpStatusCode.Redirect when camelliaClient.IsLogged().Result != true:
+                        throw new AuthenticationException(
+                            $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
+                    case HttpStatusCode.Redirect:
+                        Thread.Sleep(delay);
+                        continue;
+
+                    default:
+                        return true;
                 }
-
-                throw;
             }
-        }
 
-
-        /// <summary>
-        /// Gets information about organization
-        /// </summary>
-        /// <param name="camelliaClient">Camellia CLient</param>
-        /// <param name="bin">Bin of the company</param>
-        /// <returns>Organization object</returns>
-        /// <exception cref="InvalidDataException">If company doesn't presented in the system</exception>
-        public static Organization GetOrganizationInfo(CamelliaClient camelliaClient, string bin)
-        {
-            bin = bin.PadLeft(12, '0');
-            var res = camelliaClient.HttpClient
-                .GetStringAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}")
-                .GetAwaiter()
-                .GetResult();
-            var organization = JsonSerializer.Deserialize<Organization>(res);
-            if (organization.status.code == "031" || organization.status.code == "034")
-                throw new InvalidDataException("This company isn't presented in camellia system");
-            return organization;
+            throw new Exception($"{numberOfTries} tries with delay={delay} exceeded");
         }
 
 
@@ -140,16 +142,54 @@ namespace Camellia_Management_System.Requests
         /// </summary>
         /// <param name="camelliaClient">Camellia CLient</param>
         /// <param name="name">Name of the company</param>
+        /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
+        /// <param name="delay">Time in millis between requests</param>
         /// <returns>True or false</returns>
-        public static bool IsCompanyNameEmpty(CamelliaClient camelliaClient, string name)
+        public static async Task<bool> IsCompanyNameFree(CamelliaClient camelliaClient, string name,
+            int numberOfTries = 15, int delay = 500)
         {
-            var content = new StringContent("{\"nameKz\":\"" + name + "\"}", Encoding.UTF8, "application/json");
-            var res = camelliaClient.HttpClient
-                .PostAsync(new Uri("https://egov.kz/services/Com03/rest/app/checkNames"), content).Result.Content
-                .ReadAsStringAsync().GetAwaiter().GetResult();
-            if (res.Contains("005"))
-                return true;
-            return false;
+            var content = new StringContent($"{{\"nameKz\":\"{name}\"}}", Encoding.UTF8, "application/json");
+
+            string[] knownCorrectCodes = {"005"};
+
+            for (var i = 0; i < numberOfTries; i++)
+            {
+                var response = await camelliaClient.HttpClient
+                    .PostAsync(new Uri("https://egov.kz/services/Com03/rest/app/checkNames"), content);
+
+                // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
+                if (response.StatusCode == HttpStatusCode.Redirect)
+                {
+                    if (camelliaClient.IsLogged().Result != true)
+                        throw new AuthenticationException(
+                            $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
+
+                    Thread.Sleep(delay);
+                    continue;
+                }
+
+                var result = "";
+
+                if (response.Content != null)
+                    result = await response.Content.ReadAsStringAsync();
+                else if (response.ReasonPhrase != null)
+                    throw new HttpRequestException(
+                        $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
+
+                try
+                {
+                    var companyNameStatus = JsonSerializer.Deserialize<CompanyNameStatus>(result);
+                    return knownCorrectCodes.Contains(companyNameStatus.code);
+                }
+                catch (JsonException e)
+                {
+                    throw new JsonException(
+                        $"Json error while deserializing next string '{result}' of the '{name}' company to companyNameStatus object",
+                        e);
+                }
+            }
+
+            throw new Exception($"{numberOfTries} tries with delay={delay} exceeded");
         }
 
         /// <summary>
@@ -161,26 +201,27 @@ namespace Camellia_Management_System.Requests
         /// <returns></returns>
         /// <exception cref="FileNotFoundException">If the sign hasn't been found</exception>
         /// <exception cref="InvalidDataException">If the password is incorrect</exception>
-        /// <exception cref="ExternalException">If service unavaliable</exception>
-        public static bool IsSignCorrect(Sign sign, string biin, IWebProxy webProxy = null)
+        /// <exception cref="ExternalException">If service unavailable</exception>
+        public static async Task<bool> IsSignCorrect(Sign sign, string biin, IWebProxy webProxy = null)
         {
+            //Padding BIIN to 12 symbols
+            biin = biin.PadLeft(12, '0');
+
             //TODO (enum)
             try
             {
                 if (!new FileInfo(sign.filePath).Exists)
                     throw new FileNotFoundException();
-                biin = biin.PadLeft(12, '0');
                 var camelliaClient = new CamelliaClient(new FullSign(sign, null), webProxy);
+                await camelliaClient.Login();
                 return camelliaClient.UserInformation.uin.PadLeft(12, '0') == biin;
             }
-            catch (FileNotFoundException e)
+            catch (SignXmlTokens.KalkanCryptException e)
             {
-                throw;
+                throw new InvalidDataException("Incorrect password", e);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                if (e.Message == "Some error occured while loading the key storage")
-                    throw new InvalidDataException("Incorrect password");
                 throw new ExternalException("Service unavailable");
             }
         }
@@ -197,7 +238,8 @@ namespace Camellia_Management_System.Requests
         /// <returns></returns>
         /// <exception cref="InvalidDataException">If camellia system doesn't contain such information</exception>
         /// <exception cref="ExternalException">If service unavaliable</exception>
-        public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin, string captchaToken,
+        public static async Task<List<CompanyChange>> GetCompanyChanges(CamelliaClient client, string bin,
+            string captchaToken,
             int delay = 1000, bool deleteFiles = true, int timeout = 20000)
         {
             var changes = new List<CompanyChange>();
@@ -221,7 +263,8 @@ namespace Camellia_Management_System.Requests
                     try
                     {
                         var tempDateRef = new RegisteredDateReference(client);
-                        foreach (var tempReference in tempDateRef.GetReference(bin, activitiesDate.date, captchaToken,
+                        foreach (var tempReference in await tempDateRef.GetReference(bin, activitiesDate.date,
+                            captchaToken,
                             delay: delay, timeout: timeout))
                             if (activitiesDate.date == activitiesDates[0].date
                                 || activitiesDate.activity.action.Contains("Изменение руководителя")
@@ -252,7 +295,10 @@ namespace Camellia_Management_System.Requests
             }
 
             var headChanges = activitiesDates.Where(x =>
-                x.activity.action != null && (x.activity.action.Contains("Изменение руководителя") || x.activity.action.Contains("Изменение состава участников") || x.activity.action.Contains("Изменение состава учредителей (членов, участников)")) ).ToList();
+                x.activity.action != null && (x.activity.action.Contains("Изменение руководителя") ||
+                                              x.activity.action.Contains("Изменение состава участников") ||
+                                              x.activity.action.Contains(
+                                                  "Изменение состава учредителей (членов, участников)"))).ToList();
             {
                 var head =
                     new PdfParser(

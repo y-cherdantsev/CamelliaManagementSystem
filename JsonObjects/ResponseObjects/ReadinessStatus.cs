@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Camellia_Management_System.JsonObjects.ResponseObjects
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:18:07
-    /// @version 1.0
     /// <summary>
     /// ReadinessStatus json object
     /// </summary>
-    public class ReadinessStatus
+    public class ReadinessStatus : IDisposable
     {
         public string status { get; set; }
         public string bpmProcessStatus { get; set; }
@@ -28,5 +28,28 @@ namespace Camellia_Management_System.JsonObjects.ResponseObjects
         public string operatorName { get; set; }
         public string recipientUin { get; set; }
         public string recipientFullName { get; set; }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            status = null;
+            bpmProcessStatus = null;
+            declarantIdentificationNumber = null;
+            declarantName = null;
+            applicationCode = null;
+            nameRu = null;
+            nameKz = null;
+            
+            resultsForDownload.ForEach(x => x.Dispose());
+            resultsForDownload.Clear();
+            resultsForDownload = null;
+            
+            eds.Dispose();
+            statusGo.Dispose();
+            operatorIin = null;
+            operatorName = null;
+            recipientUin = null;
+            recipientFullName = null;
+        }
     }
 }
