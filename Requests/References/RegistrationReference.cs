@@ -33,7 +33,7 @@ namespace Camellia_Management_System.Requests.References
         {
             var reference = GetReference(bin, delay, timeout);
 
-            var temp = reference.Result.First(x => x.language.Contains("ru"));
+            var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
                 return new PdfParser(temp.SaveFile("./", CamelliaClient.HttpClient), deleteFile).GetFounders();
             return null;

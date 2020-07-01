@@ -6,9 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using AngleSharp;
-using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 using Camellia_Management_System.SignManage;
 
@@ -80,7 +78,7 @@ namespace Camellia_Management_System
         /// <summary>
         /// Connects to the camellia system using handler
         /// </summary>
-        public async Task Login()
+        public void Login()
         {
             //Addresses with necessary cookies for authorization
             string[] cookieAddresses =
@@ -92,13 +90,13 @@ namespace Camellia_Management_System
             //Getting cookies
             foreach (var url in cookieAddresses)
             {
-                await HttpClient.GetStringAsync(url);
+                HttpClient.GetStringAsync(url).GetAwaiter().GetResult();
             }
 
             //Runs authorization script
-            await Authorize();
+            Authorize();
 
-            UserInformation = await GetUserInformation();
+            UserInformation = GetUserInformation();
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -107,14 +105,14 @@ namespace Camellia_Management_System
         /// Request of the connection token
         /// </summary>
         /// <returns>string - Connection token</returns>
-        private async Task<string> GetToken()
+        private string GetToken()
         {
             const string tokenUrl = "https://idp.egov.kz/idp/sign-in";
 
-            var response = await HttpClient.GetStringAsync(tokenUrl);
+            var response = HttpClient.GetStringAsync(tokenUrl).GetAwaiter().GetResult();
 
             //Generates document for AngleSharp
-            var angleDocument = await new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response));
+            var angleDocument = new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response)).GetAwaiter().GetResult();
 
             //Gets 'value' attribute of the page for authorization
             response = angleDocument.All.First(m => m.GetAttribute("id") == "xmlToSign").GetAttribute("value");
@@ -128,14 +126,14 @@ namespace Camellia_Management_System
         /// <summary>
         /// Authorization to the system using sign
         /// </summary>
-        private async Task Authorize()
+        private void Authorize()
         {
             //Check if provided sign exists
             if (!new FileInfo(FullSign.authSign.filePath).Exists)
                 throw new FileNotFoundException($"Can't find '{FullSign.authSign.filePath}'");
 
             //Signing token from authorization page
-            var signedToken = SignXmlTokens.SignToken(await GetToken(), FullSign.authSign);
+            var signedToken = SignXmlTokens.SignToken(GetToken(), FullSign.authSign);
 
             var values = new Dictionary<string, string>
             {
@@ -146,7 +144,7 @@ namespace Camellia_Management_System
             var content = new FormUrlEncodedContent(values);
 
             // Posting signed token to the camellia system
-            await HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content);
+            HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content).GetAwaiter().GetResult();
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -154,13 +152,13 @@ namespace Camellia_Management_System
         /// Get the information about connection of the client to the system
         /// </summary>
         /// <returns>true if the user logged in</returns>
-        public async Task<bool> IsLogged()
+        public bool IsLogged()
         {
             //TODO(Rethink function, it shouldn't depend on errors. If error won't tide to logging information, it could be lost)
             //Trying to get information about user, if error occured it's likely that client not logged in
             try
             {
-                await GetUserInformation(1);
+                GetUserInformation(1);
                 return true;
             }
             catch (Exception)
@@ -178,19 +176,19 @@ namespace Camellia_Management_System
         /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
         /// <param name="delay">Time in millis between requests</param>
         /// <returns>UserInformation - Information about authorized user</returns>
-        private async Task<UserInformation> GetUserInformation(int numberOfTries = 3, int delay = 500)
+        private UserInformation GetUserInformation(int numberOfTries = 3, int delay = 500)
         {
             var response = new HttpResponseMessage();
             for (var i = 0; i < numberOfTries; i++)
             {
-                response = await HttpClient.GetAsync("https://egov.kz/services/P30.11/rest/current-user");
+                response = HttpClient.GetAsync("https://egov.kz/services/P30.11/rest/current-user").GetAwaiter().GetResult();
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.Redirect:
                         Thread.Sleep(delay);
                         continue;
                     case HttpStatusCode.OK:
-                        var result = await response.Content.ReadAsStringAsync();
+                        var result = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                         var userInformation = JsonSerializer.Deserialize<UserInformation>(result);
                         return userInformation;
                     default:
@@ -209,9 +207,9 @@ namespace Camellia_Management_System
         /// </summary>
         /// <returns>string - Information about user</returns>
         [Obsolete("GetUser is deprecated, there is no any scenarios where it could be used")]
-        private async Task<string> GetUser()
+        private string GetUser()
         {
-            var res = await HttpClient.GetStringAsync("https://egov.kz/cms/auth/user.json");
+            var res = HttpClient.GetStringAsync("https://egov.kz/cms/auth/user.json").GetAwaiter().GetResult();
             return res;
         }
 
@@ -221,9 +219,9 @@ namespace Camellia_Management_System
         /// <summary>
         /// Logging out of camellia system
         /// </summary>
-        public async Task Logout()
+        public void Logout()
         {
-            await HttpClient.GetAsync("https://egov.kz/cms/ru/auth/logout");
+            HttpClient.GetAsync("https://egov.kz/cms/ru/auth/logout").GetAwaiter().GetResult();
             UserInformation = null;
             CookieContainer = null;
         }
@@ -234,9 +232,8 @@ namespace Camellia_Management_System
         /// <summary>
         /// Disposing
         /// </summary>
-        public async void Dispose()
+        public void Dispose()
         {
-            await Logout();
             HttpClient.Dispose();
             FullSign.Dispose();
         }

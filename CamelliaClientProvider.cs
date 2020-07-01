@@ -48,9 +48,19 @@ namespace Camellia_Management_System
 
 
         /// <summary>
-        /// Return the number of left clients before the next shuffle
+        /// Return the number of left clients till the next shuffle
         /// </summary>
-        public int clientsLeft => _camelliaClients.Count;
+        public int clientsLeft
+        {
+            get
+            {
+                lock (_camelliaClients)
+                {
+                    return _camelliaClients.Count;
+                }
+            }
+        }
+
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:31:53
@@ -107,7 +117,7 @@ namespace Camellia_Management_System
 
                             Console.WriteLine($"Left to load {_signProvider.signsLeft + 1} clients");
                             var client = new CamelliaClient(sign, _webProxies.Current, _handlerTimeout);
-                            client.Login().GetAwaiter().GetResult();
+                            client.Login();
                             _camelliaClients.Add(client);
                             break;
                         }
@@ -115,9 +125,9 @@ namespace Camellia_Management_System
                         {
                             break;
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
-                            //ignore
+                            Console.WriteLine(e.Message + " while loading client");
                         }
                     }
                 }
@@ -144,27 +154,32 @@ namespace Camellia_Management_System
                     if (_camelliaClients.Count == 0)
                     {
                         if (_usedClients.Count == 0)
-                            // LoadClients();
-                            Environment.Exit(1);
-                        _camelliaClients = _usedClients.OrderBy(x => new Random().NextDouble()).ToList();
-                        _usedClients.Clear();
+                            LoadClients();
+                        else
+                        {
+                            _camelliaClients = _usedClients.OrderBy(x => new Random().NextDouble()).ToList();
+                            _usedClients.Clear();
+                        }
                     }
 
                     var client = _camelliaClients[0];
 
                     _usedClients.Add(client);
                     _camelliaClients.Remove(client);
-                    if (!client.IsLogged().Result)
+
+                    if (client.IsLogged()) return client;
+
+                    //If the client not logged in then try to login, otherwise destroy client
+                    try
                     {
-                        try
-                        {
-                            client.Login().GetAwaiter().GetResult();
-                        }
-                        catch (Exception)
-                        {
-                            _usedClients.Remove(client);
-                            continue;
-                        }
+                        client.Login();
+                    }
+                    catch (Exception)
+                    {
+                        _usedClients.Remove(client);
+                        client.Logout();
+                        client.Dispose();
+                        continue;
                     }
 
                     return client;

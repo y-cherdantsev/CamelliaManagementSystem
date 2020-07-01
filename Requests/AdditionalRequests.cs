@@ -38,7 +38,7 @@ namespace Camellia_Management_System.Requests
         /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
         /// <param name="delay">Time in millis between requests</param>
         /// <returns>bool - true if company registered</returns>
-        public static async Task<bool> IsBinRegistered(CamelliaClient camelliaClient, string bin,
+        public static bool IsBinRegistered(CamelliaClient camelliaClient, string bin,
             int numberOfTries = 15, int delay = 500)
         {
             //Padding BIN to 12 symbols
@@ -50,13 +50,13 @@ namespace Camellia_Management_System.Requests
 
             for (var i = 0; i < numberOfTries; i++)
             {
-                var response = await camelliaClient.HttpClient
-                    .GetAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}");
+                var response = camelliaClient.HttpClient
+                    .GetAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}").Result;
 
                 // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
                 if (response.StatusCode == HttpStatusCode.Redirect)
                 {
-                    if (camelliaClient.IsLogged().Result != true)
+                    if (camelliaClient.IsLogged() != true)
                         throw new AuthenticationException(
                             $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
 
@@ -67,7 +67,7 @@ namespace Camellia_Management_System.Requests
                 var result = "";
 
                 if (response.Content != null)
-                    result = await response.Content.ReadAsStringAsync();
+                    result = response.Content.ReadAsStringAsync().Result;
                 else if (response.ReasonPhrase != null)
                     throw new HttpRequestException(
                         $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
@@ -99,7 +99,7 @@ namespace Camellia_Management_System.Requests
         /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
         /// <param name="delay">Time in millis between requests</param>
         /// <returns>bool - true if person registered</returns>
-        public static async Task<bool> IsIinRegistered(CamelliaClient camelliaClient, string iin,
+        public static bool IsIinRegistered(CamelliaClient camelliaClient, string iin,
             int numberOfTries = 15, int delay = 500)
         {
             //Padding IIN to 12 symbols
@@ -113,15 +113,15 @@ namespace Camellia_Management_System.Requests
             */
             for (var i = 0; i < numberOfTries; i++)
             {
-                var response = await camelliaClient.HttpClient.GetAsync(
-                    $"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short");
+                var response = camelliaClient.HttpClient.GetAsync(
+                    $"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short").Result;
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
                         return false;
 
                     // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
-                    case HttpStatusCode.Redirect when camelliaClient.IsLogged().Result != true:
+                    case HttpStatusCode.Redirect when camelliaClient.IsLogged() != true:
                         throw new AuthenticationException(
                             $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
                     case HttpStatusCode.Redirect:
@@ -145,7 +145,7 @@ namespace Camellia_Management_System.Requests
         /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
         /// <param name="delay">Time in millis between requests</param>
         /// <returns>True or false</returns>
-        public static async Task<bool> IsCompanyNameFree(CamelliaClient camelliaClient, string name,
+        public static bool IsCompanyNameFree(CamelliaClient camelliaClient, string name,
             int numberOfTries = 15, int delay = 500)
         {
             var content = new StringContent($"{{\"nameKz\":\"{name}\"}}", Encoding.UTF8, "application/json");
@@ -154,13 +154,13 @@ namespace Camellia_Management_System.Requests
 
             for (var i = 0; i < numberOfTries; i++)
             {
-                var response = await camelliaClient.HttpClient
-                    .PostAsync(new Uri("https://egov.kz/services/Com03/rest/app/checkNames"), content);
+                var response = camelliaClient.HttpClient
+                    .PostAsync(new Uri("https://egov.kz/services/Com03/rest/app/checkNames"), content).Result;
 
                 // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
                 if (response.StatusCode == HttpStatusCode.Redirect)
                 {
-                    if (camelliaClient.IsLogged().Result != true)
+                    if (camelliaClient.IsLogged() != true)
                         throw new AuthenticationException(
                             $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
 
@@ -171,7 +171,7 @@ namespace Camellia_Management_System.Requests
                 var result = "";
 
                 if (response.Content != null)
-                    result = await response.Content.ReadAsStringAsync();
+                    result = response.Content.ReadAsStringAsync().Result;
                 else if (response.ReasonPhrase != null)
                     throw new HttpRequestException(
                         $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
@@ -213,7 +213,7 @@ namespace Camellia_Management_System.Requests
                 if (!new FileInfo(sign.filePath).Exists)
                     throw new FileNotFoundException();
                 var camelliaClient = new CamelliaClient(new FullSign(sign, null), webProxy);
-                await camelliaClient.Login();
+                camelliaClient.Login();
                 return camelliaClient.UserInformation.uin.PadLeft(12, '0') == biin;
             }
             catch (SignXmlTokens.KalkanCryptException e)
@@ -238,7 +238,7 @@ namespace Camellia_Management_System.Requests
         /// <returns></returns>
         /// <exception cref="InvalidDataException">If camellia system doesn't contain such information</exception>
         /// <exception cref="ExternalException">If service unavaliable</exception>
-        public static async Task<List<CompanyChange>> GetCompanyChanges(CamelliaClient client, string bin,
+        public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin,
             string captchaToken,
             int delay = 1000, bool deleteFiles = true, int timeout = 20000)
         {
@@ -256,32 +256,43 @@ namespace Camellia_Management_System.Requests
             var dirName = $"{bin}-{DateTime.UtcNow.Ticks.ToString()}";
             var directoryWithReferences = new DirectoryInfo(dirName);
             directoryWithReferences.Create();
+            activitiesDates = activitiesDates.Where(x =>
+                x.date == activitiesDates[0].date
+                || x.activity.action.Contains("Изменение руководителя")
+                || x.activity.action.Contains("Изменение местонахождения")
+                || x.activity.action.Contains("Изменение состава участников")
+                || x.activity.action.Contains("Изменение состава учредителей (членов, участников)")
+                || x.activity.type.Contains("Первичная регистрация")
+                || x.activity.action.Contains("Изменение места нахождения")
+                || x.activity.action.Contains("Изменение наименования")
+                || x.activity.action.Contains("Изменение видов деятельности")
+                || x.date == activitiesDates.Last().date
+            ).ToList();
             foreach (var activitiesDate in activitiesDates)
             {
-                        var tempDateRef = new RegisteredDateReference(client);
-                        foreach (var tempReference in await tempDateRef.GetReference(bin, activitiesDate.date,
-                            captchaToken,
-                            delay: delay, timeout: timeout))
-                            if (activitiesDate.date == activitiesDates[0].date
-                                || activitiesDate.activity.action.Contains("Изменение руководителя")
-                                || activitiesDate.activity.action.Contains(
-                                    "Изменение местонахождения (с изменением места регистрации)")
-                                || activitiesDate.activity.action.Contains(
-                                    "Изменение состава участников")
-                                || activitiesDate.activity.action.Contains(
-                                    "Изменение состава учредителей (членов, участников)")
-                                || activitiesDate.activity.type.Contains(
-                                    "Первичная регистрация")
-                                || activitiesDate.activity.action.Contains(
-                                    "Изменение места нахождения (без изменения места регистрации)")
-                                || activitiesDate.activity.action.Contains("Изменение наименования")
-                                || activitiesDate.activity.action.Contains("Изменение видов деятельности")
-                                || activitiesDate.date == activitiesDates.Last().date
-                            )
-                                if (tempReference.language.Contains("ru"))
-                                    tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
-                                        $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
-                        break;
+                var tempDateRef = new RegisteredDateReference(client);
+                foreach (var tempReference in tempDateRef.GetReference(bin, activitiesDate.date,
+                        captchaToken,
+                        delay: delay, timeout: timeout))
+                    // if (activitiesDate.date == activitiesDates[0].date
+                    //     || activitiesDate.activity.action.Contains("Изменение руководителя")
+                    //     || activitiesDate.activity.action.Contains(
+                    //         "Изменение местонахождения")
+                    //     || activitiesDate.activity.action.Contains(
+                    //         "Изменение состава участников")
+                    //     || activitiesDate.activity.action.Contains(
+                    //         "Изменение состава учредителей (членов, участников)")
+                    //     || activitiesDate.activity.type.Contains(
+                    //         "Первичная регистрация")
+                    //     || activitiesDate.activity.action.Contains(
+                    //         "Изменение места нахождения")
+                    //     || activitiesDate.activity.action.Contains("Изменение наименования")
+                    //     || activitiesDate.activity.action.Contains("Изменение видов деятельности")
+                    //     || activitiesDate.date == activitiesDates.Last().date
+                    // )
+                    if (tempReference.language.Contains("ru"))
+                        tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
+                            $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
             }
 
             var headChanges = activitiesDates.Where(x =>

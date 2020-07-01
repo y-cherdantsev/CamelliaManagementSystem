@@ -18,18 +18,18 @@ namespace Camellia_Management_System.Requests
         {
         }
 
-        public async Task<IEnumerable<ResultForDownload>> GetReference(string input, DateTime date, string captchaApiKey, int delay = 1000,
+        public IEnumerable<ResultForDownload> GetReference(string input, DateTime date, string captchaApiKey, int delay = 1000,
             int timeout = 60000, int numOfCaptchaTries = 5)
         {
             input = input.PadLeft(12, '0');
             if (TypeOfBiin() == BiinType.BIN)
             {
-                if (input.Length == 12 && ! await AdditionalRequests.IsBinRegistered(CamelliaClient, input))
+                if (input.Length == 12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, input))
                     throw new InvalidDataException("This bin is not registered");
             }
             else
             {
-                if (input.Length == 12 && !await AdditionalRequests.IsIinRegistered(CamelliaClient, input))
+                if (input.Length == 12 && !AdditionalRequests.IsIinRegistered(CamelliaClient, input))
                     throw new InvalidDataException("This Iin is not registered");
             }
 
