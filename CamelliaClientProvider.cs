@@ -144,8 +144,8 @@ namespace Camellia_Management_System
                     if (_camelliaClients.Count == 0)
                     {
                         if (_usedClients.Count == 0)
-                            LoadClients();
-
+                            // LoadClients();
+                            Environment.Exit(1);
                         _camelliaClients = _usedClients.OrderBy(x => new Random().NextDouble()).ToList();
                         _usedClients.Clear();
                     }

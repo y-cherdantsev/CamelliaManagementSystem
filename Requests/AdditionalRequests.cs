@@ -258,10 +258,6 @@ namespace Camellia_Management_System.Requests
             directoryWithReferences.Create();
             foreach (var activitiesDate in activitiesDates)
             {
-                for (var i = 0; i < 10; i++)
-                {
-                    try
-                    {
                         var tempDateRef = new RegisteredDateReference(client);
                         foreach (var tempReference in await tempDateRef.GetReference(bin, activitiesDate.date,
                             captchaToken,
@@ -286,12 +282,6 @@ namespace Camellia_Management_System.Requests
                                     tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
                                         $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
                         break;
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
-                }
             }
 
             var headChanges = activitiesDates.Where(x =>
