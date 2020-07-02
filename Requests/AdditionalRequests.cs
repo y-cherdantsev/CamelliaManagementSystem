@@ -68,6 +68,9 @@ namespace Camellia_Management_System.Requests
 
                 if (response.Content != null)
                     result = response.Content.ReadAsStringAsync().Result;
+                else if (result.Contains("Number of connections exceeded. Please, try later"))
+                    throw new HttpRequestException(
+                        $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nNumber of connections exceeded. Please, try later;");
                 else if (response.ReasonPhrase != null)
                     throw new HttpRequestException(
                         $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");

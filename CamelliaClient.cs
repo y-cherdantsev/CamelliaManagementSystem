@@ -112,7 +112,8 @@ namespace Camellia_Management_System
             var response = HttpClient.GetStringAsync(tokenUrl).GetAwaiter().GetResult();
 
             //Generates document for AngleSharp
-            var angleDocument = new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response)).GetAwaiter().GetResult();
+            var angleDocument = new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response))
+                .GetAwaiter().GetResult();
 
             //Gets 'value' attribute of the page for authorization
             response = angleDocument.All.First(m => m.GetAttribute("id") == "xmlToSign").GetAttribute("value");
@@ -181,7 +182,8 @@ namespace Camellia_Management_System
             var response = new HttpResponseMessage();
             for (var i = 0; i < numberOfTries; i++)
             {
-                response = HttpClient.GetAsync("https://egov.kz/services/P30.11/rest/current-user").GetAwaiter().GetResult();
+                response = HttpClient.GetAsync("https://egov.kz/services/P30.11/rest/current-user").GetAwaiter()
+                    .GetResult();
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.Redirect:
@@ -196,6 +198,7 @@ namespace Camellia_Management_System
                             $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
                 }
             }
+
             throw new HttpRequestException(
                 $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
         }
@@ -221,7 +224,8 @@ namespace Camellia_Management_System
         /// </summary>
         public void Logout()
         {
-            HttpClient.GetAsync("https://egov.kz/cms/ru/auth/logout").GetAwaiter().GetResult();
+            //HttpClient can be disposed, don't know the reason
+            HttpClient?.GetAsync("https://egov.kz/cms/ru/auth/logout").GetAwaiter().GetResult();
             UserInformation = null;
             CookieContainer = null;
         }

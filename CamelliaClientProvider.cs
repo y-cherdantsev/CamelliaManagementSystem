@@ -177,8 +177,9 @@ namespace Camellia_Management_System
                     catch (Exception)
                     {
                         _usedClients.Remove(client);
-                        client.Logout();
-                        client.Dispose();
+                        //    client.Logout();
+                        //    client.Dispose();
+                        GC.Collect();
                         continue;
                     }
 
