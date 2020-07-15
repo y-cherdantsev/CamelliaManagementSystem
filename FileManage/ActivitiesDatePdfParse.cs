@@ -54,7 +54,8 @@ namespace Camellia_Management_System.FileManage
                 
                 var activity = new Activity
                 {
-                    type = activityString.Substring(0, typeTo).Trim()
+                    type = activityString.Substring(0, typeTo).Trim(),
+                    action = new List<string>()
                 };
                 
                 try
@@ -74,7 +75,7 @@ namespace Camellia_Management_System.FileManage
                 {
                     // ignored
                 }
-
+                
                 result.Add(new DateActivity(date, activity));
             }
 

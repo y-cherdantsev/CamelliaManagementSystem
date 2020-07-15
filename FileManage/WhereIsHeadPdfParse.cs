@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 //TODO(REFACTOR)
 namespace Camellia_Management_System.FileManage
 {
@@ -37,9 +38,8 @@ namespace Camellia_Management_System.FileManage
                     .Replace("\n", string.Empty)
                     .Replace("\r", string.Empty);
                 if (checkText.Replace(" ", string.Empty).Contains(fullname))
-                    companies.Add(innerText.Substring(0, innerText.IndexOf("\n")));
+                    companies.Add(innerText.Substring(0, innerText.IndexOf("\n")).Replace("\r", string.Empty));
             }
-
             return companies;
         }
     }

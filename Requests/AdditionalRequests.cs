@@ -68,12 +68,14 @@ namespace Camellia_Management_System.Requests
 
                 if (response.Content != null)
                     result = response.Content.ReadAsStringAsync().Result;
-                else if (result.Contains("Number of connections exceeded. Please, try later"))
-                    throw new HttpRequestException(
-                        $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nNumber of connections exceeded. Please, try later;");
                 else if (response.ReasonPhrase != null)
                     throw new HttpRequestException(
                         $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
+
+
+                if (result.Contains("Number of connections exceeded"))
+                    throw new HttpRequestException(
+                        $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nNumber of connections exceeded. Please, try later;");
 
                 try
                 {
@@ -266,6 +268,8 @@ namespace Camellia_Management_System.Requests
                 || x.activity.action.Contains("Изменение состава участников")
                 || x.activity.action.Contains("Изменение состава учредителей (членов, участников)")
                 || x.activity.type.Contains("Первичная регистрация")
+                || x.activity.type.Contains("Перерегистрация")
+                || x.activity.type.Contains("Внесение изменений")
                 || x.activity.action.Contains("Изменение места нахождения")
                 || x.activity.action.Contains("Изменение наименования")
                 || x.activity.action.Contains("Изменение видов деятельности")
@@ -302,7 +306,10 @@ namespace Camellia_Management_System.Requests
                 x.activity.action != null && (x.activity.action.Contains("Изменение руководителя") ||
                                               x.activity.action.Contains("Изменение состава участников") ||
                                               x.activity.action.Contains(
-                                                  "Изменение состава учредителей (членов, участников)"))).ToList();
+                                                  "Изменение состава учредителей (членов, участников)") ||
+                                              x.activity.type.Contains("Перерегистрация") ||
+                                              x.activity.type.Contains("Внесение изменений")
+                )).ToList();
             {
                 var head =
                     new PdfParser(
