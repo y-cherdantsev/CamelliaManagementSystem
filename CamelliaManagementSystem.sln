@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29411.138
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Camellia Management System", "Camellia Management System.csproj", "{8FEF76AF-A12F-426B-BCA6-35E0C9A4C3E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CamelliaManagementSystem", "CamelliaManagementSystem.csproj", "{8FEF76AF-A12F-426B-BCA6-35E0C9A4C3E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{F183DB47-473C-4BD3-AEB7-5280BC94A804}"
 EndProject

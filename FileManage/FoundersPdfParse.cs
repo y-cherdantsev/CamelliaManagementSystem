@@ -64,6 +64,12 @@ namespace Camellia_Management_System.FileManage
                         founders.Add(element);
                         continue;
                     }
+                    if (element.ToLower().Trim().Replace(" ", "").StartsWith("обществосограниченной"))
+                    {
+                        flag = true;
+                        founders.Add(element);
+                        continue;
+                    }
                     if (element.ToLower().Trim().Replace(" ", "").StartsWith("акционерноеобщество"))
                     {
                         flag = true;
@@ -72,6 +78,12 @@ namespace Camellia_Management_System.FileManage
                     }
                     if (flag)
                     {
+                        var founder = founders.Last();
+                        founders.Remove(founders.Last());
+                        founders.Add(founder + " " + element);
+                    }else if (element.ToLower().Trim().StartsWith("республиканского"))
+                    {
+                        flag = true;
                         var founder = founders.Last();
                         founders.Remove(founders.Last());
                         founders.Add(founder + " " + element);

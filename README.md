@@ -1,4 +1,4 @@
-# Camellia Management System
+# CamelliaManagementSystem
 
 ## Details
 
