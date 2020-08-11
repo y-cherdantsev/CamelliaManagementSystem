@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using AngleSharp;
-using Camellia_Management_System.JsonObjects.ResponseObjects;
+using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 using CamelliaManagementSystem.SignManage;
 
 // ReSharper disable StringLiteralTypo

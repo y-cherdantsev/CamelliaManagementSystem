@@ -1,6 +1,11 @@
 ﻿using System;
 
-namespace Camellia_Management_System.JsonObjects.RequestObjects
+// ReSharper disable CommentTypo
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
+
+#pragma warning disable 1591
+namespace CamelliaManagementSystem.JsonObjects.RequestObjects
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.05.2020 16:21:40

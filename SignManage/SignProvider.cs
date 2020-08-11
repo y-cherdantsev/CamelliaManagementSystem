@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 
+// ReSharper disable ClassNeverInstantiated.Local
+// ReSharper disable CommentTypo
+
 namespace CamelliaManagementSystem.SignManage
 {
     /// @author Yevgeniy Cherdantsev

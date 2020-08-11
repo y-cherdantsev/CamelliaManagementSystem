@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable CommentTypo
+
 namespace CamelliaManagementSystem.SignManage
 {
     /// @author Yevgeniy Cherdantsev

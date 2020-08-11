@@ -4,9 +4,9 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
-using Camellia_Management_System.JsonObjects;
-using Camellia_Management_System.JsonObjects.RequestObjects;
-using Camellia_Management_System.JsonObjects.ResponseObjects;
+using CamelliaManagementSystem.JsonObjects;
+using CamelliaManagementSystem.JsonObjects.RequestObjects;
+using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 //TODO(REFACTOR)
 namespace CamelliaManagementSystem.Requests

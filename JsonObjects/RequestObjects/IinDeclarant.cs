@@ -1,8 +1,18 @@
 ﻿using System;
 
-namespace Camellia_Management_System.JsonObjects.RequestObjects
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
+#pragma warning disable 1591
+namespace CamelliaManagementSystem.JsonObjects.RequestObjects
 {
-    /// <inheritdoc />
+    /// @author Yevgeniy Cherdantsev
+    /// @date 18.02.2020 12:19:42
+    /// <summary>
+    /// IinDeclarant json object 
+    /// </summary>
     public class IinDeclarant : Declarant, IDisposable
     {
         public string iin { get; set; }

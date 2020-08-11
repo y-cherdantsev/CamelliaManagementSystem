@@ -1,4 +1,9 @@
-﻿namespace Camellia_Management_System.JsonObjects.ResponseObjects
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable CommentTypo
+
+#pragma warning disable 1591
+namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
 {
     //TODO(IMPLEMENT LEFT FIELDS)
     /// @author Yevgeniy Cherdantsev

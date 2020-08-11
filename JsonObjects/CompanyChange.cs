@@ -1,12 +1,16 @@
 ﻿using System;
 
-//TODO(REFACTOR)
-namespace Camellia_Management_System.JsonObjects
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable CommentTypo
+
+#pragma warning disable 1591
+namespace CamelliaManagementSystem.JsonObjects
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:19:42
     /// <summary>
-    /// CompanyChange json object for 
+    /// CompanyChange json object 
     /// </summary>
     public class CompanyChange : IDisposable
     {

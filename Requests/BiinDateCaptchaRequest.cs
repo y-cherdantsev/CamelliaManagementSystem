@@ -4,8 +4,8 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using Camellia_Management_System.JsonObjects.RequestObjects;
-using Camellia_Management_System.JsonObjects.ResponseObjects;
+using CamelliaManagementSystem.JsonObjects.RequestObjects;
+using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 using CamelliaManagementSystem.SignManage;
 
 //TODO(REFACTOR)

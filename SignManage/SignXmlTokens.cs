@@ -1,5 +1,8 @@
 ﻿using System;
 
+// ReSharper disable IdentifierTypo
+// ReSharper disable CommentTypo
+
 namespace CamelliaManagementSystem.SignManage
 {
     /// @author Yevgeniy Cherdantsev
@@ -29,22 +32,23 @@ namespace CamelliaManagementSystem.SignManage
             var kalkanCom = new KalkanCryptCOMLib.KalkanCryptCOM();
             kalkanCom.Init();
 
+            var alias = string.Empty;
+
             // Loading hey with handling exception
             kalkanCom.LoadKeyStore((int) KalkanCryptCOMLib.KALKANCRYPTCOM_STORETYPE.KCST_PKCS12, sign.password,
                 sign.filePath,
-                "");
+                alias);
             var edsError = kalkanCom.GetLastError();
 
             if (edsError > 0)
                 throw new KalkanCryptException($"Some error occured while loading the key storage '{sign.filePath}'");
 
-            var Alias = "";
-            var SignNodeID = "";
-            var ParentSignNode = "";
-            var ParentNameSpace = "";
+            var signNodeId = string.Empty;
+            var parentSignNode = string.Empty;
+            var parentNameSpace = string.Empty;
 
             // Signing XML
-            kalkanCom.SignXML(Alias, 0, SignNodeID, ParentSignNode, ParentNameSpace,
+            kalkanCom.SignXML(alias, 0, signNodeId, parentSignNode, parentNameSpace,
                 inData,
                 out var outSign);
             kalkanCom.GetLastErrorString(out var error, out edsError);

@@ -1,10 +1,15 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 
-//TODO(REFACTOR)
-namespace Camellia_Management_System.JsonObjects.ResponseObjects
+// ReSharper disable CommentTypo
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
+
+#pragma warning disable 1591
+
+namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:18:34
@@ -20,64 +25,63 @@ namespace Camellia_Management_System.JsonObjects.ResponseObjects
         public string language { get; set; }
         public string name { get; set; }
 
-        public Languages lang
+        /// <summary>
+        /// Language of the file in from Enum
+        /// </summary>
+        public Languages languageCode
         {
             get
             {
-                if (language.Equals("ru"))
-                    return Languages.Ru;
-
-                if (language.Equals("kz"))
-                    return Languages.Kz;
-                
-                return Languages.Unknown;
+                return language switch
+                {
+                    "ru" => Languages.Ru,
+                    "kz" => Languages.Kz,
+                    _ => Languages.Unknown
+                };
             }
         }
 
-        
-
+        /// <summary>
+        /// Downloads result for download locally
+        /// </summary>
+        /// <param name="path">Where file should be saved</param>
+        /// <param name="client">Client that will proceed request</param>
+        /// <param name="fileName">Name of the file</param>
+        /// <returns>Path of the file that has been saved</returns>
+        /// ReSharper disable once CognitiveComplexity
+        /// \todo(Make the method return FileInfo)
         public string SaveFile(string path, HttpClient client, string fileName = null)
         {
-            if (fileName == null)
-            {
-                fileName = $"{nameEn} - {DateTime.Now.Ticks}";
-            }
-            else
-            {
-                fileName = fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
-            }
+            // Generating name of a file using known values
+            fileName = fileName == null
+                ? $"{nameEn} - {DateTime.Now.Ticks}"
+                : fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
 
 
             var fullName = $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf";
 
-            for (int i = 0; i < 10; ++i)
+            for (var i = 0; i < 10; ++i)
             {
-                if (!new FileInfo(fullName).Exists || new FileInfo(fullName).Length < 10000)
-                {
-                    try
-                    {
-                        new FileInfo(fullName).Delete();
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
+                if (new FileInfo(fullName).Exists && new FileInfo(fullName).Length >= 10000) break;
 
-                    using var request = new HttpRequestMessage(HttpMethod.Get, url);
-                    using Stream contentStream = (client.SendAsync(request).GetAwaiter().GetResult()).Content
-                            .ReadAsStreamAsync().GetAwaiter().GetResult(),
-                        stream = new FileStream(fullName, FileMode.Create, FileAccess.Write, FileShare.None,
-                            4000000, true);
-                    contentStream.CopyToAsync(stream).GetAwaiter().GetResult();
-                }
-                else
+                try
                 {
-                    break;
+                    new FileInfo(fullName).Delete();
                 }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+                using Stream contentStream =
+                        client.GetAsync(url).GetAwaiter().GetResult().Content.ReadAsStreamAsync().GetAwaiter()
+                            .GetResult(),
+                    stream = new FileStream(fullName, FileMode.Create, FileAccess.Write, FileShare.None,
+                        4000000, true);
+                contentStream.CopyToAsync(stream).GetAwaiter().GetResult();
             }
 
-
-            return $"{path}\\{fileName}.pdf";
+            return new FileInfo($"{path}\\{fileName}.pdf").FullName;
         }
 
 
@@ -90,12 +94,12 @@ namespace Camellia_Management_System.JsonObjects.ResponseObjects
             /// Russian language
             /// </summary>
             Ru,
-            
+
             /// <summary>
             /// Kazakh language 
             /// </summary>
             Kz,
-            
+
             /// <summary>
             /// Unknown language 
             /// </summary>

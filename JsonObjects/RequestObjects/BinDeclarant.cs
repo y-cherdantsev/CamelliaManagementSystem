@@ -1,8 +1,18 @@
 ﻿using System;
 
-namespace Camellia_Management_System.JsonObjects.RequestObjects
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable IdentifierTypo
+// ReSharper disable CommentTypo
+
+#pragma warning disable 1591
+namespace CamelliaManagementSystem.JsonObjects.RequestObjects
 {
-    /// <inheritdoc />
+    /// @author Yevgeniy Cherdantsev
+    /// @date 18.02.2020 12:19:42
+    /// <summary>
+    /// BinDeclarant json object 
+    /// </summary>
     public class BinDeclarant : Declarant, IDisposable
     {
         public string bin { get; set; }

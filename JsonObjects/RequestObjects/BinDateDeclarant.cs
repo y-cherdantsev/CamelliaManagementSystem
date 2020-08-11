@@ -1,8 +1,18 @@
 ﻿using System;
 
-namespace Camellia_Management_System.JsonObjects.RequestObjects
+// ReSharper disable CommentTypo
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable IdentifierTypo
+
+#pragma warning disable 1591
+namespace CamelliaManagementSystem.JsonObjects.RequestObjects
 {
-    /// <inheritdoc />
+    /// @author Yevgeniy Cherdantsev
+    /// @date 18.02.2020 12:19:42
+    /// <summary>
+    /// BinDateDeclarant json object 
+    /// </summary>
     public class BinDateDeclarant : BinDeclarant, IDisposable
     {
         public string innerdate { get; set; }
