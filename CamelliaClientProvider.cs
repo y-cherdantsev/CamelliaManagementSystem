@@ -6,7 +6,8 @@ using System.Net;
 using System.Threading.Tasks;
 using CamelliaManagementSystem.SignManage;
 
-//TODO(REFACTOR)
+// ReSharper disable CommentTypo
+
 namespace CamelliaManagementSystem
 {
     /// @author Yevgeniy Cherdantsev
@@ -96,6 +97,7 @@ namespace CamelliaManagementSystem
         /// Loads clients from the given signs
         /// </summary>
         /// <returns>List - Shuffled list</returns>
+        // ReSharper disable once MemberCanBePrivate.Global
         public void LoadClients()
         {
             lock (_camelliaClients)
