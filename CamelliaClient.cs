@@ -10,7 +10,9 @@ using AngleSharp;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 using CamelliaManagementSystem.SignManage;
 
-//TODO(REFACTOR)
+// ReSharper disable StringLiteralTypo
+// ReSharper disable CommentTypo
+
 namespace CamelliaManagementSystem
 {
     /// @author Yevgeniy Cherdantsev
@@ -23,7 +25,7 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Http client
         /// </summary>
-        public HttpClient HttpClient;
+        public readonly HttpClient HttpClient;
 
         /// <summary>
         /// Information about user
@@ -33,11 +35,13 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Container of cookies
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         public CookieContainer CookieContainer;
 
         /// <summary>
         /// Proxy if need
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         internal readonly IWebProxy Proxy;
 
         /// <summary>
@@ -66,9 +70,10 @@ namespace CamelliaManagementSystem
 
             //If proxy equals null creates object without proxy and vice versa
             var handler = Proxy != null
-                ? new HttpClientHandler {AllowAutoRedirect = true, UseProxy = true, Proxy = Proxy}
-                : new HttpClientHandler {AllowAutoRedirect = true};
+                ? new HttpClientHandler {UseProxy = true, Proxy = Proxy}
+                : new HttpClientHandler();
 
+            handler.AllowAutoRedirect = true;
             CookieContainer = handler.CookieContainer;
             HttpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMilliseconds(httpClientTimeout)};
         }
@@ -111,11 +116,12 @@ namespace CamelliaManagementSystem
 
             var response = HttpClient.GetStringAsync(tokenUrl).GetAwaiter().GetResult();
 
-            //Generates document for AngleSharp
+            // Generates document for AngleSharp
+            // ReSharper disable once AccessToModifiedClosure
             var angleDocument = new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response))
                 .GetAwaiter().GetResult();
 
-            //Gets 'value' attribute of the page for authorization
+            // Gets 'value' attribute of the page for authorization
             response = angleDocument.All.First(m => m.GetAttribute("id") == "xmlToSign").GetAttribute("value");
 
             return response;
@@ -184,6 +190,7 @@ namespace CamelliaManagementSystem
             {
                 response = HttpClient.GetAsync("https://egov.kz/services/P30.11/rest/current-user").GetAwaiter()
                     .GetResult();
+                // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.Redirect:
@@ -224,7 +231,7 @@ namespace CamelliaManagementSystem
         /// </summary>
         public void Logout()
         {
-            //HttpClient can be disposed, don't know the reason
+            // HttpClient can be already disposed, don't know the reason
             HttpClient?.GetAsync("https://egov.kz/cms/ru/auth/logout").GetAwaiter().GetResult();
             UserInformation = null;
             CookieContainer = null;
