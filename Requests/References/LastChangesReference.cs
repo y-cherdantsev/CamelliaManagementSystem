@@ -5,7 +5,7 @@ using CamelliaManagementSystem.Requests;
 
 namespace Camellia_Management_System.Requests.References
 {
-    public class LastChangesReference : SingleInputRequest
+    public class LastChangesReference : BiinRequest
     {
         public LastChangesReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {

@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using CamelliaManagementSystem.SignManage;
 
+// ReSharper disable UnusedType.Global
 // ReSharper disable CommentTypo
 
 namespace CamelliaManagementSystem
@@ -80,15 +81,15 @@ namespace CamelliaManagementSystem
             _handlerTimeout = handlerTimeout;
             _numberOfTries = numberOfTries;
 
-            Task.Run(() =>
-            {
+            // Task.Run(() =>
+            // {
                 // if (_camelliaClients.Count == 0)
                 // {
                 // throw new InvalidDataException("No clients has been loaded");
                 // Console.WriteLine("No clients has been loaded");
                 // return;
                 // }
-            });
+            // });
         }
 
         /// @author Yevgeniy Cherdantsev

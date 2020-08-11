@@ -14,7 +14,7 @@ namespace Camellia_Management_System.Requests.References
     /// <summary>
     /// 
     /// </summary>
-    public sealed class RegistrationReference : SingleInputRequest
+    public sealed class RegistrationReference : BiinRequest
     {
         public RegistrationReference(CamelliaClient camelliaClient) : base(camelliaClient)
         { 

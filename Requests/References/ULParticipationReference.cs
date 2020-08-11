@@ -17,7 +17,7 @@ namespace Camellia_Management_System.Requests.References
     /// <code>
     /// 
     /// </code>
-    public sealed class ULParticipationReference : SingleInputCaptchaRequest
+    public sealed class ULParticipationReference : BiinCaptchaRequest
     {
         public ULParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {

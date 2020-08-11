@@ -10,7 +10,7 @@ namespace CamelliaManagementSystem.Requests.References
     /// <summary>
     /// 
     /// </summary>
-    public class RegistrationActivitiesReference : SingleInputRequest
+    public class RegistrationActivitiesReference : BiinRequest
     {
         /// <summary>
         /// 

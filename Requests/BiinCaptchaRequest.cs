@@ -14,9 +14,9 @@ namespace CamelliaManagementSystem.Requests
     /// <summary>
     /// INPUT
     /// </summary>
-    public abstract class SingleInputCaptchaRequest : CamelliaCaptchaRequest
+    public abstract class BiinCaptchaRequest : CamelliaCaptchaRequest
     {
-        public SingleInputCaptchaRequest(CamelliaClient camelliaClient) : base(camelliaClient)
+        public BiinCaptchaRequest(CamelliaClient camelliaClient) : base(camelliaClient)
         {
         }
 
@@ -79,7 +79,7 @@ namespace CamelliaManagementSystem.Requests
 
             var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.rsaSign);
             var requestNumber = SendPdfRequest(signedToken, solvedCaptcha);
-            var readinessStatus = WaitResult(requestNumber, delay, timeout);
+            var readinessStatus = WaitResult(requestNumber.requestNumber, delay, timeout);
 
             if (readinessStatus.status.Equals("APPROVED"))
                 return readinessStatus.resultsForDownload;

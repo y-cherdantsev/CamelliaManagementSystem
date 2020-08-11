@@ -12,7 +12,6 @@ namespace CamelliaManagementSystem.FileManage
     /// </summary>
     public class ActivitiesDatePdfParse : PdfParse
     {
-        
         public static IEnumerable<DateActivity> GetDatesChanges(string innerText)
         {
             var result = new List<DateActivity>();

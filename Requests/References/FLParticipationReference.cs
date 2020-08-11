@@ -5,7 +5,7 @@ using CamelliaManagementSystem.FileManage;
 //TODO(REFACTOR)
 namespace CamelliaManagementSystem.Requests.References
 {
-    public sealed class FLParticipationReference : SingleInputCaptchaRequest
+    public sealed class FLParticipationReference : BiinCaptchaRequest
     {
         public FLParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {
