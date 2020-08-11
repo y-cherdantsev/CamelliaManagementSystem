@@ -1,6 +1,7 @@
 ﻿using System;
+
 //TODO(REFACTOR)
-namespace Camellia_Management_System.FileManage
+namespace CamelliaManagementSystem.FileManage
 {
 
     /// @author Yevgeniy Cherdantsev

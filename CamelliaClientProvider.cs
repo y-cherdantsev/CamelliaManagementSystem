@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
-using Camellia_Management_System.SignManage;
+using CamelliaManagementSystem.SignManage;
 
 //TODO(REFACTOR)
-namespace Camellia_Management_System
+namespace CamelliaManagementSystem
 {
     /// @author Yevgeniy Cherdantsev
     /// <summary>

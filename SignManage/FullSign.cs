@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Camellia_Management_System.SignManage
+namespace CamelliaManagementSystem.SignManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 10:31:15

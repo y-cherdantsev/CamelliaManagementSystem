@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Camellia_Management_System.FileManage;
+using CamelliaManagementSystem;
+using CamelliaManagementSystem.FileManage;
+using CamelliaManagementSystem.Requests;
+
 //TODO(REFACTOR)
 namespace Camellia_Management_System.Requests.References
 {

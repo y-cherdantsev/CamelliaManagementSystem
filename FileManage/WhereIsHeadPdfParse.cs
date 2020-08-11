@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
 //TODO(REFACTOR)
-namespace Camellia_Management_System.FileManage
+namespace CamelliaManagementSystem.FileManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.05.2020 14:49:19

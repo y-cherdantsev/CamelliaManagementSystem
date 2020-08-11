@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace Camellia_Management_System.SignManage
+namespace CamelliaManagementSystem.SignManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 10:21:54

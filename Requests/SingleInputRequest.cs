@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
-using Camellia_Management_System.SignManage;
+using CamelliaManagementSystem.SignManage;
+
 //TODO(REFACTOR)
-namespace Camellia_Management_System.Requests
+namespace CamelliaManagementSystem.Requests
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 16:35:25

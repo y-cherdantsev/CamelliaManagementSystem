@@ -10,14 +10,15 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Camellia_Management_System.FileManage;
 using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
 using Camellia_Management_System.Requests.References;
-using Camellia_Management_System.SignManage;
+using CamelliaManagementSystem.FileManage;
+using CamelliaManagementSystem.Requests.References;
+using CamelliaManagementSystem.SignManage;
 
 //TODO(REFACTOR)
-namespace Camellia_Management_System.Requests
+namespace CamelliaManagementSystem.Requests
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 11.03.2020 15:08:36
@@ -237,6 +238,7 @@ namespace Camellia_Management_System.Requests
         /// <param name="client">Camellia Client</param>
         /// <param name="bin">BIN of the company</param>
         /// <param name="captchaToken">Captcha token</param>
+        /// <param name="fromDate">First date that will be used for parsing</param>
         /// <param name="delay">Delay for the waiting of references</param>
         /// <param name="deleteFiles">If the references should be deleted after parsing</param>
         /// <param name="timeout">Timeout of waiting of the sign</param>
@@ -244,7 +246,7 @@ namespace Camellia_Management_System.Requests
         /// <exception cref="InvalidDataException">If camellia system doesn't contain such information</exception>
         /// <exception cref="ExternalException">If service unavaliable</exception>
         public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin,
-            string captchaToken,
+            string captchaToken, DateTime? fromDate = null,
             int delay = 1000, bool deleteFiles = true, int timeout = 20000)
         {
             var changes = new List<CompanyChange>();
@@ -252,6 +254,10 @@ namespace Camellia_Management_System.Requests
             var activitiesDates =
                 registrationActivitiesReference.GetActivitiesDates(bin, delay: delay, timeout: timeout)
                     .OrderBy(x => x.date).ToList();
+
+            // if (fromDate != null)
+                // activitiesDates = activitiesDates.Where(x => x.date >= fromDate).ToList();
+
             // foreach (var activitiesDate in activitiesDates)
             // if (activitiesDate.activity.action != null)
             // foreach (var s in activitiesDate.activity.action)
@@ -315,8 +321,9 @@ namespace Camellia_Management_System.Requests
                     new PdfParser(
                         $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf",
                         false).GetHead();
-                changes.Add(new CompanyChange
-                    {Date = activitiesDates[0].date, Type = "fullname_director", Before = null, After = head});
+                // if (fromDate == null)
+                    changes.Add(new CompanyChange
+                        {Date = activitiesDates[0].date, Type = "fullname_director", Before = null, After = head});
                 foreach (var dateActivity in headChanges)
                 {
                     var newHead = new PdfParser(

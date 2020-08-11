@@ -4,8 +4,9 @@ using System.Security.Authentication;
 using System.Threading;
 using System.Web;
 using RestSharp;
+
 //TODO(REFACTOR)
-namespace Camellia_Management_System.Requests
+namespace CamelliaManagementSystem.Requests
 {
 
     /// @author Yevgeniy Cherdantsev

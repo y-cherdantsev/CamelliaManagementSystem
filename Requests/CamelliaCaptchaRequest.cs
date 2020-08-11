@@ -3,9 +3,10 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using Camellia_Management_System.JsonObjects.RequestObjects;
+using Camellia_Management_System.Requests;
 
 //TODO(REFACTOR)
-namespace Camellia_Management_System.Requests
+namespace CamelliaManagementSystem.Requests
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 11:25:15

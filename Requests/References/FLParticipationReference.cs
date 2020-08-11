@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Camellia_Management_System.FileManage;
+using CamelliaManagementSystem.FileManage;
+
 //TODO(REFACTOR)
-namespace Camellia_Management_System.Requests.References
+namespace CamelliaManagementSystem.Requests.References
 {
     public sealed class FLParticipationReference : SingleInputCaptchaRequest
     {

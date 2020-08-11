@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using AngleSharp.Text;
+﻿using System.Linq;
+
 //TODO(REFACTOR)
-namespace Camellia_Management_System.FileManage
+namespace CamelliaManagementSystem.FileManage
 {
     public class RegisteredDateParse : PdfParse
     {

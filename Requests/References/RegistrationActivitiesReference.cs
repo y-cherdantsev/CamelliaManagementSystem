@@ -1,13 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using Camellia_Management_System.FileManage;
+using Camellia_Management_System;
+using Camellia_Management_System.Requests;
+using CamelliaManagementSystem.FileManage;
+
 //TODO(REFACTOR)
-namespace Camellia_Management_System.Requests.References
+namespace CamelliaManagementSystem.Requests.References
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class RegistrationActivitiesReference : SingleInputRequest
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="camelliaClient"></param>
         public RegistrationActivitiesReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {
         }

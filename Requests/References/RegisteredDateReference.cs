@@ -1,4 +1,8 @@
 ﻿//TODO(REFACTOR)
+
+using CamelliaManagementSystem;
+using CamelliaManagementSystem.Requests;
+
 namespace Camellia_Management_System.Requests.References
 {
     public class RegisteredDateReference : BiinDateCaptchaRequest

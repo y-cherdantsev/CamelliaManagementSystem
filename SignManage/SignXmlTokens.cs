@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
-namespace Camellia_Management_System.SignManage
+namespace CamelliaManagementSystem.SignManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 10:35:27

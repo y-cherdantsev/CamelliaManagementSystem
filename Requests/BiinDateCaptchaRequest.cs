@@ -4,13 +4,12 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.RequestObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
-using Camellia_Management_System.SignManage;
+using CamelliaManagementSystem.SignManage;
+
 //TODO(REFACTOR)
-namespace Camellia_Management_System.Requests
+namespace CamelliaManagementSystem.Requests
 {
     public abstract class BiinDateCaptchaRequest : CamelliaCaptchaRequest
     {

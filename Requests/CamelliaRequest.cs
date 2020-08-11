@@ -7,8 +7,9 @@ using System.Threading;
 using Camellia_Management_System.JsonObjects;
 using Camellia_Management_System.JsonObjects.RequestObjects;
 using Camellia_Management_System.JsonObjects.ResponseObjects;
+
 //TODO(REFACTOR)
-namespace Camellia_Management_System.Requests
+namespace CamelliaManagementSystem.Requests
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 15:49:33
