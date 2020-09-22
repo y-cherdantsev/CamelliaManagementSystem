@@ -83,12 +83,12 @@ namespace CamelliaManagementSystem
 
             // Task.Run(() =>
             // {
-                // if (_camelliaClients.Count == 0)
-                // {
-                // throw new InvalidDataException("No clients has been loaded");
-                // Console.WriteLine("No clients has been loaded");
-                // return;
-                // }
+            // if (_camelliaClients.Count == 0)
+            // {
+            // throw new InvalidDataException("No clients has been loaded");
+            // Console.WriteLine("No clients has been loaded");
+            // return;
+            // }
             // });
         }
 
@@ -170,12 +170,21 @@ namespace CamelliaManagementSystem
                     _camelliaClients.Remove(client);
 
                     //If sign has disappeared from folder tries to get another sign
-                    if (!new FileInfo(client.FullSign.authSign.filePath).Exists || !new FileInfo(client.FullSign.rsaSign.filePath).Exists )
+                    try
+                    {
+                        if (!new FileInfo(client.FullSign.authSign.filePath).Exists ||
+                            !new FileInfo(client.FullSign.rsaSign.filePath).Exists)
+                        {
+                            _usedClients.Remove(client);
+                            continue;
+                        }
+                    }
+                    catch (Exception)
                     {
                         _usedClients.Remove(client);
                         continue;
                     }
-                    
+
                     if (client.IsLogged()) return client;
 
                     //If the client not logged in then try to login, otherwise destroy client

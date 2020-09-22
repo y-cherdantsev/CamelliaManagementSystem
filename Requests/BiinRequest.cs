@@ -66,6 +66,7 @@ namespace CamelliaManagementSystem.Requests
             }
 
             var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.rsaSign);
+            // var signedToken1 = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.rsaSign, "localhost:6000");
 
             // Sending request and getting reference
             var requestNumber = SendPdfRequest(signedToken);

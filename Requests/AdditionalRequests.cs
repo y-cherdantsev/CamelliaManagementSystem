@@ -256,7 +256,7 @@ namespace CamelliaManagementSystem.Requests
                     .OrderBy(x => x.date).ToList();
 
             // if (fromDate != null)
-                // activitiesDates = activitiesDates.Where(x => x.date >= fromDate).ToList();
+            // activitiesDates = activitiesDates.Where(x => x.date >= fromDate).ToList();
 
             // foreach (var activitiesDate in activitiesDates)
             // if (activitiesDate.activity.action != null)
@@ -284,28 +284,30 @@ namespace CamelliaManagementSystem.Requests
             foreach (var activitiesDate in activitiesDates)
             {
                 var tempDateRef = new RegisteredDateReference(client);
-                foreach (var tempReference in tempDateRef.GetReference(bin, activitiesDate.date,
-                        captchaToken,
-                        delay: delay, timeout: timeout))
-                    // if (activitiesDate.date == activitiesDates[0].date
-                    //     || activitiesDate.activity.action.Contains("Изменение руководителя")
-                    //     || activitiesDate.activity.action.Contains(
-                    //         "Изменение местонахождения")
-                    //     || activitiesDate.activity.action.Contains(
-                    //         "Изменение состава участников")
-                    //     || activitiesDate.activity.action.Contains(
-                    //         "Изменение состава учредителей (членов, участников)")
-                    //     || activitiesDate.activity.type.Contains(
-                    //         "Первичная регистрация")
-                    //     || activitiesDate.activity.action.Contains(
-                    //         "Изменение места нахождения")
-                    //     || activitiesDate.activity.action.Contains("Изменение наименования")
-                    //     || activitiesDate.activity.action.Contains("Изменение видов деятельности")
-                    //     || activitiesDate.date == activitiesDates.Last().date
-                    // )
-                    if (tempReference.language.Contains("ru"))
-                        tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
-                            $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
+                List<ResultForDownload> tempDateReferences = null;
+
+                for (var i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        tempDateReferences = tempDateRef.GetReference(bin, activitiesDate.date,
+                            captchaToken,
+                            delay: delay, timeout: timeout).ToList();
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"{bin} - {activitiesDate.date} - {e.Message}");
+                    }
+                    Thread.Sleep(5000);
+                }
+
+                if (tempDateReferences == null)
+                    throw new Exception("ERROR");
+                foreach (var tempReference in tempDateReferences.Where(tempReference => tempReference.language.Contains("ru")))
+                    tempReference.SaveFile(directoryWithReferences.FullName, client.HttpClient,
+                        $"{bin}-{activitiesDate.date.Year}-{activitiesDate.date.Month}-{activitiesDate.date.Day}");
+                Thread.Sleep(5000);
             }
 
             var headChanges = activitiesDates.Where(x =>
@@ -322,8 +324,8 @@ namespace CamelliaManagementSystem.Requests
                         $"{directoryWithReferences}\\{bin}-{activitiesDates[0].date.Year}-{activitiesDates[0].date.Month}-{activitiesDates[0].date.Day}.pdf",
                         false).GetHead();
                 // if (fromDate == null)
-                    changes.Add(new CompanyChange
-                        {Date = activitiesDates[0].date, Type = "fullname_director", Before = null, After = head});
+                changes.Add(new CompanyChange
+                    {Date = activitiesDates[0].date, Type = "fullname_director", Before = null, After = head});
                 foreach (var dateActivity in headChanges)
                 {
                     var newHead = new PdfParser(

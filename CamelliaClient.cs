@@ -139,8 +139,10 @@ namespace CamelliaManagementSystem
             if (!new FileInfo(FullSign.authSign.filePath).Exists)
                 throw new FileNotFoundException($"Can't find '{FullSign.authSign.filePath}'");
 
+            var token = GetToken();
             //Signing token from authorization page
-            var signedToken = SignXmlTokens.SignToken(GetToken(), FullSign.authSign);
+            // var signedToken1 = SignXmlTokens.SignToken(token, FullSign.authSign, "192.168.1.105:6000");
+            var signedToken = SignXmlTokens.SignToken(token, FullSign.authSign);
 
             var values = new Dictionary<string, string>
             {
@@ -183,7 +185,7 @@ namespace CamelliaManagementSystem
         /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
         /// <param name="delay">Time in millis between requests</param>
         /// <returns>UserInformation - Information about authorized user</returns>
-        private UserInformation GetUserInformation(int numberOfTries = 3, int delay = 500)
+        private UserInformation GetUserInformation(int numberOfTries = 3, int delay = 1500)
         {
             var response = new HttpResponseMessage();
             for (var i = 0; i < numberOfTries; i++)

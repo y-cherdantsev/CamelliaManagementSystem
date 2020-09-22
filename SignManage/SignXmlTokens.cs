@@ -1,4 +1,11 @@
 ﻿using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using CamelliaManagementSystem.JsonObjects.ResponseObjects;
+using RestSharp;
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
@@ -12,6 +19,9 @@ namespace CamelliaManagementSystem.SignManage
     /// </summary>
     public static class SignXmlTokens
     {
+        // [DllImport("KalkanCryptCOM.dll")] 
+        // private static extern KalkanCryptCOM KalkanCryptCOMLib();
+
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:35:42
         /// <summary>
@@ -59,6 +69,31 @@ namespace CamelliaManagementSystem.SignManage
 
             var result = outSign.Replace("\n", "\r\n");
             return result;
+        }
+
+
+        /// @author Yevgeniy Cherdantsev
+        /// @date 10.09.2020 14:39:17
+        /// <summary>
+        /// Signing of the xml token via API
+        /// </summary>
+        /// <param name="inData">XML text</param>
+        /// <param name="sign">Sign</param>
+        /// <returns>string - signed token</returns>
+        public static string SignToken(string inData, Sign sign, string apiAddress)
+        {
+            var restClient = new RestClient($"http://{apiAddress}");
+            var request = new RestSharp.RestRequest($"signXML", Method.POST);
+            request.AlwaysMultipartFormData = true;
+            request.AddHeader("Content-Type", "multipart/form-data");
+
+            request.AddQueryParameter("password", sign.password);
+            request.AddQueryParameter("xmlToken", inData);
+
+            request.AddFile("signatureFile", sign.filePath);
+            var restResponse = restClient.Execute(request);
+            var signedXML = JsonSerializer.Deserialize<ESignatureApiResponse>(restResponse.Content).signedXML.Replace("\n", "\r\n");;
+            return signedXML;
         }
 
         /// <summary>
