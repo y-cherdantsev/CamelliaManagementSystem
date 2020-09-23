@@ -232,6 +232,50 @@ namespace CamelliaManagementSystem.Requests
             }
         }
 
+        public static PersonStatus GetPersonStatus(CamelliaClient camelliaClient, string iin,
+            int numberOfTries = 15, int delay = 500)
+        {
+            var content = new StringContent($"{{\"iin\":\"{iin}\",\"captchaCode\":null}}", Encoding.UTF8, "application/json");
+            
+            for (var i = 0; i < numberOfTries; i++)
+            {
+                var response = camelliaClient.HttpClient
+                    .PostAsync(new Uri("https://egov.kz/services/P6.02/rest/app/status"), content).Result;
+
+                // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
+                if (response.StatusCode == HttpStatusCode.Redirect)
+                {
+                    if (camelliaClient.IsLogged() != true)
+                        throw new AuthenticationException(
+                            $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
+
+                    Thread.Sleep(delay);
+                    continue;
+                }
+
+                var result = "";
+
+                if (response.Content != null)
+                    result = response.Content.ReadAsStringAsync().Result;
+                else if (response.ReasonPhrase != null)
+                    throw new HttpRequestException(
+                        $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
+
+                try
+                {
+                    var personStatus = JsonSerializer.Deserialize<PersonStatus>(result);
+                    return personStatus;
+                }
+                catch (JsonException e)
+                {
+                    throw new JsonException(
+                        $"Json error while deserializing next string '{result}' of the '{iin}' person to personStatus object",
+                        e);
+                }
+            }
+            throw new Exception($"{numberOfTries} tries with delay={delay} exceeded");
+        }
+        
         /// <summary>
         /// Gets changes of the company
         /// </summary>
