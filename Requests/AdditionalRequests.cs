@@ -419,8 +419,7 @@ namespace CamelliaManagementSystem.Requests
                 }
             }
 
-            var nameChanges = activitiesDates.Where(x =>
-                x.activity.action != null && x.activity.action.Contains("Изменение наименования")).ToList();
+            var nameChanges = activitiesDates.ToList();
             {
                 var name =
                     new PdfParser(
