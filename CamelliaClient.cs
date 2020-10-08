@@ -39,6 +39,7 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Container of cookies
         /// </summary>
+        // ReSharper disable once NotAccessedField.Global
         public CookieContainer CookieContainer;
 
         /// <summary>
@@ -171,6 +172,7 @@ namespace CamelliaManagementSystem
         /// <param name="delay">Time in millis between requests</param>
         /// <returns>UserInformation - Information about authorized user</returns>
         [Obsolete("GetUserInformationAsync is deprecated, there is no any scenarios where it could be used")]
+        // ReSharper disable once UnusedMember.Local
         private async Task<UserInformation> GetUserInformationAsync(int numberOfTries = 3, int delay = 1500)
         {
             var response = new HttpResponseMessage();
