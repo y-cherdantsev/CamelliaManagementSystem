@@ -97,4 +97,28 @@ namespace CamelliaManagementSystem.Requests
         {
         }
     }
+
+    /// <summary>
+    /// Custom CamelliaClient exception
+    /// </summary>
+    [Serializable]
+    public class CamelliaClientException : Exception
+    {
+        /// <inheritdoc />
+        public CamelliaClientException()
+        {
+        }
+
+        /// <inheritdoc />
+        public CamelliaClientException(string message)
+            : base(message)
+        {
+        }
+
+        /// <inheritdoc />
+        public CamelliaClientException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
 }
