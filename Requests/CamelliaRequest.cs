@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using CamelliaManagementSystem.JsonObjects;
 using CamelliaManagementSystem.JsonObjects.RequestObjects;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
@@ -35,6 +36,7 @@ namespace CamelliaManagementSystem.Requests
             CamelliaClient = camelliaClient;
         }
 
+
         /// <summary>
         /// Link for getting reference
         /// </summary>
@@ -47,26 +49,25 @@ namespace CamelliaManagementSystem.Requests
         /// <returns>Enum BiinType</returns>
         protected abstract BiinType TypeOfBiin();
 
+
         /// <summary>
         /// Requests camellia system about reference readiness
         /// </summary>
         /// <param name="requestNumber">Number of request</param>
         /// <returns>Status of reference readiness</returns>
-        /// <exception cref="InvalidDataException">If some error with cammelia occured</exception>
-        private ReadinessStatus GetReadinessStatus(string requestNumber)
+        /// <exception cref="InvalidDataException">If some error with camellia occured</exception>
+        private async Task<ReadinessStatus> GetReadinessStatusAsync(string requestNumber)
         {
             try
             {
-                var result = CamelliaClient.HttpClient
-                    .GetStringAsync($"{RequestLink()}/rest/request-states/{requestNumber}")
-                    .GetAwaiter()
-                    .GetResult();
-                var readinessStatus = JsonSerializer.Deserialize<ReadinessStatus>(result);
+                var response = await CamelliaClient.HttpClient
+                    .GetStringAsync($"{RequestLink()}/rest/request-states/{requestNumber}");
+                var readinessStatus = JsonSerializer.Deserialize<ReadinessStatus>(response);
                 return readinessStatus;
             }
             catch (Exception)
             {
-                throw new InvalidDataException("It seems that camellia rejected request");
+                throw new CamelliaRequestException("It seems that camellia rejected request");
             }
         }
 
@@ -78,10 +79,11 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="timeout">Timeout of </param>
         /// <returns>Status of reference readiness</returns>
         /// <exception cref="InvalidDataException">If some error with cammelia occured</exception>
-        protected ReadinessStatus WaitResult(string requestNumber, int delay = 1000, int timeout = 60000)
+        protected async Task<ReadinessStatus> WaitResultAsync(string requestNumber, int delay = 1000,
+            int timeout = 60000)
         {
             // Minimum delay is 1s
-            delay = delay < 500 ? 1000 : delay;
+            delay = delay < 1000 ? 1000 : delay;
 
             // Counts number of requests that will be proceeded
             var wait = timeout / delay;
@@ -91,17 +93,13 @@ namespace CamelliaManagementSystem.Requests
             do
             {
                 if (wait-- <= 0)
-                    throw new InvalidDataException($"Timeout '{timeout}' exceeded");
+                    throw new CamelliaRequestException($"Timeout '{timeout}' exceeded");
                 Thread.Sleep(delay);
-                readinessStatus = GetReadinessStatus(requestNumber);
+                readinessStatus = await GetReadinessStatusAsync(requestNumber);
             } while (readinessStatus.status.Equals("IN_PROCESSING"));
 
-            if (readinessStatus.status.Equals("APPROVED"))
-                return readinessStatus;
-
-            throw new InvalidDataException($"Readiness status equals {readinessStatus.status}");
+            return readinessStatus;
         }
-
 
         /// <summary>
         /// Returns true if request has been denied
@@ -109,13 +107,11 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="requestNumber">Number of request</param>
         /// <returns></returns>
         [Obsolete("IsDenied is deprecated, there is no any scenarios where it could be used")]
-        protected bool IsDenied(string requestNumber)
+        protected async Task<bool> IsDeniedAsync(string requestNumber)
         {
-            var response = CamelliaClient.HttpClient
+            var response = await CamelliaClient.HttpClient
                 .GetStringAsync(
-                    $"https://egov.kz/services/P30.03/rest/like/{requestNumber}/{CamelliaClient.UserInformation.uin}")
-                .GetAwaiter()
-                .GetResult();
+                    $"https://egov.kz/services/P30.03/rest/like/{requestNumber}/{CamelliaClient.User.user_iin}");
             return response.Contains("DENIED");
         }
 
@@ -125,7 +121,7 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="signedToken"></param>
         /// <param name="solvedCaptcha"></param>
         /// <returns>RequestNumber</returns>
-        protected RequestNumber SendPdfRequest(string signedToken, string solvedCaptcha = null)
+        protected async Task<RequestNumber> SendPdfRequestAsync(string signedToken, string solvedCaptcha = null)
         {
             // If request needs captcha adds captchaCode
             var requestUri = solvedCaptcha == null
@@ -149,10 +145,11 @@ namespace CamelliaManagementSystem.Requests
 
             request.Content =
                 new StringContent(jsonXmlToken, Encoding.UTF8, "application/json");
-            var response = CamelliaClient.HttpClient
-                .SendAsync(request).GetAwaiter().GetResult()
-                .Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            var requestNumber = JsonSerializer.Deserialize<RequestNumber>(response);
+            var response = await CamelliaClient.HttpClient
+                .SendAsync(request);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var requestNumber = JsonSerializer.Deserialize<RequestNumber>(responseContent);
 
             return requestNumber;
         }
@@ -163,7 +160,7 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="biin">Biin of reference that should be taken</param>
         /// <param name="stringDate">Date in string format if needed</param>
         /// <returns>XmlToken</returns>
-        protected string GetToken(string biin, string stringDate = null)
+        protected async Task<string> GetTokenAsync(string biin, string stringDate = null)
         {
             using var request = new HttpRequestMessage(new HttpMethod("POST"),
                 $"{RequestLink()}/rest/app/xml");
@@ -177,7 +174,7 @@ namespace CamelliaManagementSystem.Requests
             request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
             request.Headers.Add("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
 
-            var jsonDeclarant = string.Empty;
+            string jsonDeclarant;
 
             // Generates declarant based on known values
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -186,27 +183,29 @@ namespace CamelliaManagementSystem.Requests
                 case BiinType.BIN:
                     if (stringDate != null)
                         jsonDeclarant = JsonSerializer.Serialize(new BinDateDeclarant(biin, stringDate,
-                            CamelliaClient.UserInformation.uin));
+                            CamelliaClient.User.user_iin));
                     else
                         jsonDeclarant =
-                            JsonSerializer.Serialize(new BinDeclarant(biin, CamelliaClient.UserInformation.uin));
+                            JsonSerializer.Serialize(new BinDeclarant(biin, CamelliaClient.User.user_iin));
                     break;
                 case BiinType.IIN:
                     if (stringDate != null)
                         jsonDeclarant = JsonSerializer.Serialize(new IinDateDeclarant(biin, stringDate,
-                            CamelliaClient.UserInformation.uin));
+                            CamelliaClient.User.user_iin));
                     else
                         jsonDeclarant =
-                            JsonSerializer.Serialize(new IinDeclarant(biin, CamelliaClient.UserInformation.uin));
+                            JsonSerializer.Serialize(new IinDeclarant(biin, CamelliaClient.User.user_iin));
                     break;
                 default:
-                    throw new Exception("Unknown BiinType");
+                    throw new CamelliaRequestException("Unknown BiinType");
             }
 
             request.Content = new StringContent(jsonDeclarant, Encoding.UTF8, "application/json");
-            var response = CamelliaClient.HttpClient.SendAsync(request).GetAwaiter().GetResult();
 
-            return response.Content.ReadAsStringAsync().Result;
+            var response = await CamelliaClient.HttpClient.SendAsync(request);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            return responseContent;
         }
     }
 

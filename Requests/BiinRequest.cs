@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
-using CamelliaManagementSystem.JsonObjects.ResponseObjects;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using CamelliaManagementSystem.SignManage;
+using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 // ReSharper disable CognitiveComplexity
 // ReSharper disable StringLiteralTypo
@@ -15,7 +15,7 @@ namespace CamelliaManagementSystem.Requests
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 16:35:25
     /// <summary>
-    /// Request with biin and captcha
+    /// Request with biin
     /// </summary>
     public abstract class BiinRequest : CamelliaRequest
     {
@@ -31,9 +31,11 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="delay">Delay between requests while waiting reference</param>
         /// <param name="timeout">Timeout while waiting reference</param>
         /// <returns>List of results for downloadings (References links)</returns>
-        /// <exception cref="InvalidDataException"></exception>
+        /// <exception cref="CamelliaNoneDataException">If some information dowsn't exist in camellia system</exception>
+        /// <exception cref="CamelliaRequestException">If some error occured</exception>
         // ReSharper disable once MemberCanBeProtected.Global
-        public IEnumerable<ResultForDownload> GetReference(string biin, int delay = 1000, int timeout = 60000)
+        public async Task<IEnumerable<ResultForDownload>> GetReferenceAsync(string biin, int delay = 1000,
+            int timeout = 60000)
         {
             // Transforms to the suitable form
             biin = biin.PadLeft(12, '0');
@@ -42,18 +44,18 @@ namespace CamelliaManagementSystem.Requests
             switch (TypeOfBiin())
             {
                 case BiinType.BIN:
-                    if (biin.Length == 12 && !AdditionalRequests.IsBinRegistered(CamelliaClient, biin))
-                        throw new InvalidDataException("This bin is not registered");
+                    if (biin.Length == 12 && !await AdditionalRequests.IsBinRegisteredAsync(CamelliaClient, biin))
+                        throw new CamelliaNoneDataException("This bin is not registered");
                     break;
                 case BiinType.IIN:
-                    if (biin.Length == 12 && !AdditionalRequests.IsIinRegistered(CamelliaClient, biin))
-                        throw new InvalidDataException("This iin is not registered");
+                    if (biin.Length == 12 && !await AdditionalRequests.IsIinRegisteredAsync(CamelliaClient, biin))
+                        throw new CamelliaNoneDataException("This iin is not registered");
                     break;
-                default: throw new Exception("Unknown BiinType");
+                default: throw new CamelliaRequestException("Unknown BiinType");
             }
 
             // Getting token
-            var token = GetToken(biin);
+            var token = await GetTokenAsync(biin);
             try
             {
                 token = JsonSerializer.Deserialize<Token>(token).xml;
@@ -61,20 +63,20 @@ namespace CamelliaManagementSystem.Requests
             catch (Exception)
             {
                 if (token.Contains("<h1>405 Not Allowed</h1>"))
-                    throw new InvalidDataException("Not allowed or some problem with egov occured");
+                    throw new CamelliaRequestException("Not allowed or some problem with egov occured");
                 throw;
             }
 
-            var signedToken = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.rsaSign);
-            // var signedToken1 = SignXmlTokens.SignToken(token, CamelliaClient.FullSign.rsaSign, "localhost:6000");
+            // Signing token
+            var signedToken = await SignXmlTokens.SignTokenAsync(token, CamelliaClient.Sign.rsa, CamelliaClient.Sign.password);
 
             // Sending request and getting reference
-            var requestNumber = SendPdfRequest(signedToken);
-            var readinessStatus = WaitResult(requestNumber.requestNumber, delay, timeout);
+            var requestNumber = await SendPdfRequestAsync(signedToken);
+            var readinessStatus = await WaitResultAsync(requestNumber.requestNumber, delay, timeout);
             if (readinessStatus.status.Equals("APPROVED"))
                 return readinessStatus.resultsForDownload;
 
-            throw new InvalidDataException($"Readiness status equals {readinessStatus.status}");
+            throw new CamelliaNoneDataException($"Readiness status equals {readinessStatus.status}");
         }
     }
 }

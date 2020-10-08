@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Camellia_Management_System;
 using Camellia_Management_System.Requests;
 using CamelliaManagementSystem.FileManage;
@@ -20,9 +21,9 @@ namespace CamelliaManagementSystem.Requests.References
         {
         }
         
-        public IEnumerable<ActivitiesDatePdfParse.DateActivity> GetActivitiesDates(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
+        public async Task<IEnumerable<ActivitiesDatePdfParse.DateActivity>> GetActivitiesDatesAsync(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
         {
-            var reference = GetReference(bin, delay, timeout);
+            var reference = await GetReferenceAsync(bin, delay, timeout);
 
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)

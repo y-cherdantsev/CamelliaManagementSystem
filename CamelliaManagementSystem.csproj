@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-	<PackageVersion>1.2.1.22-alpha-sync</PackageVersion>
-	<Version>1.2.1.22-alpha-sync</Version>
+	<PackageVersion>2.0.0-alpha</PackageVersion>
+	<Version>2.0.0-alpha</Version>
     <RootNamespace>CamelliaManagementSystem</RootNamespace>
     <PackageTags>camellia management wisk zhekacher</PackageTags>
     <Company>Wisk Telecom Solutions</Company>
@@ -35,6 +35,7 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.0.0-alpha-822" />
     <PackageReference Include="InteropKalkanCryptCOMLib" Version="1.0.1" />
-    <PackageReference Include="RestSharp" Version="106.11.4" />
+    <PackageReference Include="NCANode" Version="1.0.1" />
+    <PackageReference Include="RestSharp" Version="106.11.7" />
   </ItemGroup>
 </Project>

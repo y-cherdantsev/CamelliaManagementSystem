@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using AngleSharp;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 using CamelliaManagementSystem.SignManage;
 
+#pragma warning disable 618
+
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
 
@@ -30,7 +33,7 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Information about user
         /// </summary>
-        public UserInformation UserInformation;
+        public User User;
 
         /// <summary>
         /// Container of cookies
@@ -47,12 +50,7 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Sign of a client
         /// </summary>
-        public readonly FullSign FullSign;
-
-        /// <summary>
-        /// Name of the folder with sign
-        /// </summary>
-        public string folderName => new FileInfo(FullSign.authSign.filePath).Directory?.Name;
+        public readonly Sign Sign;
 
 
         /// @author Yevgeniy Cherdantsev
@@ -60,12 +58,12 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Constructor for creating Camellia client with(out) proxy
         /// </summary>
-        /// <param name="fullSign">AUTH and RSA signs of the user</param>
+        /// <param name="sign">AUTH and RSA signs of the user</param>
         /// <param name="webProxy">Proxy</param>
         /// <param name="httpClientTimeout">Timeout of http client connected to the camellia system; Standard: 15000</param>
-        public CamelliaClient(FullSign fullSign, IWebProxy webProxy = null, int httpClientTimeout = 15000)
+        public CamelliaClient(Sign sign, IWebProxy webProxy = null, int httpClientTimeout = 15000)
         {
-            FullSign = fullSign;
+            Sign = sign;
             Proxy = webProxy;
 
             //If proxy equals null creates object without proxy and vice versa
@@ -74,6 +72,9 @@ namespace CamelliaManagementSystem
                 : new HttpClientHandler();
 
             handler.AllowAutoRedirect = true;
+            handler.ServerCertificateCustomValidationCallback =
+                (creation, of, insecure, connection) => true;
+
             CookieContainer = handler.CookieContainer;
             HttpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMilliseconds(httpClientTimeout)};
         }
@@ -83,25 +84,25 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Connects to the camellia system using handler
         /// </summary>
-        public void Login()
+        public async Task LoginAsync()
         {
-            //Addresses with necessary cookies for authorization
-            string[] cookieAddresses =
+            // Getting cookies from addresses with necessary cookies for authorization
+            var urls = new[]
             {
                 "https://www.egov.kz",
                 "https://idp.egov.kz/idp/login?lvl=2&url=https://egov.kz/cms/callback/auth/cms/"
             };
 
-            //Getting cookies
-            foreach (var url in cookieAddresses)
-            {
-                HttpClient.GetStringAsync(url).GetAwaiter().GetResult();
-            }
+            foreach (var url in urls)
+                await HttpClient.GetStringAsync(url);
 
             //Runs authorization script
-            Authorize();
+            await AuthorizeAsync();
 
-            UserInformation = GetUserInformation();
+            User = await GetUserAsync();
+
+            if (User.user_iin == null)
+                throw new CamelliaClientException($"Sign: '{Sign.iin}' hasn't been loaded");
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -110,16 +111,15 @@ namespace CamelliaManagementSystem
         /// Request of the connection token
         /// </summary>
         /// <returns>string - Connection token</returns>
-        private string GetToken()
+        private async Task<string> GetTokenAsync()
         {
             const string tokenUrl = "https://idp.egov.kz/idp/sign-in";
 
-            var response = HttpClient.GetStringAsync(tokenUrl).GetAwaiter().GetResult();
+            var response = await HttpClient.GetStringAsync(tokenUrl);
 
             // Generates document for AngleSharp
             // ReSharper disable once AccessToModifiedClosure
-            var angleDocument = new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response))
-                .GetAwaiter().GetResult();
+            var angleDocument = await new BrowsingContext(Configuration.Default).OpenAsync(x => x.Content(response));
 
             // Gets 'value' attribute of the page for authorization
             response = angleDocument.All.First(m => m.GetAttribute("id") == "xmlToSign").GetAttribute("value");
@@ -127,22 +127,17 @@ namespace CamelliaManagementSystem
             return response;
         }
 
-
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:15:18
         /// <summary>
         /// Authorization to the system using sign
         /// </summary>
-        private void Authorize()
+        private async Task AuthorizeAsync()
         {
-            //Check if provided sign exists
-            if (!new FileInfo(FullSign.authSign.filePath).Exists)
-                throw new FileNotFoundException($"Can't find '{FullSign.authSign.filePath}'");
+            var token = await GetTokenAsync();
 
-            var token = GetToken();
             //Signing token from authorization page
-            // var signedToken1 = SignXmlTokens.SignToken(token, FullSign.authSign, "192.168.1.105:6000");
-            var signedToken = SignXmlTokens.SignToken(token, FullSign.authSign);
+            var signedToken = await SignXmlTokens.SignTokenAsync(token, Sign.auth, Sign.password);
 
             var values = new Dictionary<string, string>
             {
@@ -153,7 +148,7 @@ namespace CamelliaManagementSystem
             var content = new FormUrlEncodedContent(values);
 
             // Posting signed token to the camellia system
-            HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content).GetAwaiter().GetResult();
+            await HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content);
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -161,21 +156,12 @@ namespace CamelliaManagementSystem
         /// Get the information about connection of the client to the system
         /// </summary>
         /// <returns>true if the user logged in</returns>
-        public bool IsLogged()
+        public async Task<bool> IsLoggedAsync()
         {
-            //TODO(Rethink function, it shouldn't depend on errors. If error won't tide to logging information, it could be lost)
-            //Trying to get information about user, if error occured it's likely that client not logged in
-            try
-            {
-                GetUserInformation(1);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            //Trying to get information about user, if iin equals null it's likely that client not logged in
+            var user = await GetUserAsync();
+            return user.user_iin != null;
         }
-
 
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:17:42
@@ -185,13 +171,13 @@ namespace CamelliaManagementSystem
         /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
         /// <param name="delay">Time in millis between requests</param>
         /// <returns>UserInformation - Information about authorized user</returns>
-        private UserInformation GetUserInformation(int numberOfTries = 3, int delay = 1500)
+        [Obsolete("GetUserInformationAsync is deprecated, there is no any scenarios where it could be used")]
+        private async Task<UserInformation> GetUserInformationAsync(int numberOfTries = 3, int delay = 1500)
         {
             var response = new HttpResponseMessage();
             for (var i = 0; i < numberOfTries; i++)
             {
-                response = HttpClient.GetAsync("https://egov.kz/services/P30.11/rest/current-user").GetAwaiter()
-                    .GetResult();
+                response = await HttpClient.GetAsync("https://egov.kz/services/P30.11/rest/current-user");
                 // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
                 switch (response.StatusCode)
                 {
@@ -199,17 +185,17 @@ namespace CamelliaManagementSystem
                         Thread.Sleep(delay);
                         continue;
                     case HttpStatusCode.OK:
-                        var result = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                        var result = await response.Content.ReadAsStringAsync();
                         var userInformation = JsonSerializer.Deserialize<UserInformation>(result);
                         return userInformation;
                     default:
                         throw new HttpRequestException(
-                            $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
+                            $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is '{response.Content}';");
                 }
             }
 
             throw new HttpRequestException(
-                $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
+                $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is '{response.Content}';");
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -219,23 +205,23 @@ namespace CamelliaManagementSystem
         /// </summary>
         /// <returns>string - Information about user</returns>
         [Obsolete("GetUser is deprecated, there is no any scenarios where it could be used")]
-        private string GetUser()
+        private async Task<User> GetUserAsync()
         {
-            var res = HttpClient.GetStringAsync("https://egov.kz/cms/auth/user.json").GetAwaiter().GetResult();
-            return res;
+            var result = await HttpClient.GetStringAsync("https://egov.kz/cms/auth/user.json");
+            var user = JsonSerializer.Deserialize<User>(result);
+            return user;
         }
-
 
         /// @author Yevgeniy Cherdantsev
         /// @date 07.03.2020 15:50:14
         /// <summary>
         /// Logging out of camellia system
         /// </summary>
-        public void Logout()
+        public async Task LogoutAsync()
         {
             // HttpClient can be already disposed, don't know the reason
-            HttpClient?.GetAsync("https://egov.kz/cms/ru/auth/logout").GetAwaiter().GetResult();
-            UserInformation = null;
+            await HttpClient.GetAsync("https://egov.kz/cms/ru/auth/logout");
+            User = null;
             CookieContainer = null;
         }
 
@@ -245,10 +231,34 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Disposing
         /// </summary>
-        public void Dispose()
+        public async void Dispose()
         {
+            await LogoutAsync();
             HttpClient.Dispose();
-            FullSign.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Custom CamelliaClient exception
+    /// </summary>
+    [Serializable]
+    public class CamelliaClientException : Exception
+    {
+        /// <inheritdoc />
+        public CamelliaClientException()
+        {
+        }
+
+        /// <inheritdoc />
+        public CamelliaClientException(string message)
+            : base(message)
+        {
+        }
+
+        /// <inheritdoc />
+        public CamelliaClientException(string message, Exception innerException)
+            : base(message, innerException)
+        {
         }
     }
 }

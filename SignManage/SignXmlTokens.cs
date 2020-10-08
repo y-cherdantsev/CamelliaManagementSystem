@@ -1,11 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using CamelliaManagementSystem.JsonObjects.ResponseObjects;
-using RestSharp;
+using System.Threading.Tasks;
+using NCANode.Models.NCANode.Requests;
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
@@ -19,102 +14,64 @@ namespace CamelliaManagementSystem.SignManage
     /// </summary>
     public static class SignXmlTokens
     {
-        // [DllImport("KalkanCryptCOM.dll")] 
-        // private static extern KalkanCryptCOM KalkanCryptCOMLib();
-
-        /// @author Yevgeniy Cherdantsev
-        /// @date 18.02.2020 10:35:42
-        /// <summary>
-        /// Signing of the xml token
-        /// </summary>
-        /// <param name="inData">XML text</param>
-        /// <param name="sign">Sign</param>
-        /// <returns>string - signed token</returns>
-        public static string SignToken(string inData, Sign sign)
-        {
-            /*
-             * Error status for electronic digital signature
-             * 0 - ok
-             * any numers greater then 0 is error
-             */
-
-            // Here calling COM and initialazing it
-            var kalkanCom = new KalkanCryptCOMLib.KalkanCryptCOM();
-            kalkanCom.Init();
-
-            var alias = string.Empty;
-
-            // Loading hey with handling exception
-            kalkanCom.LoadKeyStore((int) KalkanCryptCOMLib.KALKANCRYPTCOM_STORETYPE.KCST_PKCS12, sign.password,
-                sign.filePath,
-                alias);
-            var edsError = kalkanCom.GetLastError();
-
-            if (edsError > 0)
-                throw new KalkanCryptException($"Some error occured while loading the key storage '{sign.filePath}'");
-
-            var signNodeId = string.Empty;
-            var parentSignNode = string.Empty;
-            var parentNameSpace = string.Empty;
-
-            // Signing XML
-            kalkanCom.SignXML(alias, 0, signNodeId, parentSignNode, parentNameSpace,
-                inData,
-                out var outSign);
-            kalkanCom.GetLastErrorString(out var error, out edsError);
-
-            if (edsError > 0)
-                throw new KalkanCryptException(
-                    $"Some error occured while signing the token:${error}\n\nPossible reasons:\n1.Shortage of bin length (Should be 12);\n");
-
-            var result = outSign.Replace("\n", "\r\n");
-            return result;
-        }
-
-
         /// @author Yevgeniy Cherdantsev
         /// @date 10.09.2020 14:39:17
         /// <summary>
-        /// Signing of the xml token via API
+        /// Signing of the xml token via NCANode API
         /// </summary>
         /// <param name="inData">XML text</param>
-        /// <param name="sign">Sign</param>
+        /// <param name="base64Sign">Base64 representation of sign file</param>
+        /// <param name="password">Password</param>
+        /// <param name="host">API host</param>
+        /// <param name="port">API port</param>
         /// <returns>string - signed token</returns>
-        public static string SignToken(string inData, Sign sign, string apiAddress)
+        public static async Task<string> SignTokenAsync(string inData, string base64Sign, string password,
+            string host = "192.168.1.105",
+            int port = 6000)
         {
-            var restClient = new RestClient($"http://{apiAddress}");
-            var request = new RestSharp.RestRequest($"signXML", Method.POST);
-            request.AlwaysMultipartFormData = true;
-            request.AddHeader("Content-Type", "multipart/form-data");
+            var ncaNode = new NCANode.NCANode(host, port);
+            var xmlSignRequest = new XMLSignRequest
+            {
+                useTsaPotspHashAlgorithm = TspHashAlgorithm.SHA256,
+                @params = new XMLSignRequest.XMLSignRequestParams
+                {
+                    p12 = base64Sign,
+                    password = password,
+                    xml = inData
+                }
+            };
+            try
+            {
+                var signedXml = await ncaNode.SignXMLAsync(xmlSignRequest);
+                if (signedXml.status != 0) throw new XmlSignException(signedXml.message);
 
-            request.AddQueryParameter("password", sign.password);
-            request.AddQueryParameter("xmlToken", inData);
-
-            request.AddFile("signatureFile", sign.filePath);
-            var restResponse = restClient.Execute(request);
-            var signedXML = JsonSerializer.Deserialize<ESignatureApiResponse>(restResponse.Content).signedXML.Replace("\n", "\r\n");;
-            return signedXML;
+                return signedXml.result.xml;
+            }
+            catch (Exception e)
+            {
+                throw new XmlSignException("Error occured while signing XML", e);
+            }
         }
 
         /// <summary>
-        /// Custom KalkanCryptCOMLib exception
+        /// Custom XMLSign exception
         /// </summary>
         [Serializable]
-        public class KalkanCryptException : Exception
+        public class XmlSignException : Exception
         {
             /// <inheritdoc />
-            public KalkanCryptException()
+            public XmlSignException()
             {
             }
 
             /// <inheritdoc />
-            public KalkanCryptException(string message)
+            public XmlSignException(string message)
                 : base(message)
             {
             }
 
             /// <inheritdoc />
-            public KalkanCryptException(string message, Exception innerException)
+            public XmlSignException(string message, Exception innerException)
                 : base(message, innerException)
             {
             }

@@ -5,12 +5,13 @@
 #pragma warning disable 1591
 namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
 {
-    //TODO(IMPLEMENT LEFT FIELDS)
+
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:20:02
     /// <summary>
     /// UserInformation json objects
     /// </summary>
+    /// todo(IMPLEMENT LEFT FIELDS)
     public class UserInformation
     {
         public string uin { get; set; }

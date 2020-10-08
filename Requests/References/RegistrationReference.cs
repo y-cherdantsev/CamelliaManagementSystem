@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using CamelliaManagementSystem;
+using System.Threading.Tasks;
 using CamelliaManagementSystem.FileManage;
-using CamelliaManagementSystem.Requests;
 
 //TODO(REFACTOR)
-namespace Camellia_Management_System.Requests.References
+namespace CamelliaManagementSystem.Requests.References
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 16:49:47
@@ -23,7 +21,6 @@ namespace Camellia_Management_System.Requests.References
 
         /// @author Yevgeniy Cherdantsev
         /// @date 11.03.2020 15:42:39
-        /// @version 1.0
         /// <summary>
         /// Parsing of registration reference and getting of founders from it
         /// </summary>
@@ -32,9 +29,9 @@ namespace Camellia_Management_System.Requests.References
         /// <param name="deleteFile">If the file should be deleted after parsing</param>
         /// <param name="timeout">Timeout</param>
         /// <returns>IEnumerable - list of founders</returns>
-        public IEnumerable<string> GetFounders(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
+        public async Task<IEnumerable<string>> GetFoundersAsync(string bin, int delay = 1000, bool deleteFile = true, int timeout = 20000)
         {
-            var reference = GetReference(bin, delay, timeout);
+            var reference = await GetReferenceAsync(bin, delay, timeout);
 
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)

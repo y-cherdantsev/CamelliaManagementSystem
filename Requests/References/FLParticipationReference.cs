@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CamelliaManagementSystem.FileManage;
 
 //TODO(REFACTOR)
@@ -21,10 +22,10 @@ namespace CamelliaManagementSystem.Requests.References
             return BiinType.IIN;
         }
         
-        public IEnumerable<string> GetWherePersonIsHead(string iin, string captchaApiKey, int delay = 1000,
+        public async Task<IEnumerable<string>> GetWherePersonIsHeadAsync(string iin, string captchaApiKey, int delay = 1000,
             bool deleteFile = true, int timeout = 60000)
         {
-            var reference = GetReference(iin, captchaApiKey, delay, timeout);
+            var reference = await GetReferenceAsync(iin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
                 return new PdfParser(temp.SaveFile("./", CamelliaClient.HttpClient), deleteFile).GetWherePersonIsHead();

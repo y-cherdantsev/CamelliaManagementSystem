@@ -15,9 +15,9 @@ using CamelliaManagementSystem.FileManage;
 using CamelliaManagementSystem.JsonObjects;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 using CamelliaManagementSystem.Requests.References;
-using CamelliaManagementSystem.SignManage;
 
-//TODO(REFACTOR)
+// ReSharper disable CommentTypo
+
 namespace CamelliaManagementSystem.Requests
 {
     /// @author Yevgeniy Cherdantsev
@@ -39,7 +39,8 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
         /// <param name="delay">Time in millis between requests</param>
         /// <returns>bool - true if company registered</returns>
-        public static bool IsBinRegistered(CamelliaClient camelliaClient, string bin,
+        // ReSharper disable once CognitiveComplexity
+        public static async Task<bool> IsBinRegisteredAsync(CamelliaClient camelliaClient, string bin,
             int numberOfTries = 15, int delay = 500)
         {
             //Padding BIN to 12 symbols
@@ -51,15 +52,15 @@ namespace CamelliaManagementSystem.Requests
 
             for (var i = 0; i < numberOfTries; i++)
             {
-                var response = camelliaClient.HttpClient
-                    .GetAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}").Result;
+                var response = await camelliaClient.HttpClient
+                    .GetAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}");
 
                 // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
                 if (response.StatusCode == HttpStatusCode.Redirect)
                 {
-                    if (camelliaClient.IsLogged() != true)
+                    if (camelliaClient.IsLoggedAsync().Result != true)
                         throw new AuthenticationException(
-                            $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
+                            $"'{camelliaClient.Sign.iin}' isn't authorized to the camellia system");
 
                     Thread.Sleep(delay);
                     continue;
@@ -105,7 +106,7 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
         /// <param name="delay">Time in millis between requests</param>
         /// <returns>bool - true if person registered</returns>
-        public static bool IsIinRegistered(CamelliaClient camelliaClient, string iin,
+        public static async Task<bool> IsIinRegisteredAsync(CamelliaClient camelliaClient, string iin,
             int numberOfTries = 15, int delay = 500)
         {
             //Padding IIN to 12 symbols
@@ -119,17 +120,17 @@ namespace CamelliaManagementSystem.Requests
             */
             for (var i = 0; i < numberOfTries; i++)
             {
-                var response = camelliaClient.HttpClient.GetAsync(
-                    $"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short").Result;
+                var response = await camelliaClient.HttpClient.GetAsync(
+                    $"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short");
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
                         return false;
 
                     // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
-                    case HttpStatusCode.Redirect when camelliaClient.IsLogged() != true:
+                    case HttpStatusCode.Redirect when await camelliaClient.IsLoggedAsync() != true:
                         throw new AuthenticationException(
-                            $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
+                            $"'{camelliaClient.Sign.iin}' isn't authorized to the camellia system");
                     case HttpStatusCode.Redirect:
                         Thread.Sleep(delay);
                         continue;
@@ -166,9 +167,9 @@ namespace CamelliaManagementSystem.Requests
                 // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
                 if (response.StatusCode == HttpStatusCode.Redirect)
                 {
-                    if (camelliaClient.IsLogged() != true)
+                    if (camelliaClient.IsLoggedAsync().Result != true)
                         throw new AuthenticationException(
-                            $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
+                            $"'{camelliaClient.Sign.iin}' isn't authorized to the camellia system");
 
                     Thread.Sleep(delay);
                     continue;
@@ -198,40 +199,6 @@ namespace CamelliaManagementSystem.Requests
             throw new Exception($"{numberOfTries} tries with delay={delay} exceeded");
         }
 
-        /// <summary>
-        /// Checks if the biin equals to the biin from sign
-        /// </summary>
-        /// <param name="sign">Sign</param>
-        /// <param name="biin">BIIN</param>
-        /// <param name="webProxy">Proxy if needed</param>
-        /// <returns></returns>
-        /// <exception cref="FileNotFoundException">If the sign hasn't been found</exception>
-        /// <exception cref="InvalidDataException">If the password is incorrect</exception>
-        /// <exception cref="ExternalException">If service unavailable</exception>
-        public static async Task<bool> IsSignCorrect(Sign sign, string biin, IWebProxy webProxy = null)
-        {
-            //Padding BIIN to 12 symbols
-            biin = biin.PadLeft(12, '0');
-
-            //TODO (enum)
-            try
-            {
-                if (!new FileInfo(sign.filePath).Exists)
-                    throw new FileNotFoundException();
-                var camelliaClient = new CamelliaClient(new FullSign(sign, null), webProxy);
-                camelliaClient.Login();
-                return camelliaClient.UserInformation.uin.PadLeft(12, '0') == biin;
-            }
-            catch (SignXmlTokens.KalkanCryptException e)
-            {
-                throw new InvalidDataException("Incorrect password", e);
-            }
-            catch (Exception)
-            {
-                throw new ExternalException("Service unavailable");
-            }
-        }
-
         public static PersonStatus GetPersonStatus(CamelliaClient camelliaClient, string iin,
             int numberOfTries = 15, int delay = 500)
         {
@@ -245,9 +212,9 @@ namespace CamelliaManagementSystem.Requests
                 // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
                 if (response.StatusCode == HttpStatusCode.Redirect)
                 {
-                    if (camelliaClient.IsLogged() != true)
+                    if (camelliaClient.IsLoggedAsync().Result != true)
                         throw new AuthenticationException(
-                            $"'{camelliaClient.folderName}' isn't authorized to the camellia system");
+                            $"'{camelliaClient.Sign.iin}' isn't authorized to the camellia system");
 
                     Thread.Sleep(delay);
                     continue;
@@ -289,14 +256,14 @@ namespace CamelliaManagementSystem.Requests
         /// <returns></returns>
         /// <exception cref="InvalidDataException">If camellia system doesn't contain such information</exception>
         /// <exception cref="ExternalException">If service unavaliable</exception>
-        public static List<CompanyChange> GetCompanyChanges(CamelliaClient client, string bin,
+        public static async Task<List<CompanyChange>> GetCompanyChanges(CamelliaClient client, string bin,
             string captchaToken, DateTime? fromDate = null,
             int delay = 1000, bool deleteFiles = true, int timeout = 20000)
         {
             var changes = new List<CompanyChange>();
             var registrationActivitiesReference = new RegistrationActivitiesReference(client);
             var activitiesDates =
-                registrationActivitiesReference.GetActivitiesDates(bin, delay: delay, timeout: timeout)
+             (   await registrationActivitiesReference.GetActivitiesDatesAsync(bin, delay: delay, timeout: timeout))
                     .OrderBy(x => x.date).ToList();
 
             // if (fromDate != null)
@@ -334,9 +301,9 @@ namespace CamelliaManagementSystem.Requests
                 {
                     try
                     {
-                        tempDateReferences = tempDateRef.GetReference(bin, activitiesDate.date,
+                        tempDateReferences = (await tempDateRef.GetReferenceAsync(bin, activitiesDate.date,
                             captchaToken,
-                            delay: delay, timeout: timeout).ToList();
+                            delay: delay, timeout: timeout)).ToList();
                         break;
                     }
                     catch (Exception e)

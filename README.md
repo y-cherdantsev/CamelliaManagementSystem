@@ -9,6 +9,7 @@
 * InteropKalkanCryptCOMLib 1.0.1
 * RestSharp 106.10.1
 * AngleSharp 1.0.0-alpha-822
+* NCANode 1.0.1
 
 ## Authors
 

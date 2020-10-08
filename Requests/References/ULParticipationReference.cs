@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using CamelliaManagementSystem;
 using CamelliaManagementSystem.FileManage;
 using CamelliaManagementSystem.Requests;
@@ -23,10 +24,10 @@ namespace Camellia_Management_System.Requests.References
         {
         }
 
-        public IEnumerable<string> GetChildCompanies(string bin, string captchaApiKey, int delay = 1000,
+        public async Task<IEnumerable<string>> GetChildCompaniesAsync(string bin, string captchaApiKey, int delay = 1000,
             bool deleteFile = true, int timeout = 60000)
         {
-            var reference = GetReference(bin, captchaApiKey, delay, timeout);
+            var reference = await GetReferenceAsync(bin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
             if (temp != null)
                 return new PdfParser(temp.SaveFile( "./",CamelliaClient.HttpClient), deleteFile).GetChildCompanies();

@@ -2,46 +2,53 @@
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using Camellia_Management_System.Requests;
+using System.Threading.Tasks;
 using CamelliaManagementSystem.JsonObjects.RequestObjects;
 
-//TODO(REFACTOR)
+// ReSharper disable CommentTypo
+
 namespace CamelliaManagementSystem.Requests
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 11:25:15
-    /// @version 1.0
     /// <summary>
-    /// INPUT
+    /// Request that requires captcha
     /// </summary>
-    /// <code>
-    /// 
-    /// </code>
     public abstract class CamelliaCaptchaRequest : CamelliaRequest
     {
+        /// <inheritdoc />
         protected CamelliaCaptchaRequest(CamelliaClient camelliaClient) : base(camelliaClient)
         {
         }
 
-        protected void DownloadCaptcha(string captchaLink, string path)
+        /// <summary>
+        /// Download captcha locally from camellia system
+        /// </summary>
+        /// <param name="captchaLink">Get link for captcha</param>
+        /// <param name="path">Local path</param>
+        protected async Task DownloadCaptchaAsync(string captchaLink, string path)
         {
-            var response = CamelliaClient.HttpClient.GetAsync(captchaLink).GetAwaiter().GetResult();
+            var response = await CamelliaClient.HttpClient.GetAsync(captchaLink);
 
-            var filePath = path;
-
-            var inputStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
-            using (var outputFileStream = new FileStream(filePath, FileMode.Create))
+            var inputStream = await response.Content.ReadAsStreamAsync();
+            await using (var outputFileStream = new FileStream(path, FileMode.Create))
             {
-                inputStream.CopyTo(outputFileStream);
-                outputFileStream.Flush();
+                await inputStream.CopyToAsync(outputFileStream);
+                await outputFileStream.FlushAsync();
                 outputFileStream.Close();
             }
-            inputStream.Flush();
+
+            await inputStream.FlushAsync();
             inputStream.Close();
-            inputStream.Dispose();
+            await inputStream.DisposeAsync();
         }
 
-        protected bool CheckCaptcha(string solvedCaptcha)
+        /// <summary>
+        /// Checks if captcha solved correctly
+        /// </summary>
+        /// <param name="solvedCaptcha">Captcha solution</param>
+        /// <returns>True if answer wat correct</returns>
+        protected async Task<bool> CheckCaptchaAsync(string solvedCaptcha)
         {
             using var request = new HttpRequestMessage(new HttpMethod("POST"),
                 $"{RequestLink()}rest/captcha/check-captcha");
@@ -59,10 +66,9 @@ namespace CamelliaManagementSystem.Requests
             request.Content =
                 new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = CamelliaClient.HttpClient.SendAsync(request).GetAwaiter().GetResult().Content
-                .ReadAsStringAsync()
-                .GetAwaiter().GetResult();
-            return response.Contains("\"rightCaptcha\":true");
+            var response = await CamelliaClient.HttpClient.SendAsync(request);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            return responseContent.Contains("\"rightCaptcha\":true");
         }
     }
 }
