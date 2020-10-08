@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using AngleSharp;
 using System.Net;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using AngleSharp;
-using CamelliaManagementSystem.JsonObjects.ResponseObjects;
+using System.Collections.Generic;
+using CamelliaManagementSystem.Requests;
 using CamelliaManagementSystem.SignManage;
+using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 #pragma warning disable 618
 
@@ -21,7 +22,7 @@ namespace CamelliaManagementSystem
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 15:13:36
     /// <summary>
-    /// Client for connecting to the service and using it
+    /// Client for connecting to the service and making requests
     /// </summary>
     public class CamelliaClient : IDisposable
     {
@@ -38,13 +39,11 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Container of cookies
         /// </summary>
-        // ReSharper disable once MemberCanBePrivate.Global
         public CookieContainer CookieContainer;
 
         /// <summary>
         /// Proxy if need
         /// </summary>
-        // ReSharper disable once MemberCanBePrivate.Global
         internal readonly IWebProxy Proxy;
 
         /// <summary>
@@ -66,7 +65,7 @@ namespace CamelliaManagementSystem
             Sign = sign;
             Proxy = webProxy;
 
-            //If proxy equals null creates object without proxy and vice versa
+            //If proxy equals null creates handler without proxy and vice versa
             var handler = Proxy != null
                 ? new HttpClientHandler {UseProxy = true, Proxy = Proxy}
                 : new HttpClientHandler();
@@ -136,7 +135,7 @@ namespace CamelliaManagementSystem
         {
             var token = await GetTokenAsync();
 
-            //Signing token from authorization page
+            //Signing token for authorization
             var signedToken = await SignXmlTokens.SignTokenAsync(token, Sign.auth, Sign.password);
 
             var values = new Dictionary<string, string>
@@ -189,21 +188,21 @@ namespace CamelliaManagementSystem
                         var userInformation = JsonSerializer.Deserialize<UserInformation>(result);
                         return userInformation;
                     default:
-                        throw new HttpRequestException(
+                        throw new CamelliaRequestException(
                             $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is '{response.Content}';");
                 }
             }
 
-            throw new HttpRequestException(
+            throw new CamelliaRequestException(
                 $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is '{response.Content}';");
         }
 
         /// @author Yevgeniy Cherdantsev
         /// @date 29.06.2020 15:43:22
         /// <summary>
-        /// Loading string user data from camellia system
+        /// Loading user data from camellia system
         /// </summary>
-        /// <returns>string - Information about user</returns>
+        /// <returns>User object - Information about user</returns>
         [Obsolete("GetUser is deprecated, there is no any scenarios where it could be used")]
         private async Task<User> GetUserAsync()
         {
@@ -219,7 +218,6 @@ namespace CamelliaManagementSystem
         /// </summary>
         public async Task LogoutAsync()
         {
-            // HttpClient can be already disposed, don't know the reason
             await HttpClient.GetAsync("https://egov.kz/cms/ru/auth/logout");
             User = null;
             CookieContainer = null;
@@ -235,30 +233,6 @@ namespace CamelliaManagementSystem
         {
             await LogoutAsync();
             HttpClient.Dispose();
-        }
-    }
-
-    /// <summary>
-    /// Custom CamelliaClient exception
-    /// </summary>
-    [Serializable]
-    public class CamelliaClientException : Exception
-    {
-        /// <inheritdoc />
-        public CamelliaClientException()
-        {
-        }
-
-        /// <inheritdoc />
-        public CamelliaClientException(string message)
-            : base(message)
-        {
-        }
-
-        /// <inheritdoc />
-        public CamelliaClientException(string message, Exception innerException)
-            : base(message, innerException)
-        {
         }
     }
 }
