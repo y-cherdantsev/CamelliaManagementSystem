@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Net.Http;
 using System.Text;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -86,13 +86,13 @@ namespace CamelliaManagementSystem.Requests
             delay = delay < 1000 ? 1000 : delay;
 
             // Counts number of requests that will be proceeded
-            var wait = timeout / delay;
+            var leftRequests = timeout / delay;
 
             ReadinessStatus readinessStatus;
 
             do
             {
-                if (wait-- <= 0)
+                if (leftRequests-- <= 0)
                     throw new CamelliaRequestException($"Timeout '{timeout}' exceeded");
                 Thread.Sleep(delay);
                 readinessStatus = await GetReadinessStatusAsync(requestNumber);
@@ -107,6 +107,7 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="requestNumber">Number of request</param>
         /// <returns></returns>
         [Obsolete("IsDenied is deprecated, there is no any scenarios where it could be used")]
+        // ReSharper disable once UnusedMember.Global
         protected async Task<bool> IsDeniedAsync(string requestNumber)
         {
             var response = await CamelliaClient.HttpClient
