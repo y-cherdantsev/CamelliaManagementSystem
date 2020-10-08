@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Threading;
-using System.Web;
 using RestSharp;
+using System.IO;
+using System.Web;
+using System.Threading;
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
@@ -11,7 +11,6 @@ namespace CamelliaManagementSystem.Requests
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 11:05:15
-    /// @version 1.0
     /// <summary>
     /// Service which solves captchas
     /// </summary>
