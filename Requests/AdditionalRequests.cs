@@ -301,9 +301,9 @@ namespace CamelliaManagementSystem.Requests
                 {
                     try
                     {
-                        tempDateReferences = (await tempDateRef.GetReferenceAsync(bin, activitiesDate.date,
-                            captchaToken,
-                            delay: delay, timeout: timeout)).ToList();
+                        tempDateReferences = (await tempDateRef.GetReferenceAsync(bin, 
+                            captchaToken, activitiesDate.date,
+                            delay, timeout)).ToList();
                         break;
                     }
                     catch (Exception e)

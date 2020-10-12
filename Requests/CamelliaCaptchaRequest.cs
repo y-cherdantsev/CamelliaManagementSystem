@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Net.Http;
 using System.Text.Json;
@@ -27,7 +28,7 @@ namespace CamelliaManagementSystem.Requests
         /// </summary>
         /// <param name="captchaLink">Get link for captcha</param>
         /// <param name="path">Local path</param>
-        protected async Task DownloadCaptchaAsync(string captchaLink, string path)
+        private async Task DownloadCaptchaAsync(string captchaLink, string path)
         {
             var response = await CamelliaClient.HttpClient.GetAsync(captchaLink);
 
@@ -49,7 +50,7 @@ namespace CamelliaManagementSystem.Requests
         /// </summary>
         /// <param name="solvedCaptcha">Captcha solution</param>
         /// <returns>True if answer wat correct</returns>
-        protected async Task<bool> CheckCaptchaAsync(string solvedCaptcha)
+        private async Task<bool> CheckCaptchaAsync(string solvedCaptcha)
         {
             using var request = new HttpRequestMessage(new HttpMethod("POST"),
                 $"{RequestLink()}rest/captcha/check-captcha");
@@ -70,6 +71,46 @@ namespace CamelliaManagementSystem.Requests
             var response = await CamelliaClient.HttpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
             return responseContent.Contains("\"rightCaptcha\":true");
+        }
+
+        /// <summary>
+        /// Requests and activates captcha
+        /// </summary>
+        /// <param name="captchaApiKey">API Key for solving captchas</param>
+        /// <param name="numOfCaptchaTries">Number of attempts while solving captchas</param>
+        /// <returns>Solved captcha</returns>
+        /// <exception cref="CamelliaCaptchaSolverException">If some error occured while solving captcha</exception>
+        protected async Task<string> PerformCaptcha(string captchaApiKey, int numOfCaptchaTries)
+        {
+            //Get captcha
+            var captcha = $"{RequestLink()}captcha?" +
+                          (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+            var tempDirectoryPath = Path.GetTempPath();
+            var filePath = Path.Combine(tempDirectoryPath, $"temp_captcha_{DateTime.Now.Ticks}.jpeg");
+
+            // Solve captcha
+            var solvedCaptcha = "";
+            for (var i = 0; i <= numOfCaptchaTries; i++)
+            {
+                if (i == numOfCaptchaTries)
+                    throw new CamelliaCaptchaSolverException($"Wrong captcha {i} times");
+                await DownloadCaptchaAsync(captcha, filePath);
+                solvedCaptcha = CaptchaSolver.SolveCaptcha(filePath, captchaApiKey);
+                if (string.IsNullOrEmpty(solvedCaptcha))
+                    continue;
+
+                try
+                {
+                    if (await CheckCaptchaAsync(solvedCaptcha))
+                        break;
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
+
+            return solvedCaptcha;
         }
     }
 }

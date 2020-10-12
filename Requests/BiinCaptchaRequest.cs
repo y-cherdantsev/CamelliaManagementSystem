@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using CamelliaManagementSystem.JsonObjects.ResponseObjects;
+using System.Collections.Generic;
 using CamelliaManagementSystem.SignManage;
+using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
@@ -16,7 +16,7 @@ namespace CamelliaManagementSystem.Requests
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 11:04:36
     /// <summary>
-    /// Request with BIIN and captcha
+    /// Request with BIIN and captcha (Can be used with date)
     /// </summary>
     public abstract class BiinCaptchaRequest : CamelliaCaptchaRequest
     {
@@ -30,6 +30,7 @@ namespace CamelliaManagementSystem.Requests
         /// </summary>
         /// <param name="input">Given BIIN or another input</param>
         /// <param name="captchaApiKey">API Key for captcha solving</param>
+        /// <param name="date">If request needs date</param>
         /// <param name="delay">Delay between requests while waiting result</param>
         /// <param name="timeout">Timeout while waiting result</param>
         /// <param name="numOfCaptchaTries">Number of attempts while trying to solve captcha</param>
@@ -38,7 +39,9 @@ namespace CamelliaManagementSystem.Requests
         /// <exception cref="CamelliaRequestException">If some error with camellia system occured</exception>
         /// <exception cref="CamelliaUnknownException">Unknown status or whatever</exception>
         // ReSharper disable once CognitiveComplexity
-        public async Task<IEnumerable<ResultForDownload>> GetReferenceAsync(string input, string captchaApiKey, int delay = 1000,
+        public async Task<IEnumerable<ResultForDownload>> GetReferenceAsync(string input, string captchaApiKey,
+            DateTime? date = null,
+            int delay = 1000,
             int timeout = 60000, int numOfCaptchaTries = 5)
         {
             input = input.PadLeft(12, '0');
@@ -53,36 +56,10 @@ namespace CamelliaManagementSystem.Requests
                     throw new CamelliaNoneDataException("This Iin is not registered");
             }
 
-            var captcha = $"{RequestLink()}captcha?" +
-                          (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-            var tempDirectoryPath = Environment.GetEnvironmentVariable("TEMP");
-            var filePath = $"{tempDirectoryPath}\\temp_captcha_{DateTime.Now.Ticks}.jpeg";
-            var solvedCaptcha = "";
-            for (var i = 0; i <= numOfCaptchaTries; i++)
-            {
-                if (i == numOfCaptchaTries)
-                    throw new CamelliaCaptchaSolverException($"Wrong captcha {i} times");
-                await DownloadCaptchaAsync(captcha, filePath);
-                solvedCaptcha = CaptchaSolver.SolveCaptcha(filePath, captchaApiKey);
-                if (string.IsNullOrEmpty(solvedCaptcha))
-                    continue;
+            var solvedCaptcha = await PerformCaptcha(captchaApiKey, numOfCaptchaTries);
 
-                for (var j = 0; j < 3; j++)
-                {
+            var token = date == null ? await GetTokenAsync(input) : await GetTokenAsync(input, date.Value);
 
-                    try
-                    {
-                        if (await CheckCaptchaAsync(solvedCaptcha))
-                            goto gotoFlag;
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-            }
-            gotoFlag:
-            var token = await GetTokenAsync(input);
-            
             try
             {
                 token = JsonSerializer.Deserialize<Token>(token).xml;
@@ -90,13 +67,14 @@ namespace CamelliaManagementSystem.Requests
             catch (Exception)
             {
                 if (token.Contains("<h1>405 Not Allowed</h1>"))
-                    throw new InvalidDataException("Not allowed or some problem with egov occured");
+                    throw new CamelliaRequestException("Not allowed or some problem with egov occured");
                 throw;
             }
 
-            var signedToken =  SignXmlTokens.SignTokenAsync(token, CamelliaClient.Sign.rsa, CamelliaClient.Sign.password).Result;
+            var signedToken = SignXmlTokens.SignTokenAsync(token, CamelliaClient.Sign.rsa, CamelliaClient.Sign.password)
+                .Result;
             var requestNumber = await SendPdfRequestAsync(signedToken, solvedCaptcha);
-            var readinessStatus =await WaitResultAsync(requestNumber.requestNumber, delay, timeout);
+            var readinessStatus = await WaitResultAsync(requestNumber.requestNumber, delay, timeout);
 
             if (readinessStatus.status.Equals("APPROVED"))
                 return readinessStatus.resultsForDownload;
