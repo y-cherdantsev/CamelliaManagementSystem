@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using NCANode.Models.NCANode.Requests;
 
-// ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
 
 namespace CamelliaManagementSystem.SignManage
 {

@@ -1,11 +1,12 @@
 ﻿using System.IO;
-using System.Net.Http;
 using System.Text;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CamelliaManagementSystem.JsonObjects.RequestObjects;
 
 // ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
 
 namespace CamelliaManagementSystem.Requests
 {

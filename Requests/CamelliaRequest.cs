@@ -9,10 +9,10 @@ using CamelliaManagementSystem.JsonObjects;
 using CamelliaManagementSystem.JsonObjects.RequestObjects;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
-// ReSharper disable StringLiteralTypo
-// ReSharper disable InconsistentNaming
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable InconsistentNaming
 // ReSharper disable PublicConstructorInAbstractClass
 
 #pragma warning disable 1591

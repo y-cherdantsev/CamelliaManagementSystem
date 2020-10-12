@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text;
+using System.Security.Cryptography;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable CommentTypo
 // ReSharper disable NotResolvedInText
 // ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable CommentTypo
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace CamelliaManagementSystem.SignManage
 {

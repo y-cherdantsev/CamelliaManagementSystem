@@ -5,17 +5,17 @@ using System.Collections.Generic;
 using CamelliaManagementSystem.SignManage;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
-// ReSharper disable CognitiveComplexity
-// ReSharper disable StringLiteralTypo
-// ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable CognitiveComplexity
 
 namespace CamelliaManagementSystem.Requests
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 16:35:25
     /// <summary>
-    /// Request with biin
+    /// Request with BIIN
     /// </summary>
     public abstract class BiinRequest : CamelliaRequest
     {

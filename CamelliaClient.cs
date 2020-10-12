@@ -13,9 +13,9 @@ using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 #pragma warning disable 618
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace CamelliaManagementSystem
 {

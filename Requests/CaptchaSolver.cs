@@ -4,8 +4,8 @@ using System.IO;
 using System.Web;
 using System.Threading;
 
-// ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
 
 namespace CamelliaManagementSystem.Requests
 {
