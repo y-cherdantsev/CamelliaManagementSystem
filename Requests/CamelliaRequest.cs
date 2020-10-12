@@ -159,9 +159,8 @@ namespace CamelliaManagementSystem.Requests
         /// Gets token for sending reference request
         /// </summary>
         /// <param name="biin">Biin of reference that should be taken</param>
-        /// <param name="stringDate">Date in string format if needed</param>
         /// <returns>XmlToken</returns>
-        protected async Task<string> GetTokenAsync(string biin, string stringDate = null)
+        protected async Task<string> GetTokenAsync(string biin)
         {
             using var request = new HttpRequestMessage(new HttpMethod("POST"),
                 $"{RequestLink()}/rest/app/xml");
@@ -175,31 +174,14 @@ namespace CamelliaManagementSystem.Requests
             request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
             request.Headers.Add("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
 
-            string jsonDeclarant;
-
             // Generates declarant based on known values
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-            switch (TypeOfBiin())
+            var jsonDeclarant = TypeOfBiin() switch
             {
-                case BiinType.BIN:
-                    if (stringDate != null)
-                        jsonDeclarant = JsonSerializer.Serialize(new BinDateDeclarant(biin, stringDate,
-                            CamelliaClient.User.user_iin));
-                    else
-                        jsonDeclarant =
-                            JsonSerializer.Serialize(new BinDeclarant(biin, CamelliaClient.User.user_iin));
-                    break;
-                case BiinType.IIN:
-                    if (stringDate != null)
-                        jsonDeclarant = JsonSerializer.Serialize(new IinDateDeclarant(biin, stringDate,
-                            CamelliaClient.User.user_iin));
-                    else
-                        jsonDeclarant =
-                            JsonSerializer.Serialize(new IinDeclarant(biin, CamelliaClient.User.user_iin));
-                    break;
-                default:
-                    throw new CamelliaRequestException("Unknown BiinType");
-            }
+                BiinType.BIN => JsonSerializer.Serialize(new BinDeclarant(biin, CamelliaClient.User.user_iin)),
+                BiinType.IIN => JsonSerializer.Serialize(new IinDeclarant(biin, CamelliaClient.User.user_iin)),
+                _ => throw new CamelliaRequestException("Unknown BiinType")
+            };
 
             request.Content = new StringContent(jsonDeclarant, Encoding.UTF8, "application/json");
 
@@ -208,14 +190,51 @@ namespace CamelliaManagementSystem.Requests
 
             return responseContent;
         }
-    }
 
-    /// <summary>
-    /// Types of biin (BIN and IIN)
-    /// </summary>
-    public enum BiinType
-    {
-        BIN,
-        IIN
+
+        /// <summary>
+        /// Gets token for signing
+        /// </summary>
+        /// <param name="biin">User biin</param>
+        /// <param name="date">Date for request</param>
+        /// <returns>Token</returns>
+        protected async Task<string> GetTokenAsync(string biin, DateTime date)
+        {
+            var stringDate = $"{date.Year}-{date.Month}-{date.Day}T18:00:00.000Z";
+            using var request = new HttpRequestMessage(new HttpMethod("POST"),
+                $"{RequestLink()}/rest/app/xml");
+            request.Headers.Add("Connection", "keep-alive");
+            request.Headers.Add("Cache-Control", "max-age=0");
+            request.Headers.Add("Origin", "https://idp.egov.kz");
+            request.Headers.Add("User-Agent", "Mozilla5.0 Windows NT 10.0");
+            request.Headers.Add("Sec-Fetch-Site", "same-origin");
+            request.Headers.Add("Sec-Fetch-Mode", "navigate");
+            request.Headers.Add("Referer", "https://idp.egov.kz/idp/sign-in");
+            request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
+            request.Headers.Add("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
+
+            var json = TypeOfBiin() switch
+            {
+                BiinType.BIN => JsonSerializer.Serialize(new BinDateDeclarant(biin, CamelliaClient.User.user_iin,
+                    stringDate)),
+                BiinType.IIN => JsonSerializer.Serialize(new IinDateDeclarant(biin, CamelliaClient.User.user_iin,
+                    stringDate)),
+                _ => throw new CamelliaRequestException("Unknown BiinType")
+            };
+
+            request.Content =
+                new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await CamelliaClient.HttpClient.SendAsync(request);
+            return await response.Content.ReadAsStringAsync();
+        }
     }
+}
+
+/// <summary>
+/// Types of biin (BIN and IIN)
+/// </summary>
+public enum BiinType
+{
+    BIN,
+    IIN
 }
