@@ -1,7 +1,11 @@
 ﻿using System;
 
+// ReSharper disable CommentTypo
+
 namespace CamelliaManagementSystem.Requests
 {
+    /// @author Yevgeniy Cherdantsev
+    /// @date 13.10.2020 10:42:01
     /// <summary>
     /// Custom CamelliaRequest exception
     /// </summary>
@@ -26,6 +30,8 @@ namespace CamelliaManagementSystem.Requests
         }
     }
 
+    /// @author Yevgeniy Cherdantsev
+    /// @date 13.10.2020 10:42:01
     /// <summary>
     /// Custom CamelliaRequest exception
     /// </summary>
@@ -50,6 +56,8 @@ namespace CamelliaManagementSystem.Requests
         }
     }
 
+    /// @author Yevgeniy Cherdantsev
+    /// @date 13.10.2020 10:42:01
     /// <summary>
     /// Custom CamelliaUnknown exception
     /// </summary>
@@ -74,6 +82,8 @@ namespace CamelliaManagementSystem.Requests
         }
     }
 
+    /// @author Yevgeniy Cherdantsev
+    /// @date 13.10.2020 10:42:01
     /// <summary>
     /// Custom CaptchaSolve exception
     /// </summary>
@@ -98,6 +108,8 @@ namespace CamelliaManagementSystem.Requests
         }
     }
 
+    /// @author Yevgeniy Cherdantsev
+    /// @date 13.10.2020 10:42:01
     /// <summary>
     /// Custom CamelliaClient exception
     /// </summary>

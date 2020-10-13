@@ -53,8 +53,6 @@ namespace CamelliaManagementSystem
         public readonly Sign Sign;
 
 
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:14:34
         /// <summary>
         /// Constructor for creating Camellia client with(out) proxy
         /// </summary>
@@ -79,8 +77,6 @@ namespace CamelliaManagementSystem
             HttpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMilliseconds(httpClientTimeout)};
         }
 
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:15:18
         /// <summary>
         /// Connects to the camellia system using handler
         /// </summary>
@@ -105,8 +101,6 @@ namespace CamelliaManagementSystem
                 throw new CamelliaClientException($"Sign: '{Sign.iin}' hasn't been loaded");
         }
 
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:15:18
         /// <summary>
         /// Request of the connection token
         /// </summary>
@@ -127,8 +121,6 @@ namespace CamelliaManagementSystem
             return response;
         }
 
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:15:18
         /// <summary>
         /// Authorization to the system using sign
         /// </summary>
@@ -151,7 +143,6 @@ namespace CamelliaManagementSystem
             await HttpClient.PostAsync("https://idp.egov.kz/idp/eds-login.do", content);
         }
 
-        /// @author Yevgeniy Cherdantsev
         /// <summary>
         /// Get the information about connection of the client to the system
         /// </summary>
@@ -163,8 +154,6 @@ namespace CamelliaManagementSystem
             return user.user_iin != null;
         }
 
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:17:42
         /// <summary>
         /// Loading user information from camellia system
         /// </summary>
@@ -199,8 +188,6 @@ namespace CamelliaManagementSystem
                 $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is '{response.Content}';");
         }
 
-        /// @author Yevgeniy Cherdantsev
-        /// @date 29.06.2020 15:43:22
         /// <summary>
         /// Loading user data from camellia system
         /// </summary>
@@ -213,8 +200,6 @@ namespace CamelliaManagementSystem
             return user;
         }
 
-        /// @author Yevgeniy Cherdantsev
-        /// @date 07.03.2020 15:50:14
         /// <summary>
         /// Logging out of camellia system
         /// </summary>
@@ -226,8 +211,6 @@ namespace CamelliaManagementSystem
         }
 
 
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:19:28
         /// <summary>
         /// Disposing
         /// </summary>
