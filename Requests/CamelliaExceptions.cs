@@ -81,6 +81,32 @@ namespace CamelliaManagementSystem.Requests
         {
         }
     }
+    
+    /// @author Yevgeniy Cherdantsev
+    /// @date 13.10.2020 14:57:01
+    /// <summary>
+    /// Custom CamelliaFile exception
+    /// </summary>
+    [Serializable]
+    public class CamelliaFileException : Exception
+    {
+        /// <inheritdoc />
+        public CamelliaFileException()
+        {
+        }
+
+        /// <inheritdoc />
+        public CamelliaFileException(string message)
+            : base(message)
+        {
+        }
+
+        /// <inheritdoc />
+        public CamelliaFileException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
 
     /// @author Yevgeniy Cherdantsev
     /// @date 13.10.2020 10:42:01
