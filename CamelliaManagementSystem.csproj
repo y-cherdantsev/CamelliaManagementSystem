@@ -4,7 +4,7 @@
 	<PackageVersion>2.0.0-alpha</PackageVersion>
 	<Version>2.0.0-alpha</Version>
     <RootNamespace>CamelliaManagementSystem</RootNamespace>
-    <PackageTags>camellia management wisk zhekacher</PackageTags>
+    <PackageTags>camellia management wisk alldata zhekacher</PackageTags>
     <Company>Wisk Telecom Solutions</Company>
     <Authors>Yevgeniy Cherdantsev</Authors>
     <PackageId>CamelliaManagementSystem</PackageId>
@@ -21,7 +21,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\zheka\RiderProjects\CamelliaManagementSystem\CamelliaManagementSystem\CamelliaManagementSystem.xml</DocumentationFile>
+    <DocumentationFile>C:\Users\zheka\RiderProjects\CamelliaManagementSystem\CamelliaManagementSystem.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>C:\Users\zheka\RiderProjects\CamelliaManagementSystem\CamelliaManagementSystem\CamelliaManagementSystem.xml</DocumentationFile>

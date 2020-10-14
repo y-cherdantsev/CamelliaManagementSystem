@@ -120,6 +120,7 @@ namespace CamelliaManagementSystem
                 }
             }
 
+            Console.WriteLine($"Loaded client: '{client.User.full_name}'");
             _camelliaClients.Add(client);
         }
 
@@ -133,7 +134,7 @@ namespace CamelliaManagementSystem
             lock (_lock)
             {
                 // ReSharper disable once EmptyEmbeddedStatement
-                for (var i = 0; i < 120 && _camelliaClients.Count < 5; ++i) Thread.Sleep(500);
+                for (var i = 0; i < 120 && _camelliaClients.Count < 3; ++i) Thread.Sleep(500);
 
                 if (_camelliaClients.Count < 1)
                     LoadClientsAsync().GetAwaiter().GetResult();
@@ -151,6 +152,15 @@ namespace CamelliaManagementSystem
                     throw new CamelliaClientProviderException("There is no available loaded clients");
                 }
             }
+        }
+
+        /// <summary>
+        /// Releases client back to client provider
+        /// </summary>
+        /// <param name="client">CamelliaClient</param>
+        public void ReleaseClient(CamelliaClient client)
+        {
+            _camelliaClients.Add(client);
         }
     }
 }
