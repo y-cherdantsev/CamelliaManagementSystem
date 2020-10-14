@@ -84,6 +84,12 @@ namespace CamelliaManagementSystem.FileManage
                         var founder = founders.Last();
                         founders.Remove(founders.Last());
                         founders.Add(founder + " " + element);
+                    }else if (element.ToLower().Trim().StartsWith("\""))
+                    {
+                        flag = true;
+                        var founder = founders.Last();
+                        founders.Remove(founders.Last());
+                        founders.Add(founder + " " + element);
                     }
                     else
                     {
