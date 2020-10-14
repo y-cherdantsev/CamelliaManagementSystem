@@ -137,7 +137,10 @@ namespace CamelliaManagementSystem
                 for (var i = 0; i < 120 && _camelliaClients.Count < 3; ++i) Thread.Sleep(500);
 
                 if (_camelliaClients.Count < 3)
+                {
+                    _camelliaClients.Clear();
                     LoadClientsAsync().GetAwaiter().GetResult();
+                }
 
                 lock (_camelliaClients)
                 {
