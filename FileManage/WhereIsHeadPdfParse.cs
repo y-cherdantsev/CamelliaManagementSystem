@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 
-//TODO(REFACTOR)
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable StringIndexOfIsCultureSpecific.1
+
 namespace CamelliaManagementSystem.FileManage
 {
     /// @author Yevgeniy Cherdantsev
