@@ -1,9 +1,9 @@
 ﻿using System;
 
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable IdentifierTypo
-// ReSharper disable CommentTypo
 
 namespace CamelliaManagementSystem.JsonObjects.RequestObjects
 {

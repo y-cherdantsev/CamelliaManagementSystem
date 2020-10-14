@@ -1,9 +1,9 @@
 ﻿using System;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 #pragma warning disable 1591
 namespace CamelliaManagementSystem.JsonObjects.RequestObjects

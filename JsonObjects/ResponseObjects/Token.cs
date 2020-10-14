@@ -1,8 +1,9 @@
 ﻿using System;
 
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable CommentTypo
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable ClassNeverInstantiated.Global
 
 #pragma warning disable 1591
 namespace CamelliaManagementSystem.JsonObjects.ResponseObjects

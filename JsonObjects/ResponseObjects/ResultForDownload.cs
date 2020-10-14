@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 // ReSharper disable CommentTypo
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable MemberCanBePrivate.Global
 
 #pragma warning disable 1591
 
@@ -49,8 +50,7 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
         /// <param name="fileName">Name of the file</param>
         /// <returns>Path of the file that has been saved</returns>
         /// ReSharper disable once CognitiveComplexity
-        /// \todo(Make the method return FileInfo)
-        public string SaveFile(string path, HttpClient client, string fileName = null)
+        public async Task<string> SaveFileAsync(string path, HttpClient client, string fileName = null)
         {
             // Generating name of a file using known values
             fileName = fileName == null
@@ -58,33 +58,45 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
                 : fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
 
 
-            var fullName = $"{new DirectoryInfo(path).FullName}\\{fileName}.pdf";
+            var fullName = Path.Combine(path, $"{fileName}.pdf");
 
             for (var i = 0; i < 10; ++i)
             {
-                if (new FileInfo(fullName).Exists && new FileInfo(fullName).Length >= 10000) break;
+                if (new FileInfo(fullName).Exists)
+                    try
+                    {
+                        new FileInfo(fullName).Delete();
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
 
-                try
-                {
-                    new FileInfo(fullName).Delete();
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
-
-                using Stream contentStream =
-                        client.GetAsync(url).GetAwaiter().GetResult().Content.ReadAsStreamAsync().GetAwaiter()
-                            .GetResult(),
+                var result = await client.GetAsync(url);
+                await using Stream contentStream =
+                        await result.Content.ReadAsStreamAsync(),
                     stream = new FileStream(fullName, FileMode.Create, FileAccess.Write, FileShare.None,
                         4000000, true);
-                contentStream.CopyToAsync(stream).GetAwaiter().GetResult();
+                await contentStream.CopyToAsync(stream);
+
+                if (new FileInfo(fullName).Exists && new FileInfo(fullName).Length >= 10000) break;
             }
 
-            return new FileInfo($"{path}\\{fileName}.pdf").FullName;
+            return Path.Combine(path, $"{fileName}.pdf");
         }
-
-
+        
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            nameKk = null;
+            nameRu = null;
+            nameEn = null;
+            url = null;
+            language = null;
+            name = null;
+        }
+        
+        
         /// <summary>
         /// Enumerates different languages of the reference
         /// </summary>
@@ -104,17 +116,6 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
             /// Unknown language 
             /// </summary>
             Unknown
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            nameKk = null;
-            nameRu = null;
-            nameEn = null;
-            url = null;
-            language = null;
-            name = null;
         }
     }
 }

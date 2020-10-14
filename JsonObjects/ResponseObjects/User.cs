@@ -2,6 +2,7 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 #pragma warning disable 1591
 namespace CamelliaManagementSystem.JsonObjects.ResponseObjects

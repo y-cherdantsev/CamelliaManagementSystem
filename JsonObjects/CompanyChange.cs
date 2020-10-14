@@ -1,8 +1,8 @@
 ﻿using System;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable InconsistentNaming
 // ReSharper disable CommentTypo
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 #pragma warning disable 1591
 namespace CamelliaManagementSystem.JsonObjects

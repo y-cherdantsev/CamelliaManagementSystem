@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable IdentifierTypo
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable CommentTypo
-// ReSharper disable ClassNeverInstantiated.Global
 
 #pragma warning disable 1591
 namespace CamelliaManagementSystem.JsonObjects.ResponseObjects

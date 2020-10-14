@@ -1,8 +1,8 @@
 ﻿using System;
 
 // ReSharper disable CommentTypo
-// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 #pragma warning disable 1591

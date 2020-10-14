@@ -1,11 +1,11 @@
-﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+﻿// ReSharper disable CommentTypo
+// ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable CommentTypo
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 #pragma warning disable 1591
 namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
 {
-
     /// @author Yevgeniy Cherdantsev
     /// @date 18.02.2020 12:20:02
     /// <summary>

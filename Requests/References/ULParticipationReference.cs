@@ -1,47 +1,66 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using CamelliaManagementSystem;
+using System.Collections.Generic;
 using CamelliaManagementSystem.FileManage;
-using CamelliaManagementSystem.Requests;
 
-//TODO(REFACTOR)
-namespace Camellia_Management_System.Requests.References
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable UnusedType.Global
+// ReSharper disable UnusedMember.Global
+
+namespace CamelliaManagementSystem.Requests.References
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 11:03:28
-    /// @version 1.0
     /// <summary>
-    /// INPUT
+    /// UL participation reference with information about child companies
     /// </summary>
-    /// <code>
-    /// 
-    /// </code>
-    public sealed class ULParticipationReference : BiinCaptchaRequest
+    public sealed class UlParticipationReference : BiinCaptchaRequest
     {
-        public ULParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
+        /// <inheritdoc />
+        public UlParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {
         }
 
-        public async Task<IEnumerable<string>> GetChildCompaniesAsync(string bin, string captchaApiKey, int delay = 1000,
-            bool deleteFile = true, int timeout = 60000)
-        {
-            var reference = await GetReferenceAsync(bin, captchaApiKey, delay, timeout);
-            var temp = reference.First(x => x.language.Contains("ru"));
-            if (temp != null)
-                return new PdfParser(temp.SaveFile( "./",CamelliaClient.HttpClient), deleteFile).GetChildCompanies();
-            return null;
-        }
-
+        /// <inheritdoc />
         protected override string RequestLink()
         {
             return "https://egov.kz/services/P30.03/";
         }
 
+        /// <inheritdoc />
         protected override BiinType TypeOfBiin()
         {
             return BiinType.BIN;
+        }
+
+        /// <summary>
+        /// Parsing of ul participation reference and getting child companies
+        /// </summary>
+        /// <param name="bin">BIN of the company</param>
+        /// <param name="captchaApiKey">API key for solving captchas</param>
+        /// <param name="saveFolderPath">Defines where to save file</param>
+        /// <param name="delay">Delay of checking if the reference is in ms</param>
+        /// <param name="deleteFile">If the file should be deleted after parsing</param>
+        /// <param name="timeout">Timeout</param>
+        /// <returns>IEnumerable - list of companies where person is head</returns>
+        public async Task<IEnumerable<string>> GetChildCompaniesAsync(string bin, string captchaApiKey,
+            string saveFolderPath = null,
+            int delay = 1000,
+            bool deleteFile = true, int timeout = 60000)
+        {
+            saveFolderPath ??= Path.GetTempPath();
+
+            var reference = await GetReferenceAsync(bin, captchaApiKey, delay, timeout);
+            var temp = reference.First(x => x.language.Contains("ru"));
+
+            return temp != null
+                ? new PdfParser(
+                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                            $"{bin.TrimStart('0')}_ul_participation"), deleteFile)
+                    .GetChildCompanies()
+                : null;
         }
     }
 }

@@ -1,35 +1,66 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using CamelliaManagementSystem.FileManage;
 
-//TODO(REFACTOR)
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable UnusedType.Global
+// ReSharper disable UnusedMember.Global
+
 namespace CamelliaManagementSystem.Requests.References
 {
-    public sealed class FLParticipationReference : BiinCaptchaRequest
+    /// @author Yevgeniy Cherdantsev
+    /// @date 07.03.2020 16:49:47
+    /// <summary>
+    /// FL participation reference with information about participation of person in companies
+    /// </summary>
+    public sealed class FlParticipationReference : BiinCaptchaRequest
     {
-        public FLParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
+        /// <inheritdoc />
+        public FlParticipationReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {
         }
 
+        /// <inheritdoc />
         protected override string RequestLink()
         {
             return "https://egov.kz/services/P30.04/";
         }
 
+        /// <inheritdoc />
         protected override BiinType TypeOfBiin()
         {
             return BiinType.IIN;
         }
-        
-        public async Task<IEnumerable<string>> GetWherePersonIsHeadAsync(string iin, string captchaApiKey, int delay = 1000,
+
+        /// <summary>
+        /// Parsing of fl participation reference and getting companies in which defined person is head
+        /// </summary>
+        /// <param name="iin">IIN of the person</param>
+        /// <param name="captchaApiKey">API key for solving captchas</param>
+        /// <param name="saveFolderPath">Defines where to save file</param>
+        /// <param name="delay">Delay of checking if the reference is in ms</param>
+        /// <param name="deleteFile">If the file should be deleted after parsing</param>
+        /// <param name="timeout">Timeout</param>
+        /// <returns>IEnumerable - list of companies where person is head</returns>
+        public async Task<IEnumerable<string>> GetWherePersonIsHeadAsync(string iin, string captchaApiKey,
+            string saveFolderPath = null,
+            int delay = 1000,
             bool deleteFile = true, int timeout = 60000)
         {
+            saveFolderPath ??= Path.GetTempPath();
+
             var reference = await GetReferenceAsync(iin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
-            if (temp != null)
-                return new PdfParser(temp.SaveFile("./", CamelliaClient.HttpClient), deleteFile).GetWherePersonIsHead();
-            return null;
+            
+            return temp != null
+                ? new PdfParser(
+                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                            $"{iin.TrimStart('0')}_fl_participation"), deleteFile)
+                    .GetWherePersonIsHead()
+                : null;
         }
     }
 }

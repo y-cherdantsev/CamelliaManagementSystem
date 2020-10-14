@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using CamelliaManagementSystem.FileManage;
 using CamelliaManagementSystem.JsonObjects;
 using CamelliaManagementSystem.Requests.References;
-using Camellia_Management_System.Requests.References;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 // ReSharper disable CommentTypo

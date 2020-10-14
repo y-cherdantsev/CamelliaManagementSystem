@@ -15,12 +15,12 @@ namespace CamelliaManagementSystem.Requests
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 11:04:36
     /// <summary>
-    /// Request with BIIN and captcha
+    /// Request with BIIN, date and captcha
     /// </summary>
-    public abstract class BiinCaptchaRequest : CamelliaCaptchaRequest
+    public abstract class BiinDateCaptchaRequest : CamelliaCaptchaRequest
     {
         /// <inheritdoc />
-        public BiinCaptchaRequest(CamelliaClient camelliaClient) : base(camelliaClient)
+        public BiinDateCaptchaRequest(CamelliaClient camelliaClient) : base(camelliaClient)
         {
         }
 
@@ -29,6 +29,7 @@ namespace CamelliaManagementSystem.Requests
         /// </summary>
         /// <param name="input">Given BIIN or another input</param>
         /// <param name="captchaApiKey">API Key for captcha solving</param>
+        /// <param name="date">Date input</param>
         /// <param name="delay">Delay between requests while waiting result</param>
         /// <param name="timeout">Timeout while waiting result</param>
         /// <param name="numOfCaptchaTries">Number of attempts while trying to solve captcha</param>
@@ -38,6 +39,7 @@ namespace CamelliaManagementSystem.Requests
         /// <exception cref="CamelliaUnknownException">Unknown status or whatever</exception>
         // ReSharper disable once CognitiveComplexity
         public async Task<IEnumerable<ResultForDownload>> GetReferenceAsync(string input, string captchaApiKey,
+            DateTime date,
             int delay = 1000,
             int timeout = 60000, int numOfCaptchaTries = 5)
         {
@@ -55,7 +57,7 @@ namespace CamelliaManagementSystem.Requests
 
             var solvedCaptcha = await PerformCaptcha(captchaApiKey, numOfCaptchaTries);
 
-            var token = await GetTokenAsync(input);
+            var token = await GetTokenAsync(input, date);
 
             try
             {
@@ -64,6 +66,7 @@ namespace CamelliaManagementSystem.Requests
             catch (Exception)
             {
                 if (token.Contains("<h1>405 Not Allowed</h1>"))
+                    // ReSharper disable once StringLiteralTypo
                     throw new CamelliaRequestException("Not allowed or some problem with egov occured");
                 throw;
             }
