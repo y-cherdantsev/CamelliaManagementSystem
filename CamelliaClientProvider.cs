@@ -136,7 +136,7 @@ namespace CamelliaManagementSystem
                 // ReSharper disable once EmptyEmbeddedStatement
                 for (var i = 0; i < 120 && _camelliaClients.Count < 3; ++i) Thread.Sleep(500);
 
-                if (_camelliaClients.Count < 1)
+                if (_camelliaClients.Count < 3)
                     LoadClientsAsync().GetAwaiter().GetResult();
 
                 lock (_camelliaClients)
