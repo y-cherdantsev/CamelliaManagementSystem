@@ -1,13 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics;
+using System.Collections.Generic;
+using CamelliaManagementSystem.Requests;
 
-//TODO(REFACTOR)
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedMember.Global
+
 namespace CamelliaManagementSystem.FileManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 17:22:27
-    /// @version 1.0
     /// <summary>
     /// Class that parsing pdf and gets information from them in centralized objects
     /// </summary>
@@ -15,22 +19,24 @@ namespace CamelliaManagementSystem.FileManage
     {
         private readonly string _innerText;
 
-
-
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:38:28
-        /// @version 1.0
         /// <summary>
-        /// Construcvtor
+        /// Constructor
         /// </summary>
         /// <param name="path">Path to the file</param>
         /// <param name="deleteFile">If the object should delete file after parsing</param>
         public PdfParser(string path, bool deleteFile = true)
         {
             var file = new FileInfo(path);
+
+            if (!file.Exists)
+                throw new CamelliaFileException($"No file has been found; Full path:'{file.FullName}'");
+
             try
             {
                 _innerText = GetTextFromPdf(file);
+                _innerText = _innerText.Replace("<br/>", "<br>");
+                _innerText = _innerText.Replace("<hr/>", "<hr>");
+                _innerText = _innerText.Replace("&#160;", "");
             }
             catch (Exception)
             {
@@ -41,11 +47,6 @@ namespace CamelliaManagementSystem.FileManage
                 file.Delete();
         }
 
-
-
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:39:27
-        /// @version 1.0
         /// <summary>
         /// Gets text from pdf file (pdftohtml.exe util required)
         /// </summary>
@@ -53,8 +54,23 @@ namespace CamelliaManagementSystem.FileManage
         /// <returns>string - inner text</returns>
         private static string GetTextFromPdf(FileSystemInfo file)
         {
-            var command = $"pdftohtml.exe -i -noframes -nomerge -enc UTF-8 \"{file.FullName}\"";
-            System.Diagnostics.Process.Start("cmd.exe", "/C " + command)?.WaitForExit();
+            var system = Environment.OSVersion.Platform;
+            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+            switch (system)
+            {
+                case PlatformID.Win32NT:
+                {
+                    var command = $"pdftohtml.exe -i -noframes -nomerge -enc UTF-8 \"{file.FullName}\"";
+                    Process.Start("cmd.exe", "/C " + command)?.WaitForExit();
+                    break;
+                }
+                case PlatformID.Unix:
+                    Process.Start("/usr/bin/pdftohtml", $"-i -noframes -nomerge -enc UTF-8 \"{file.FullName}\"")
+                        ?.WaitForExit();
+                    break;
+                default:
+                    throw new Exception("This OS type not supported");
+            }
 
             var htmlFile = new FileInfo(file.FullName.Replace(file.Extension, ".html"));
             var text = File.ReadAllText(htmlFile.FullName);
@@ -71,7 +87,6 @@ namespace CamelliaManagementSystem.FileManage
         }
 
 
-
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:25:01
         /// @version 1.0
@@ -83,7 +98,7 @@ namespace CamelliaManagementSystem.FileManage
         {
             return FoundersPdfParse.GetFounders(_innerText);
         }
-        
+
         /// @author Yevgeniy Cherdantsev
         /// @version 1.0
         /// <summary>
@@ -94,7 +109,7 @@ namespace CamelliaManagementSystem.FileManage
         {
             return ChildCompaniesPdfParse.GetChildCompanies(_innerText);
         }
-        
+
         /// @author Yevgeniy Cherdantsev
         /// @version 1.0
         /// <summary>
@@ -104,8 +119,8 @@ namespace CamelliaManagementSystem.FileManage
         public IEnumerable<string> GetWherePersonIsHead()
         {
             return WhereIsHeadPdfParse.GetWhereIsHead(_innerText);
-        }   
-        
+        }
+
         /// <summary>
         /// Parsing of dates and changes
         /// </summary>
@@ -114,7 +129,7 @@ namespace CamelliaManagementSystem.FileManage
         {
             return ActivitiesDatePdfParse.GetDatesChanges(_innerText);
         }
-        
+
         /// <summary>
         /// Parsing of heads from registered date reference
         /// </summary>
@@ -123,8 +138,8 @@ namespace CamelliaManagementSystem.FileManage
         {
             return RegisteredDateParse.GetHead(_innerText);
         }
-        
-        
+
+
         /// <summary>
         /// Parsing of company names from registered date reference
         /// </summary>
@@ -133,7 +148,7 @@ namespace CamelliaManagementSystem.FileManage
         {
             return RegisteredDateParse.GetName(_innerText);
         }
-        
+
         /// <summary>
         /// Parsing of company address from registered date reference
         /// </summary>
@@ -142,7 +157,7 @@ namespace CamelliaManagementSystem.FileManage
         {
             return RegisteredDateParse.GetPlace(_innerText);
         }
-        
+
         /// <summary>
         /// Parse nimber of founders from registered date reference
         /// </summary>
@@ -151,7 +166,7 @@ namespace CamelliaManagementSystem.FileManage
         {
             return Convert.ToInt32(RegisteredDateParse.CountFounders(_innerText));
         }
-        
+
         /// <summary>
         /// Parsing occupation of the company from registered date reference
         /// </summary>
@@ -160,8 +175,5 @@ namespace CamelliaManagementSystem.FileManage
         {
             return RegisteredDateParse.GetOccupation(_innerText);
         }
-        
-        
-        
     }
 }
