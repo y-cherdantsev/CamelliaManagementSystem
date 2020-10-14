@@ -112,6 +112,7 @@ namespace CamelliaManagementSystem
                     await client.LoginAsync();
                     Console.WriteLine($"Loaded client: '{client.User.full_name}'");
                     _camelliaClients.Add(client);
+                    break;
                 }
                 catch (CamelliaClientException)
                 {
