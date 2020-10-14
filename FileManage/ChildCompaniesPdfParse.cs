@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CamelliaManagementSystem.Requests;
 
 //TODO(REFACTOR)
 namespace CamelliaManagementSystem.FileManage
@@ -17,7 +18,7 @@ namespace CamelliaManagementSystem.FileManage
         /// </summary>
         /// <param name="innerText">text of the reference</param>
         /// <returns>IEnumerable - list of child companies</returns>
-        /// <exception cref="InvalidDataException">If no information were found</exception>
+        /// <exception cref="CamelliaNoneDataException">If no information were found</exception>
         public static IEnumerable<string> GetChildCompanies(string innerText)
         {
             var childCompanies = new List<string>();
@@ -34,7 +35,7 @@ namespace CamelliaManagementSystem.FileManage
             childCompanies.RemoveAll(x => x.Contains("-"));
             childCompanies = childCompanies.Distinct().ToList();
             if (childCompanies.Count < 1)
-                throw new InvalidDataException("No information were found in the reference");
+                throw new CamelliaNoneDataException("No information were found in the reference");
 
             return childCompanies;
         }

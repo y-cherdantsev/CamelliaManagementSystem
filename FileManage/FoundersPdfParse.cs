@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CamelliaManagementSystem.Requests;
 
 //TODO(REFACTOR)
 namespace CamelliaManagementSystem.FileManage
@@ -18,7 +19,7 @@ namespace CamelliaManagementSystem.FileManage
         /// </summary>
         /// <param name="innerText">Text of a pdf file</param>
         /// <returns>IEnumerable - List of founders</returns>
-        /// /// <exception cref="InvalidDataException">If no information were found</exception>
+        /// /// <exception cref="CamelliaNoneDataException">If no information were found</exception>
         public static IEnumerable<string> GetFounders(string innerText)
         {
             var founders = new List<string>();
@@ -30,7 +31,7 @@ namespace CamelliaManagementSystem.FileManage
             var from = "<b>Учредители (участники):</b>";
             var to = "<b>";
             if(minimized.ToLower().IndexOf(from.ToLower())== -1)
-                throw new InvalidDataException("No information were found in the reference");
+                throw new CamelliaNoneDataException("No information were found in the reference");
             var fromPosition = minimized.ToLower().IndexOf(from.ToLower(), StringComparison.Ordinal);
             minimized = minimized.Substring(fromPosition + from.Length, minimized.Length - fromPosition - from.Length);
             minimized = minimized.Substring(0, minimized.ToLower().IndexOf(to, StringComparison.Ordinal)).Trim();
@@ -147,7 +148,7 @@ namespace CamelliaManagementSystem.FileManage
 
             var result = Normalize(founders);
             if (result == null)
-                throw new InvalidDataException("No information were found in the reference");
+                throw new CamelliaNoneDataException("No information were found in the reference");
             return result;
         }
 
