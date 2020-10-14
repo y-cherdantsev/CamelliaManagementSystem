@@ -81,7 +81,7 @@ namespace CamelliaManagementSystem.Requests
         {
         }
     }
-    
+
     /// @author Yevgeniy Cherdantsev
     /// @date 13.10.2020 14:57:01
     /// <summary>
@@ -155,6 +155,32 @@ namespace CamelliaManagementSystem.Requests
 
         /// <inheritdoc />
         public CamelliaClientException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
+
+    /// @author Yevgeniy Cherdantsev
+    /// @date 14.10.2020 13:19:09
+    /// <summary>
+    /// Custom CamelliaClientProvider exception
+    /// </summary>
+    [Serializable]
+    public class CamelliaClientProviderException : Exception
+    {
+        /// <inheritdoc />
+        public CamelliaClientProviderException()
+        {
+        }
+
+        /// <inheritdoc />
+        public CamelliaClientProviderException(string message)
+            : base(message)
+        {
+        }
+
+        /// <inheritdoc />
+        public CamelliaClientProviderException(string message, Exception innerException)
             : base(message, innerException)
         {
         }

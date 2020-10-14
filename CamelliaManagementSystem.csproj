@@ -34,7 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.0.0-alpha-822" />
-    <PackageReference Include="InteropKalkanCryptCOMLib" Version="1.0.1" />
     <PackageReference Include="NCANode" Version="1.0.1" />
     <PackageReference Include="RestSharp" Version="106.11.7" />
   </ItemGroup>
