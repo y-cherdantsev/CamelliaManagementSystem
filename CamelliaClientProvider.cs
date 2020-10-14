@@ -110,6 +110,8 @@ namespace CamelliaManagementSystem
                 try
                 {
                     await client.LoginAsync();
+                    Console.WriteLine($"Loaded client: '{client.User.full_name}'");
+                    _camelliaClients.Add(client);
                 }
                 catch (CamelliaClientException)
                 {
@@ -119,9 +121,6 @@ namespace CamelliaManagementSystem
                     Console.WriteLine(e.Message);
                 }
             }
-
-            Console.WriteLine($"Loaded client: '{client.User.full_name}'");
-            _camelliaClients.Add(client);
         }
 
         /// @author Yevgeniy Cherdantsev
