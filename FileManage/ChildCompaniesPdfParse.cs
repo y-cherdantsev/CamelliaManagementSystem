@@ -7,7 +7,6 @@ namespace CamelliaManagementSystem.FileManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 14:49:19
-    /// @version 1.0
     /// <summary>
     /// Gets bins of all child companies
     /// </summary>

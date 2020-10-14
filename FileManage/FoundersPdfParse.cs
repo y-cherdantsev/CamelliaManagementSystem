@@ -8,15 +8,11 @@ namespace CamelliaManagementSystem.FileManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 17:30:46
-    /// @version 1.0
     /// <summary>
     /// Parsing of registration reference and gettion of founders from it
     /// </summary>
     public class FoundersPdfParse : PdfParse
     {
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:31:22
-        /// @version 1.0
         /// <summary>
         /// Parsing text and gets founders from it
         /// </summary>
@@ -149,10 +145,6 @@ namespace CamelliaManagementSystem.FileManage
             return result;
         }
 
-
-        /// @author Yevgeniy Cherdantsev
-        /// @date 10.03.2020 10:33:42
-        /// @version 1.0
         /// <summary>
         /// Removing of unneccesary element and symbols in founders list
         /// </summary>

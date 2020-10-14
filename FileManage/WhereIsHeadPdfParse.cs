@@ -5,15 +5,12 @@ namespace CamelliaManagementSystem.FileManage
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.05.2020 14:49:19
-    /// @version 1.0
     /// <summary>
     /// Parse text and gets where the person is head
     /// </summary>
     public class WhereIsHeadPdfParse : PdfParse
     {
-        /// @author Yevgeniy Cherdantsev
-        /// @date 14.05.2020 16:48:22
-        /// @version 1.0
+        
         /// <summary>
         /// Parse text and gets where the person is head
         /// </summary>
@@ -32,7 +29,7 @@ namespace CamelliaManagementSystem.FileManage
             while (innerText.Contains("<b>БИН</b>"))
             {
                 innerText = innerText.Substring(innerText.IndexOf("<b>БИН</b>") + 12,
-                    innerText.Length - innerText.IndexOf("<b>БИН</b>\r\n") - 12);
+                    innerText.Length - innerText.IndexOf("<b>БИН</b>") - 12);
                 var checkText = innerText.Substring(0, innerText.IndexOf("<b>Местонахождение</b>"))
                     .Replace("<b>Первый руководитель</b>", string.Empty)
                     .Replace("\n", string.Empty)

@@ -38,7 +38,8 @@ namespace CamelliaManagementSystem.FileManage
                 result = result.Substring(0, result.IndexOf("КОМПАНИЯ"));
             while (result.IndexOf("  ") != -1)
                 result = result.Replace("  ", " ");
-            return result.Trim();
+            result = result.Trim();
+            return string.IsNullOrEmpty(result) ? null : result;
         }
 
         public static string GetName(string innerText)
@@ -49,7 +50,8 @@ namespace CamelliaManagementSystem.FileManage
             innerText = innerText.Substring(innerText.IndexOf("<b>Наименование:</b>") + 20,
                 innerText.Length - innerText.IndexOf("<b>Наименование:</b>") - 20);
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();
-            return result;
+            result = result.Trim();
+            return string.IsNullOrEmpty(result) ? null : result;
         }
 
         public static string GetPlace(string innerText)
@@ -64,7 +66,7 @@ namespace CamelliaManagementSystem.FileManage
             result = result.Replace("ақпараттық-анықтамалық қызметі\"", "");
             result = result.Replace("Касательно получения государственных услуг\"", "");
             result = result.Trim();
-            return result;
+            return string.IsNullOrEmpty(result) ? null : result;
         }
 
         public static string CountFounders(string innerText)
@@ -86,7 +88,8 @@ namespace CamelliaManagementSystem.FileManage
             innerText = innerText.Substring(innerText.IndexOf("<b>Виды деятельности:</b>") + 25,
                 innerText.Length - innerText.IndexOf("<b>Виды деятельности:</b>") - 25);
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();
-            return result;
+            result = result.Trim();
+            return string.IsNullOrEmpty(result) ? null : result;
         }
     }
 }
