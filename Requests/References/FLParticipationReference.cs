@@ -48,7 +48,7 @@ namespace CamelliaManagementSystem.Requests.References
         public async Task<IEnumerable<string>> GetWherePersonIsHeadAsync(string iin, string captchaApiKey,
             string saveFolderPath = null,
             int delay = 1000,
-            bool deleteFile = true, int timeout = 60000)
+            bool deleteFile = false, int timeout = 60000)
         {
             saveFolderPath ??= Path.GetTempPath();
 

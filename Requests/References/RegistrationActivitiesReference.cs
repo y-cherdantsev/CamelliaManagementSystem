@@ -45,7 +45,7 @@ namespace CamelliaManagementSystem.Requests.References
         /// <param name="timeout">Timeout</param>
         /// <returns>IEnumerable - list of founders</returns>
         public async Task<IEnumerable<ActivitiesDatePdfParse.DateActivity>> GetActivitiesDatesAsync(string bin,
-            string saveFolderPath = null, int delay = 1000, bool deleteFile = true, int timeout = 20000)
+            string saveFolderPath = null, int delay = 1000, bool deleteFile = false, int timeout = 20000)
         {
             saveFolderPath ??= Path.GetTempPath();
 
