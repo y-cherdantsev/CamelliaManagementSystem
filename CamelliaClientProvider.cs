@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using CamelliaManagementSystem.Requests;
 using CamelliaManagementSystem.SignManage;
 
@@ -49,6 +50,16 @@ namespace CamelliaManagementSystem
         /// </summary>
         private readonly int _numberOfTries;
 
+        /// <summary>
+        /// Number of seconds left till reloading
+        /// </summary>
+        private int _secondsLeft;
+
+        /// <summary>
+        /// Number of seconds left till reloading
+        /// </summary>
+        private readonly int _allowedDowntime;
+
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:31:53
         /// <summary>
@@ -58,14 +69,41 @@ namespace CamelliaManagementSystem
         /// <param name="webProxies">Proxy if need</param>
         /// <param name="handlerTimeout">Timeout</param>
         /// <param name="numberOfTries">Number Of Tries</param>
+        /// <param name="allowedDowntime">Allowed downtime in seconds without clients, after it reload will be proceeded</param>
         /// <returns>List - Shuffled list</returns>
         public CamelliaClientProvider(List<Sign> signs, List<IWebProxy> webProxies = null,
-            int handlerTimeout = 20000, int numberOfTries = 5)
+            int handlerTimeout = 20000, int numberOfTries = 5, int allowedDowntime = 240)
         {
             _signs = signs;
             _webProxies = webProxies?.GetEnumerator();
             _handlerTimeout = handlerTimeout;
             _numberOfTries = numberOfTries;
+            _allowedDowntime = allowedDowntime;
+            _secondsLeft = allowedDowntime;
+
+            // Timer that controls number of free clients, when clients lost => reload them
+            // ReSharper disable once UnusedVariable
+            var timer = new Timer(activity =>
+            {
+                switch (_camelliaClients.Count)
+                {
+                    case 0 when _secondsLeft <= 0:
+                    {
+                        _camelliaClients.Clear();
+                        lock (_camelliaClients)
+                            LoadClientsAsync().GetAwaiter().GetResult();
+                        _secondsLeft = allowedDowntime;
+                        break;
+                    }
+                    case 0:
+                        _secondsLeft-=5;
+                        break;
+                    default:
+                        _secondsLeft = allowedDowntime;
+                        break;
+                }
+
+            }, true, 0, 5000);
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -111,7 +149,8 @@ namespace CamelliaManagementSystem
                 {
                     await client.LoginAsync();
                     Console.WriteLine($"Loaded client: '{client.User.full_name}'");
-                    _camelliaClients.Add(client);
+                    if (_camelliaClients.All(x => x.Sign.iin != client.Sign.iin))
+                        _camelliaClients.Add(client);
                     break;
                 }
                 catch (CamelliaClientException)
@@ -134,13 +173,7 @@ namespace CamelliaManagementSystem
             lock (_lock)
             {
                 // ReSharper disable once EmptyEmbeddedStatement
-                for (var i = 0; i < 120 && _camelliaClients.Count < 3; ++i) Thread.Sleep(500);
-
-                if (_camelliaClients.Count < 3)
-                {
-                    _camelliaClients.Clear();
-                    LoadClientsAsync().GetAwaiter().GetResult();
-                }
+                while (_camelliaClients.Count < 1) Thread.Sleep(500);
 
                 lock (_camelliaClients)
                 {
@@ -148,8 +181,9 @@ namespace CamelliaManagementSystem
                     {
                         var client = camelliaClient;
                         _camelliaClients.Remove(camelliaClient);
-                        if (client.IsLoggedAsync().Result) return client;
-                        LoadClientAsync(client, _numberOfTries).GetAwaiter().GetResult();
+                        if (!client.IsLoggedAsync().Result)
+                            LoadClientAsync(client, _numberOfTries).GetAwaiter().GetResult();
+                        return client;
                     }
 
                     throw new CamelliaClientProviderException("There is no available loaded clients");
@@ -163,7 +197,9 @@ namespace CamelliaManagementSystem
         /// <param name="client">CamelliaClient</param>
         public void ReleaseClient(CamelliaClient client)
         {
-            _camelliaClients.Add(client);
+            _secondsLeft = _allowedDowntime;
+            if (_camelliaClients.All(x => x.Sign.iin != client.Sign.iin))
+                _camelliaClients.Add(client);
         }
     }
 }

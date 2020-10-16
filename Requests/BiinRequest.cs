@@ -71,10 +71,10 @@ namespace CamelliaManagementSystem.Requests
             var signedToken = await SignXmlTokens.SignTokenAsync(token, CamelliaClient.Sign.rsa, CamelliaClient.Sign.password);
 
             // Sending request and getting reference
-            var requestNumber = await SendPdfRequestAsync(signedToken);
-            var readinessStatus = await WaitResultAsync(requestNumber.requestNumber, delay, timeout);
-            if (readinessStatus.status.Equals("APPROVED"))
-                return readinessStatus.resultsForDownload;
+                var requestNumber = await SendPdfRequestAsync(signedToken);
+                var readinessStatus = await WaitResultAsync(requestNumber.requestNumber, delay, timeout);
+                if (readinessStatus.status.Equals("APPROVED"))
+                    return readinessStatus.resultsForDownload;
 
             throw new CamelliaNoneDataException($"Readiness status equals {readinessStatus.status}");
         }
