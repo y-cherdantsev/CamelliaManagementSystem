@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
 using CamelliaManagementSystem.Requests;
 using CamelliaManagementSystem.SignManage;
 
@@ -127,7 +127,7 @@ namespace CamelliaManagementSystem
                 var client = _webProxies != null
                     ? new CamelliaClient(sign, _webProxies.Current, _handlerTimeout)
                     : new CamelliaClient(sign, httpClientTimeout: _handlerTimeout);
-
+                
                 tasks.Add(LoadClientAsync(client, _numberOfTries));
             }
 
@@ -150,7 +150,11 @@ namespace CamelliaManagementSystem
                     await client.LoginAsync();
                     Console.WriteLine($"Loaded client: '{client.User.full_name}'");
                     if (_camelliaClients.All(x => x.Sign.iin != client.Sign.iin))
+                    {
+                        GC.KeepAlive(client);
                         _camelliaClients.Add(client);
+                    }
+
                     break;
                 }
                 catch (CamelliaClientException)
@@ -158,8 +162,10 @@ namespace CamelliaManagementSystem
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine($"{e.Message} | {e.StackTrace}");
                 }
+                
+                Thread.Sleep(2000);
             }
         }
 

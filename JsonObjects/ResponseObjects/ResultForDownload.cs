@@ -62,10 +62,13 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
 
             for (var i = 0; i < 10; ++i)
             {
-                if (new FileInfo(fullName).Exists)
+                var file = new FileInfo(fullName);
+                if (file.Exists && file.Length >= 10000) break;
+
+                if (file.Exists)
                     try
                     {
-                        new FileInfo(fullName).Delete();
+                        file.Delete();
                     }
                     catch (Exception)
                     {
@@ -78,8 +81,8 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
                     stream = new FileStream(fullName, FileMode.Create, FileAccess.Write, FileShare.None,
                         4000000, true);
                 await contentStream.CopyToAsync(stream);
-
-                if (new FileInfo(fullName).Exists && new FileInfo(fullName).Length >= 10000) break;
+                await contentStream.FlushAsync();
+                contentStream.Close();
             }
 
             return Path.Combine(path, $"{fileName}.pdf");

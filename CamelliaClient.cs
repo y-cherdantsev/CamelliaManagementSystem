@@ -24,7 +24,7 @@ namespace CamelliaManagementSystem
     /// <summary>
     /// Client for connecting to the service and making requests
     /// </summary>
-    public class CamelliaClient : IDisposable
+    public class CamelliaClient
     {
         /// <summary>
         /// Http client
@@ -75,6 +75,7 @@ namespace CamelliaManagementSystem
 
             CookieContainer = handler.CookieContainer;
             HttpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMilliseconds(httpClientTimeout)};
+            GC.KeepAlive(HttpClient);
         }
 
         /// <summary>
@@ -214,10 +215,10 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Disposing
         /// </summary>
-        public async void Dispose()
-        {
-            await LogoutAsync();
-            HttpClient.Dispose();
-        }
+        // public async void Dispose()
+        // {
+        //     await LogoutAsync();
+        //     HttpClient.Dispose();
+        // }
     }
 }
