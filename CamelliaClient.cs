@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Security.Authentication;
 using CamelliaManagementSystem.Requests;
 using CamelliaManagementSystem.SignManage;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
@@ -72,6 +73,7 @@ namespace CamelliaManagementSystem
             handler.AllowAutoRedirect = true;
             handler.ServerCertificateCustomValidationCallback =
                 (creation, of, insecure, connection) => true;
+            handler.SslProtocols = SslProtocols.None;
 
             CookieContainer = handler.CookieContainer;
             HttpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMilliseconds(httpClientTimeout)};
