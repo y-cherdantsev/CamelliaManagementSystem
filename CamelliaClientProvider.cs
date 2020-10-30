@@ -60,18 +60,30 @@ namespace CamelliaManagementSystem
         /// </summary>
         private readonly int _allowedDowntime;
 
+        /// <summary>
+        /// Network address of NCANode
+        /// </summary>
+        public readonly string NcaNodeHost;
+
+        /// <summary>
+        /// Network port of NCANode
+        /// </summary>
+        public readonly int NcaNodePort;
+
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:31:53
         /// <summary>
         /// Creates clients from the given signs
         /// </summary>
         /// <param name="signs">List of signs</param>
+        /// <param name="ncaNodeHost">Network address of NCANode</param>
+        /// <param name="ncaNodePort">Network port of NCANode</param>
         /// <param name="webProxies">Proxy if need</param>
         /// <param name="handlerTimeout">Timeout</param>
         /// <param name="numberOfTries">Number Of Tries</param>
         /// <param name="allowedDowntime">Allowed downtime in seconds without clients, after it reload will be proceeded</param>
-        /// <returns>List - Shuffled list</returns>
-        public CamelliaClientProvider(List<Sign> signs, List<IWebProxy> webProxies = null,
+        public CamelliaClientProvider(List<Sign> signs, string ncaNodeHost, int ncaNodePort,
+            List<IWebProxy> webProxies = null,
             int handlerTimeout = 20000, int numberOfTries = 5, int allowedDowntime = 240)
         {
             _signs = signs;
@@ -80,6 +92,8 @@ namespace CamelliaManagementSystem
             _numberOfTries = numberOfTries;
             _allowedDowntime = allowedDowntime;
             _secondsLeft = allowedDowntime;
+            NcaNodeHost = ncaNodeHost;
+            NcaNodePort = ncaNodePort;
 
             // Timer that controls number of free clients, when clients lost => reload them
             // ReSharper disable once UnusedVariable
@@ -96,13 +110,12 @@ namespace CamelliaManagementSystem
                         break;
                     }
                     case 0:
-                        _secondsLeft-=5;
+                        _secondsLeft -= 5;
                         break;
                     default:
                         _secondsLeft = allowedDowntime;
                         break;
                 }
-
             }, true, 0, 5000);
         }
 
@@ -125,13 +138,23 @@ namespace CamelliaManagementSystem
                     }
 
                 var client = _webProxies != null
-                    ? new CamelliaClient(sign, _webProxies.Current, _handlerTimeout)
-                    : new CamelliaClient(sign, httpClientTimeout: _handlerTimeout);
-                
+                    ? new CamelliaClient(sign, NcaNodeHost, NcaNodePort, _webProxies.Current, _handlerTimeout)
+                    : new CamelliaClient(sign, NcaNodeHost, NcaNodePort, httpClientTimeout: _handlerTimeout);
+
                 tasks.Add(LoadClientAsync(client, _numberOfTries));
             }
 
-            await Task.WhenAll(tasks);
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Loading of signs failed: '{e}'");
+            }
+
+            tasks.Where(x => x.IsFaulted).ToList().ForEach(x =>
+                Console.WriteLine($"Error while loading client: '{x.Exception?.Message}'"));
             if (_camelliaClients.Count < 1)
                 throw new CamelliaClientProviderException("No clients has been loaded");
         }
@@ -164,7 +187,7 @@ namespace CamelliaManagementSystem
                 {
                     Console.WriteLine($"{e.Message} | {e.StackTrace}");
                 }
-                
+
                 Thread.Sleep(2000);
             }
         }

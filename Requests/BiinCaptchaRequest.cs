@@ -68,7 +68,8 @@ namespace CamelliaManagementSystem.Requests
                 throw;
             }
 
-            var signedToken = SignXmlTokens.SignTokenAsync(token, CamelliaClient.Sign.rsa, CamelliaClient.Sign.password)
+            var signedToken = SignXmlTokens.SignTokenAsync(token, CamelliaClient.Sign.rsa, CamelliaClient.Sign.password,
+                    CamelliaClient.NcaNodeHost, CamelliaClient.NcaNodePort)
                 .Result;
             var requestNumber = await SendPdfRequestAsync(signedToken, solvedCaptcha);
             var readinessStatus = await WaitResultAsync(requestNumber.requestNumber, delay, timeout);

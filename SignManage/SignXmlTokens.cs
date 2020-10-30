@@ -26,8 +26,8 @@ namespace CamelliaManagementSystem.SignManage
         /// <param name="port">API port</param>
         /// <returns>string - signed token</returns>
         public static async Task<string> SignTokenAsync(string inData, string base64Sign, string password,
-            string host = "192.168.1.105",
-            int port = 6000)
+            string host,
+            int port)
         {
             var ncaNode = new NCANode.NCANode(host, port);
             var xmlSignRequest = new XMLSignRequest
