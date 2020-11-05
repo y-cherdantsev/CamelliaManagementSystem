@@ -4,6 +4,7 @@ using System.Text;
 using System.Security.Cryptography;
 
 // ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
 // ReSharper disable NotResolvedInText
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -35,12 +36,12 @@ namespace CamelliaManagementSystem.SignManage
         /// <summary>
         /// Decrypted Password
         /// </summary>
-        public string password => DecryptPassword(encryptedPassword, iin.ToString());
+        public string password => DecryptPassword(encryptedPassword, biin.ToString());
 
         /// <summary>
         /// IIN
         /// </summary>
-        public long iin { get; set; }
+        public long biin { get; set; }
 
         /// <summary>
         /// Owner fullname
@@ -67,6 +68,12 @@ namespace CamelliaManagementSystem.SignManage
                 cryptoProvider.CreateDecryptor(bytes, bytes), CryptoStreamMode.Read);
             var reader = new StreamReader(cryptoStream);
             return reader.ReadToEnd();
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"'{fullname}' : '{biin}'";
         }
     }
 }

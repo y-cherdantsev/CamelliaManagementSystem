@@ -38,7 +38,7 @@ namespace CamelliaManagementSystem.Requests
             bin = bin.PadLeft(12, '0');
 
             //Codes send from system that means that bin is not registered
-            string[] knownErrorCodes = {"031", "034", "035"};
+            string[] knownErrorCodes = {"031", "033",  "034", "035"};
 
             for (var i = 0; i < numberOfTries; i++)
             {
@@ -50,7 +50,7 @@ namespace CamelliaManagementSystem.Requests
                 {
                     if (!await camelliaClient.IsLoggedAsync())
                         throw new CamelliaClientException(
-                            $"'{camelliaClient.Sign.iin}' isn't authorized to the camellia system");
+                            $"'{camelliaClient.Sign.biin}' isn't authorized to the camellia system");
 
                     Thread.Sleep(delay);
                     continue;
@@ -119,7 +119,7 @@ namespace CamelliaManagementSystem.Requests
                     // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
                     case HttpStatusCode.Redirect when !await camelliaClient.IsLoggedAsync():
                         throw new CamelliaClientException(
-                            $"'{camelliaClient.Sign.iin}' isn't authorized to the camellia system");
+                            $"'{camelliaClient.Sign.biin}' isn't authorized to the camellia system");
                     case HttpStatusCode.Redirect:
                         Thread.Sleep(delay);
                         continue;
@@ -158,7 +158,7 @@ namespace CamelliaManagementSystem.Requests
                 {
                     if (!await camelliaClient.IsLoggedAsync())
                         throw new CamelliaClientException(
-                            $"'{camelliaClient.Sign.iin}' isn't authorized to the camellia system");
+                            $"'{camelliaClient.Sign.biin}' isn't authorized to the camellia system");
 
                     Thread.Sleep(delay);
                     continue;
@@ -215,7 +215,7 @@ namespace CamelliaManagementSystem.Requests
                 {
                     if (!await camelliaClient.IsLoggedAsync())
                         throw new CamelliaClientException(
-                            $"'{camelliaClient.Sign.iin}' isn't authorized to the camellia system");
+                            $"'{camelliaClient.Sign.biin}' isn't authorized to the camellia system");
 
                     Thread.Sleep(delay);
                     continue;

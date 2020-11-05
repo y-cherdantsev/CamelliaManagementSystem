@@ -99,6 +99,7 @@ namespace CamelliaManagementSystem
             // ReSharper disable once UnusedVariable
             var timer = new Timer(activity =>
             {
+                Console.WriteLine($"Timer left: {_secondsLeft}");
                 switch (_camelliaClients.Count)
                 {
                     case 0 when _secondsLeft <= 0:
@@ -110,13 +111,13 @@ namespace CamelliaManagementSystem
                         break;
                     }
                     case 0:
-                        _secondsLeft -= 5;
+                        _secondsLeft -= 10;
                         break;
                     default:
                         _secondsLeft = allowedDowntime;
                         break;
                 }
-            }, true, 0, 5000);
+            }, true, 0, 10000);
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -171,8 +172,8 @@ namespace CamelliaManagementSystem
                 try
                 {
                     await client.LoginAsync();
-                    Console.WriteLine($"Loaded client: '{client.User.full_name}'");
-                    if (_camelliaClients.All(x => x.Sign.iin != client.Sign.iin))
+                    Console.WriteLine($"Loaded client: '{client}'");
+                    if (_camelliaClients.All(x => x.Sign.biin != client.Sign.biin))
                     {
                         GC.KeepAlive(client);
                         _camelliaClients.Add(client);
@@ -185,7 +186,7 @@ namespace CamelliaManagementSystem
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"{e.Message} | {e.StackTrace}");
+                    Console.WriteLine($"{e.Message} | {client}");
                 }
 
                 Thread.Sleep(2000);
@@ -199,19 +200,24 @@ namespace CamelliaManagementSystem
         /// <returns>CamelliaClient - returns connected client</returns>
         public CamelliaClient GetNextClient()
         {
+            Console.WriteLine("Waiting for lock released");
             lock (_lock)
             {
+                Console.WriteLine("Waiting for client released");
                 // ReSharper disable once EmptyEmbeddedStatement
                 while (_camelliaClients.Count < 1) Thread.Sleep(500);
 
+                Console.WriteLine("Waiting for inner lock released");
                 lock (_camelliaClients)
                 {
+                    Console.WriteLine("Trying to get client");
                     foreach (var camelliaClient in _camelliaClients)
                     {
                         var client = camelliaClient;
                         _camelliaClients.Remove(camelliaClient);
                         if (!client.IsLoggedAsync().Result)
                             LoadClientAsync(client, _numberOfTries).GetAwaiter().GetResult();
+                        Console.WriteLine($"Client found successfully: {client}");
                         return client;
                     }
 
@@ -226,9 +232,11 @@ namespace CamelliaManagementSystem
         /// <param name="client">CamelliaClient</param>
         public void ReleaseClient(CamelliaClient client)
         {
-            _secondsLeft = _allowedDowntime;
-            if (_camelliaClients.All(x => x.Sign.iin != client.Sign.iin))
+            Console.WriteLine($"Releasing client: {client}");
+                _secondsLeft = _allowedDowntime;
+            if (_camelliaClients.All(x => x.Sign.biin != client.Sign.biin))
                 _camelliaClients.Add(client);
+            Console.WriteLine($"Client has been released: {client}");
         }
     }
 }

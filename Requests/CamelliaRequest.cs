@@ -96,6 +96,7 @@ namespace CamelliaManagementSystem.Requests
                     throw new CamelliaRequestException($"Timeout '{timeout}' exceeded");
                 Thread.Sleep(delay);
                 readinessStatus = await GetReadinessStatusAsync(requestNumber);
+                var b = IsDeniedAsync(requestNumber);
             } while (readinessStatus.status.Equals("IN_PROCESSING"));
 
             return readinessStatus;

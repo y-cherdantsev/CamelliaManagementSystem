@@ -1,6 +1,6 @@
 ﻿using System;
-using AngleSharp;
 using System.Net;
+using AngleSharp;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -114,7 +114,7 @@ namespace CamelliaManagementSystem
             User = await GetUserAsync();
 
             if (User.user_iin == null)
-                throw new CamelliaClientException($"Sign: '{Sign.iin}' hasn't been loaded");
+                throw new CamelliaClientException($"Sign: '{Sign.biin}' hasn't been loaded");
         }
 
         /// <summary>
@@ -226,6 +226,11 @@ namespace CamelliaManagementSystem
             CookieContainer = null;
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{Sign} | Proxy: '{Proxy.GetProxy(new Uri("http://egov.kz")).Host}'";
+        }
 
         /// <summary>
         /// Disposing
