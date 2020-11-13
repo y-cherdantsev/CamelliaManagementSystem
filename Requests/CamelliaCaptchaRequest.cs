@@ -46,6 +46,17 @@ namespace CamelliaManagementSystem.Requests
         }
 
         /// <summary>
+        /// Get captcha stream from camellia system
+        /// </summary>
+        /// <param name="captchaLink">Get link for captcha</param>
+        private async Task<Stream> GetCaptchaStream(string captchaLink)
+        {
+            var response = await CamelliaClient.HttpClient.GetAsync(captchaLink);
+            var stream = await response.Content.ReadAsStreamAsync();
+            return stream;
+        }
+
+        /// <summary>
         /// Checks if captcha solved correctly
         /// </summary>
         /// <param name="solvedCaptcha">Captcha solution</param>
@@ -83,10 +94,8 @@ namespace CamelliaManagementSystem.Requests
         protected async Task<string> PerformCaptcha(string captchaApiKey, int numOfCaptchaTries)
         {
             //Get captcha
-            var captcha = $"{RequestLink()}captcha?" +
-                          (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-            var tempDirectoryPath = Path.GetTempPath();
-            var filePath = Path.Combine(tempDirectoryPath, $"temp_captcha_{DateTime.Now.Ticks}.jpeg");
+            var captchaLink = $"{RequestLink()}captcha?" +
+                              (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
 
             // Solve captcha
             var solvedCaptcha = "";
@@ -94,8 +103,8 @@ namespace CamelliaManagementSystem.Requests
             {
                 if (i == numOfCaptchaTries)
                     throw new CamelliaCaptchaSolverException($"Wrong captcha {i} times");
-                await DownloadCaptchaAsync(captcha, filePath);
-                solvedCaptcha = CaptchaSolver.SolveCaptcha(filePath, captchaApiKey);
+                var captchaStream = await GetCaptchaStream(captchaLink);
+                solvedCaptcha = CaptchaSolver.SolveCaptcha(captchaStream, captchaApiKey);
                 if (string.IsNullOrEmpty(solvedCaptcha))
                     continue;
 

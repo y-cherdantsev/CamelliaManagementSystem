@@ -22,9 +22,25 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="imagePath">Path to the image file</param>
         /// <param name="apiKey">Key for 2captcha API</param>
         /// <returns>Solved captcha string</returns>
+        // ReSharper disable once UnusedMember.Global
         public static string SolveCaptcha(string imagePath, string apiKey)
         {
             var base64 = GetBase64FromImage(imagePath);
+            var base64Encoded = HttpUtility.UrlEncode(base64);
+            var captchaId = GetCaptchaId(base64Encoded, apiKey);
+            var result = GetCaptchaAnswer(captchaId, apiKey);
+            return result;
+        }
+
+        /// <summary>
+        /// Solves captcha
+        /// </summary>
+        /// <param name="imageStream">Stream of the image</param>
+        /// <param name="apiKey">Key for 2captcha API</param>
+        /// <returns>Solved captcha string</returns>
+        public static string SolveCaptcha(Stream imageStream, string apiKey)
+        {
+            var base64 = GetBase64FromImage(imageStream);
             var base64Encoded = HttpUtility.UrlEncode(base64);
             var captchaId = GetCaptchaId(base64Encoded, apiKey);
             var result = GetCaptchaAnswer(captchaId, apiKey);
@@ -93,6 +109,20 @@ namespace CamelliaManagementSystem.Requests
         private static string GetBase64FromImage(string imagePath)
         {
             var imageBytes = File.ReadAllBytes(imagePath);
+            var base64String = Convert.ToBase64String(imageBytes);
+            return $"data:image/png;base64,{base64String}";
+        }
+
+        /// <summary>
+        /// Get base64 representation of image
+        /// </summary>
+        /// <param name="stream">Stream of the image</param>
+        /// <returns>base64 representation of image</returns>
+        private static string GetBase64FromImage(Stream stream)
+        {
+            using var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            var imageBytes = memoryStream.ToArray();
             var base64String = Convert.ToBase64String(imageBytes);
             return $"data:image/png;base64,{base64String}";
         }
