@@ -94,30 +94,38 @@ namespace CamelliaManagementSystem
             _secondsLeft = allowedDowntime;
             NcaNodeHost = ncaNodeHost;
             NcaNodePort = ncaNodePort;
-
-            // Timer that controls number of free clients, when clients lost => reload them
-            // ReSharper disable once UnusedVariable
-            var timer = new Timer(activity =>
+            new Task(async () =>
             {
-                Console.WriteLine($"Timer left: {_secondsLeft}");
-                switch (_camelliaClients.Count)
+                while (true)
                 {
-                    case 0 when _secondsLeft <= 0:
+                    await Task.Delay(10000);
+                    try
                     {
-                        _camelliaClients.Clear();
-                        lock (_camelliaClients)
-                            LoadClientsAsync().GetAwaiter().GetResult();
-                        _secondsLeft = allowedDowntime;
-                        break;
+                        Console.WriteLine($"Timer left: {_secondsLeft}");
+                        switch (_camelliaClients.Count)
+                        {
+                            case 0 when _secondsLeft <= 0:
+                            {
+                                _camelliaClients.Clear();
+                                lock (_camelliaClients)
+                                    LoadClientsAsync().GetAwaiter().GetResult();
+                                _secondsLeft = allowedDowntime;
+                                break;
+                            }
+                            case 0:
+                                _secondsLeft -= 10;
+                                break;
+                            default:
+                                _secondsLeft = allowedDowntime;
+                                break;
+                        }
                     }
-                    case 0:
-                        _secondsLeft -= 10;
-                        break;
-                    default:
-                        _secondsLeft = allowedDowntime;
-                        break;
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 }
-            }, true, 0, 10000);
+            }).Start();
         }
 
         /// @author Yevgeniy Cherdantsev
@@ -233,7 +241,7 @@ namespace CamelliaManagementSystem
         public void ReleaseClient(CamelliaClient client)
         {
             Console.WriteLine($"Releasing client: {client}");
-                _secondsLeft = _allowedDowntime;
+            _secondsLeft = _allowedDowntime;
             if (_camelliaClients.All(x => x.Sign.biin != client.Sign.biin))
                 _camelliaClients.Add(client);
             Console.WriteLine($"Client has been released: {client}");
