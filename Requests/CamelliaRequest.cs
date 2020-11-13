@@ -79,6 +79,7 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="timeout">Timeout of </param>
         /// <returns>Status of reference readiness</returns>
         /// <exception cref="InvalidDataException">If some error with cammelia occured</exception>
+        /// todo(Some references can be denied without informating about it)
         protected async Task<ReadinessStatus> WaitResultAsync(string requestNumber, int delay = 1000,
             int timeout = 60000)
         {
@@ -89,14 +90,12 @@ namespace CamelliaManagementSystem.Requests
             var leftRequests = timeout / delay;
 
             ReadinessStatus readinessStatus;
-
             do
             {
                 if (leftRequests-- <= 0)
                     throw new CamelliaRequestException($"Timeout '{timeout}' exceeded");
                 Thread.Sleep(delay);
                 readinessStatus = await GetReadinessStatusAsync(requestNumber);
-                var b = IsDeniedAsync(requestNumber);
             } while (readinessStatus.status.Equals("IN_PROCESSING"));
 
             return readinessStatus;
@@ -107,9 +106,9 @@ namespace CamelliaManagementSystem.Requests
         /// </summary>
         /// <param name="requestNumber">Number of request</param>
         /// <returns></returns>
-        [Obsolete("IsDenied is deprecated, there is no any scenarios where it could be used")]
+        // [Obsolete("IsDenied is deprecated, there is no any scenarios where it could be used")]
         // ReSharper disable once UnusedMember.Global
-        protected async Task<bool> IsDeniedAsync(string requestNumber)
+        private async Task<bool> IsDeniedAsync(string requestNumber)
         {
             var response = await CamelliaClient.HttpClient
                 .GetStringAsync(

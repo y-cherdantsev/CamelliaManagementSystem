@@ -140,7 +140,7 @@ namespace CamelliaManagementSystem
             foreach (var sign in _signs)
             {
                 if (_webProxies != null)
-                    if (_webProxies.MoveNext())
+                    if (!_webProxies.MoveNext())
                     {
                         _webProxies.Reset();
                         _webProxies.MoveNext();

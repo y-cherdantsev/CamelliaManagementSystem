@@ -97,7 +97,7 @@ namespace CamelliaManagementSystem.Requests
             }
             catch (Exception)
             {
-                throw new CamelliaCaptchaSolverException($"2captcha answer: '{response.Content}'");
+                throw new CamelliaCaptchaSolverException($"2captcha answer: '{response.Content}'; Status code: '{response.StatusCode}'");
             }
         }
 

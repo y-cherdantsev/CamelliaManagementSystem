@@ -1,40 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-	<PackageVersion>2.0.23-alpha</PackageVersion>
-	<Version>2.0.23-alpha</Version>
-    <RootNamespace>CamelliaManagementSystem</RootNamespace>
-    <PackageTags>camellia management wisk alldata zhekacher</PackageTags>
-    <Company>Wisk Telecom Solutions</Company>
-    <Authors>Yevgeniy Cherdantsev</Authors>
-    <PackageId>CamelliaManagementSystem</PackageId>
-    <Description>Util for working with Camellia service</Description>
-    <Copyright>Wisk Telecom Solutions</Copyright>
-    <RepositoryType>git</RepositoryType>
-    <PackageIcon>camellia.png</PackageIcon>
-    <PackageIconUrl />
-    <RepositoryUrl>https://github.com/ZhekaCher/CamelliaManagementSystem.git</RepositoryUrl>
-    <NeutralLanguage />
-    <Product>CamelliaManagementSystem</Product>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <ApplicationIcon>camellia.ico</ApplicationIcon>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\zheka\RiderProjects\CamelliaManagementSystem\CamelliaManagementSystem.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Users\zheka\RiderProjects\CamelliaManagementSystem\CamelliaManagementSystem\CamelliaManagementSystem.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="camellia.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="1.0.0-alpha-822" />
-    <PackageReference Include="NCANode" Version="1.0.1" />
-    <PackageReference Include="RestSharp" Version="106.11.7" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+      <PackageVersion>2.0.25-alpha</PackageVersion>
+        <Version>2.0.25-alpha</Version>
+        <RootNamespace>CamelliaManagementSystem</RootNamespace>
+        <PackageTags>camellia management wisk alldata zhekacher</PackageTags>
+        <Company>Wisk Telecom Solutions</Company>
+        <Authors>Yevgeniy Cherdantsev</Authors>
+        <PackageId>CamelliaManagementSystem</PackageId>
+        <Description>Util for working with Camellia service</Description>
+        <Copyright>Wisk Telecom Solutions</Copyright>
+        <RepositoryType>git</RepositoryType>
+        <PackageIcon>camellia.png</PackageIcon>
+        <PackageIconUrl/>
+        <RepositoryUrl>https://github.com/ZhekaCher/CamelliaManagementSystem.git</RepositoryUrl>
+        <NeutralLanguage/>
+        <Product>CamelliaManagementSystem</Product>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <ApplicationIcon>camellia.ico</ApplicationIcon>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DocumentationFile>C:\Users\zheka\RiderProjects\CamelliaManagementSystem\CamelliaManagementSystem.xml</DocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DocumentationFile>C:\Users\zheka\RiderProjects\CamelliaManagementSystem\CamelliaManagementSystem\CamelliaManagementSystem.xml</DocumentationFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="camellia.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AngleSharp" Version="1.0.0-alpha-822"/>
+        <PackageReference Include="NCANode" Version="1.0.1"/>
+        <PackageReference Include="RestSharp" Version="106.11.7"/>
+    </ItemGroup>
 </Project>
