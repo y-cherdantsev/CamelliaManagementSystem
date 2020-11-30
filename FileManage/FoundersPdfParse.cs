@@ -168,7 +168,7 @@ namespace CamelliaManagementSystem.FileManage
             }
 
             founders = founders.Distinct().ToList();
-            return founders.Count > 0 ? founders : null;
+            return founders.Count > 0 ? founders : throw new CamelliaNoneDataException("Nothing has been found in reference");
         }
     }
 }

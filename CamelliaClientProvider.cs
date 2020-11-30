@@ -94,6 +94,8 @@ namespace CamelliaManagementSystem
             _secondsLeft = allowedDowntime;
             NcaNodeHost = ncaNodeHost;
             NcaNodePort = ncaNodePort;
+
+            // Timer that check existence of clients in the list
             new Task(async () =>
             {
                 while (true)

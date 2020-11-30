@@ -52,12 +52,12 @@ namespace CamelliaManagementSystem
         /// Sign of a client
         /// </summary>
         public readonly Sign Sign;
-        
+
         /// <summary>
         /// Network address of NCANode
         /// </summary>
         public readonly string NcaNodeHost;
-        
+
         /// <summary>
         /// Network port of NCANode
         /// </summary>
@@ -72,7 +72,8 @@ namespace CamelliaManagementSystem
         /// <param name="ncaNodePort">Network port of NCANode</param>
         /// <param name="webProxy">Proxy</param>
         /// <param name="httpClientTimeout">Timeout of http client connected to the camellia system; Standard: 15000</param>
-        public CamelliaClient(Sign sign, string ncaNodeHost, int ncaNodePort, IWebProxy webProxy = null, int httpClientTimeout = 15000)
+        public CamelliaClient(Sign sign, string ncaNodeHost, int ncaNodePort, IWebProxy webProxy = null,
+            int httpClientTimeout = 15000)
         {
             Sign = sign;
             Proxy = webProxy;

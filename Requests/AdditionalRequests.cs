@@ -38,7 +38,7 @@ namespace CamelliaManagementSystem.Requests
             bin = bin.PadLeft(12, '0');
 
             //Codes send from system that means that bin is not registered
-            string[] knownErrorCodes = {"031", "033",  "034", "035"};
+            string[] knownErrorCodes = {"031", "033",  "034", "035", "041"};
 
             for (var i = 0; i < numberOfTries; i++)
             {
