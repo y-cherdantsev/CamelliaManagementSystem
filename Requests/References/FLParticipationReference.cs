@@ -24,16 +24,10 @@ namespace CamelliaManagementSystem.Requests.References
         }
 
         /// <inheritdoc />
-        protected override string RequestLink()
-        {
-            return "https://egov.kz/services/P30.04/";
-        }
+        protected override string RequestLink() => "https://egov.kz/services/P30.04/";
 
         /// <inheritdoc />
-        protected override BiinType TypeOfBiin()
-        {
-            return BiinType.IIN;
-        }
+        protected override BiinType TypeOfBiin() => BiinType.IIN;
 
         /// <summary>
         /// Parsing of fl participation reference and getting companies in which defined person is head
@@ -54,7 +48,7 @@ namespace CamelliaManagementSystem.Requests.References
 
             var reference = await GetReferenceAsync(iin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
-            
+
             return temp != null
                 ? new PdfParser(
                         await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,

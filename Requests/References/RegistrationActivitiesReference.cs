@@ -24,16 +24,10 @@ namespace CamelliaManagementSystem.Requests.References
         }
 
         /// <inheritdoc />
-        protected override string RequestLink()
-        {
-            return "https://egov.kz/services/P30.05/";
-        }
+        protected override string RequestLink() => "https://egov.kz/services/P30.05/";
 
         /// <inheritdoc />
-        protected override BiinType TypeOfBiin()
-        {
-            return BiinType.BIN;
-        }
+        protected override BiinType TypeOfBiin() => BiinType.BIN;
 
         /// <summary>
         /// Parsing of registration activities reference and getting activities dates
