@@ -13,6 +13,7 @@ using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Local
 // ReSharper disable PublicConstructorInAbstractClass
 
 #pragma warning disable 1591
