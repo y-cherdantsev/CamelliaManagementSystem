@@ -103,7 +103,6 @@ namespace CamelliaManagementSystem
                     await Task.Delay(10000);
                     try
                     {
-                        Console.WriteLine($"Timer left: {_secondsLeft}");
                         switch (_camelliaClients.Count)
                         {
                             case 0 when _secondsLeft <= 0:
@@ -210,24 +209,19 @@ namespace CamelliaManagementSystem
         /// <returns>CamelliaClient - returns connected client</returns>
         public CamelliaClient GetNextClient()
         {
-            Console.WriteLine("Waiting for lock released");
             lock (_lock)
             {
-                Console.WriteLine("Waiting for client released");
                 // ReSharper disable once EmptyEmbeddedStatement
                 while (_camelliaClients.Count < 1) Thread.Sleep(500);
 
-                Console.WriteLine("Waiting for inner lock released");
                 lock (_camelliaClients)
                 {
-                    Console.WriteLine("Trying to get client");
                     foreach (var camelliaClient in _camelliaClients)
                     {
                         var client = camelliaClient;
                         _camelliaClients.Remove(camelliaClient);
                         if (!client.IsLoggedAsync().Result)
                             LoadClientAsync(client, _numberOfTries).GetAwaiter().GetResult();
-                        Console.WriteLine($"Client found successfully: {client}");
                         return client;
                     }
 
@@ -242,11 +236,9 @@ namespace CamelliaManagementSystem
         /// <param name="client">CamelliaClient</param>
         public void ReleaseClient(CamelliaClient client)
         {
-            Console.WriteLine($"Releasing client: {client}");
             _secondsLeft = _allowedDowntime;
             if (_camelliaClients.All(x => x.Sign.biin != client.Sign.biin))
                 _camelliaClients.Add(client);
-            Console.WriteLine($"Client has been released: {client}");
         }
     }
 }
