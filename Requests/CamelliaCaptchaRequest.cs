@@ -8,6 +8,7 @@ using CamelliaManagementSystem.JsonObjects.RequestObjects;
 
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedMember.Local
 
 namespace CamelliaManagementSystem.Requests
 {
