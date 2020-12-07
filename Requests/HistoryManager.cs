@@ -304,7 +304,7 @@ namespace CamelliaManagementSystem.Requests
                     {Date = date, Type = "occupation", Before = occupation, After = newOccupation});
                 occupation = newOccupation;
             }
-            
+
             return changes;
         }
     }
