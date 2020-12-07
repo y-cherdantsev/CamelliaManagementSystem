@@ -9,6 +9,8 @@ using CamelliaManagementSystem.Requests.References;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 // ReSharper disable CommentTypo
+// ReSharper disable UnusedType.Global
+// ReSharper disable UnusedMember.Global
 
 namespace CamelliaManagementSystem.Requests
 {
