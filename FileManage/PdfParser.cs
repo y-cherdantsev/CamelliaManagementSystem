@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using iText.Kernel.Colors;
 using System.Collections.Generic;
+using iText.PdfCleanup.Autosweep;
+using System.Text.RegularExpressions;
 using CamelliaManagementSystem.Requests;
 
 // ReSharper disable CommentTypo
@@ -48,6 +51,20 @@ namespace CamelliaManagementSystem.FileManage
         }
 
         /// <summary>
+        /// Changes objects that approaches to a given regex to black color
+        /// </summary>
+        /// <param name="filePath">Source pdf file path</param>
+        /// <param name="newFilePath">Result pdf file path</param>
+        /// <param name="regex">Regex in string format</param>
+        public static void DeleteField(string filePath, string newFilePath, string regex)
+        {
+            using var pdf = new iText.Kernel.Pdf.PdfDocument(new iText.Kernel.Pdf.PdfReader(filePath), new iText.Kernel.Pdf.PdfWriter(File.Open(newFilePath, FileMode.Create)));
+            var cleanupStrategy = new RegexBasedCleanupStrategy(new Regex(regex, RegexOptions.IgnoreCase)).SetRedactionColor(ColorConstants.WHITE);
+            var autoSweep = new PdfAutoSweep(cleanupStrategy);
+            autoSweep.CleanUp(pdf);
+        }
+        
+        /// <summary>
         /// Gets text from pdf file (pdftohtml.exe util required)
         /// </summary>
         /// <param name="file">File that should be parsed</param>
@@ -86,7 +103,6 @@ namespace CamelliaManagementSystem.FileManage
             return text;
         }
 
-
         /// @author Yevgeniy Cherdantsev
         /// @date 10.03.2020 10:25:01
         /// @version 1.0
@@ -94,10 +110,7 @@ namespace CamelliaManagementSystem.FileManage
         /// Parsing of registration reference and getting of founders from it
         /// </summary>
         /// <returns>IEnumerable - list of founders</returns>
-        public IEnumerable<string> GetFounders()
-        {
-            return FoundersPdfParse.GetFounders(_innerText);
-        }
+        public IEnumerable<string> GetFounders() => FoundersPdfParse.GetFounders(_innerText);
 
         /// @author Yevgeniy Cherdantsev
         /// @version 1.0
@@ -105,10 +118,7 @@ namespace CamelliaManagementSystem.FileManage
         /// Parsing of participation ul reference and getting of child companies from it
         /// </summary>
         /// <returns>IEnumerable - list of child companies</returns>
-        public IEnumerable<string> GetChildCompanies()
-        {
-            return ChildCompaniesPdfParse.GetChildCompanies(_innerText);
-        }
+        public IEnumerable<string> GetChildCompanies() => ChildCompaniesPdfParse.GetChildCompanies(_innerText);
 
         /// @author Yevgeniy Cherdantsev
         /// @version 1.0
@@ -116,64 +126,43 @@ namespace CamelliaManagementSystem.FileManage
         /// Parsing of participation fl reference and getting of companies from it
         /// </summary>
         /// <returns>IEnumerable - list of companies where person is head</returns>
-        public IEnumerable<string> GetWherePersonIsHead()
-        {
-            return WhereIsHeadPdfParse.GetWhereIsHead(_innerText);
-        }
+        public IEnumerable<string> GetWherePersonIsHead() => WhereIsHeadPdfParse.GetWhereIsHead(_innerText);
 
         /// <summary>
         /// Parsing of dates and changes
         /// </summary>
         /// <returns>IEnumerable - list of changes with dates</returns>
-        public IEnumerable<ActivitiesDatePdfParse.DateActivity> GetActivitiesDates()
-        {
-            return ActivitiesDatePdfParse.GetDatesChanges(_innerText);
-        }
+        public IEnumerable<ActivitiesDatePdfParse.DateActivity> GetActivitiesDates() =>
+            ActivitiesDatePdfParse.GetDatesChanges(_innerText);
 
         /// <summary>
         /// Parsing of heads from registered date reference
         /// </summary>
         /// <returns>string - head of the company</returns>
-        public string GetHead()
-        {
-            return RegisteredDateParse.GetHead(_innerText);
-        }
-
+        public string GetHead() => RegisteredDateParse.GetHead(_innerText);
 
         /// <summary>
         /// Parsing of company names from registered date reference
         /// </summary>
         /// <returns>string - name of the company</returns>
-        public string GetName()
-        {
-            return RegisteredDateParse.GetName(_innerText);
-        }
+        public string GetName() => RegisteredDateParse.GetName(_innerText);
 
         /// <summary>
         /// Parsing of company address from registered date reference
         /// </summary>
         /// <returns>string - address of the company</returns>
-        public string GetPlace()
-        {
-            return RegisteredDateParse.GetPlace(_innerText);
-        }
+        public string GetPlace() => RegisteredDateParse.GetPlace(_innerText);
 
         /// <summary>
         /// Parse nimber of founders from registered date reference
         /// </summary>
         /// <returns>int - number of the founders</returns>
-        public int CountFounders()
-        {
-            return Convert.ToInt32(RegisteredDateParse.CountFounders(_innerText));
-        }
+        public int CountFounders() => Convert.ToInt32(RegisteredDateParse.CountFounders(_innerText));
 
         /// <summary>
         /// Parsing occupation of the company from registered date reference
         /// </summary>
         /// <returns>string - occupation of the company</returns>
-        public string GetOccupation()
-        {
-            return RegisteredDateParse.GetOccupation(_innerText);
-        }
+        public string GetOccupation() => RegisteredDateParse.GetOccupation(_innerText);
     }
 }
