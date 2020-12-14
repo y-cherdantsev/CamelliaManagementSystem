@@ -309,8 +309,9 @@ namespace CamelliaManagementSystem.Requests
             // Founders changes
             var startFounders =
                 new RegisteredDatePdfDictionaryParser(
-                    Path.Combine(historyDirectory.FullName,$"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf")).GetFounders();
-            
+                    Path.Combine(historyDirectory.FullName,
+                        $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf")).GetFounders();
+
             var previousFounders = new List<string>();
             if (startFounders != null)
             {
@@ -318,20 +319,25 @@ namespace CamelliaManagementSystem.Requests
                     {Date = dates.First(), Type = "founder", Before = null, After = startFounder}));
                 previousFounders = startFounders;
             }
-            
+
             foreach (var date in dates)
             {
                 var tempFounders =
                     new RegisteredDatePdfDictionaryParser(
-                        Path.Combine(historyDirectory.FullName,$"{date.Day}{date.Month}{date.Year}_{bin}.pdf")).GetFounders();
+                            Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"))
+                        .GetFounders();
                 // Old removed
-                changes.AddRange(from previousFounder in previousFounders where tempFounders.All(x => x != previousFounder) select new CompanyChange {Date = date, Type = "founder", Before = previousFounder, After = null});
-                
+                changes.AddRange(from previousFounder in previousFounders
+                    where tempFounders.All(x => x != previousFounder)
+                    select new CompanyChange {Date = date, Type = "founder", Before = previousFounder, After = null});
+
                 //New added
-                changes.AddRange(from tempFounder in tempFounders where previousFounders.All(x => x != tempFounder) select new CompanyChange {Date = date, Type = "founder", Before = null, After = tempFounder});
+                changes.AddRange(from tempFounder in tempFounders
+                    where previousFounders.All(x => x != tempFounder)
+                    select new CompanyChange {Date = date, Type = "founder", Before = null, After = tempFounder});
                 previousFounders = tempFounders;
             }
-            
+
             return changes;
         }
     }
