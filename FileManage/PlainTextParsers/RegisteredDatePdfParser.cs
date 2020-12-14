@@ -1,14 +1,22 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 //TODO(REFACTOR)
-namespace CamelliaManagementSystem.FileManage
+namespace CamelliaManagementSystem.FileManage.PlainTextParsers
 {
-    public class RegisteredDateParse : PdfParse
+    public class RegisteredDatePdfParser : PdfPlainTextParser
     {
-        public static string GetHead(string innerText)
+        /// <inheritdoc />
+        public RegisteredDatePdfParser(string path, bool deleteFile = true) : base(path, deleteFile)
         {
+            MinimizeReferenceText();
+        }
+
+        public string GetHead()
+        {
+            var innerText = InnerText;
+
             var result = "";
-            innerText = MinimizeReferenceText(innerText);
             if (innerText.IndexOf("<b>Руководитель:</b>") == -1)
                 return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Руководитель:</b>") + 20,
@@ -42,9 +50,9 @@ namespace CamelliaManagementSystem.FileManage
             return string.IsNullOrEmpty(result) ? null : result;
         }
 
-        public static string GetName(string innerText)
+        public string GetName()
         {
-            innerText = MinimizeReferenceText(innerText);
+            var innerText = InnerText;
             if (innerText.IndexOf("<b>Наименование:</b>") == -1)
                 return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Наименование:</b>") + 20,
@@ -54,9 +62,9 @@ namespace CamelliaManagementSystem.FileManage
             return string.IsNullOrEmpty(result) ? null : result;
         }
 
-        public static string GetPlace(string innerText)
+        public string GetPlace()
         {
-            innerText = MinimizeReferenceText(innerText);
+            var innerText = InnerText;
             if (innerText.IndexOf("<b>Местонахождение:</b>") == -1)
                 return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Местонахождение:</b>") + 23,
@@ -69,20 +77,20 @@ namespace CamelliaManagementSystem.FileManage
             return string.IsNullOrEmpty(result) ? null : result;
         }
 
-        public static string CountFounders(string innerText)
+        public int? CountFounders()
         {
-            innerText = MinimizeReferenceText(innerText);
+            var innerText = InnerText;
             if (innerText.IndexOf("<b>Количество участников (членов):</b>") == -1)
-                return "Неизвестно";
+                return null;
             innerText = innerText.Substring(innerText.IndexOf("<b>Количество участников (членов):</b>") + 38,
                 innerText.Length - innerText.IndexOf("<b>Количество участников (членов):</b>") - 38);
             var result = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ").Trim();
-            return result;
+            return Convert.ToInt32(result);
         }
 
-        public static string GetOccupation(string innerText)
+        public string GetOccupation()
         {
-            innerText = MinimizeReferenceText(innerText);
+            var innerText = InnerText;
             if (innerText.IndexOf("<b>Виды деятельности:</b>") == -1)
                 return "Неизвестно";
             innerText = innerText.Substring(innerText.IndexOf("<b>Виды деятельности:</b>") + 25,

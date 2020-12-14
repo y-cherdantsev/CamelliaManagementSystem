@@ -3,9 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using CamelliaManagementSystem.FileManage;
+using CamelliaManagementSystem.FileManage.DictionaryParsers;
 using CamelliaManagementSystem.JsonObjects;
 using CamelliaManagementSystem.Requests.References;
+using CamelliaManagementSystem.FileManage.PlainTextParsers;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 // ReSharper disable CommentTypo
@@ -148,8 +149,8 @@ namespace CamelliaManagementSystem.Requests
                 throw new CamelliaFileException($"No activities reference found for company '{bin}'");
 
             // Getting dates that are not in history folder yet
-            var dates = new PdfParser(activitiesReference.FullName,
-                    deleteFile: false).GetActivitiesDates()
+            var dates = new RegistrationActivitiesPdfParser(activitiesReference.FullName,
+                    deleteFile: false).GetDatesChanges()
                 .Select(x => x.date).Distinct().ToList();
             dates = dates.Where(x =>
                 historyDirectory.GetFiles()
@@ -212,9 +213,9 @@ namespace CamelliaManagementSystem.Requests
                 throw new CamelliaFileException($"Integrity not provided for company '{bin}'");
 
             var registrationActivitiesReference =
-                new PdfParser(Path.Combine(historyDirectory.FullName, $"{bin}.pdf"), false);
+                new RegistrationActivitiesPdfParser(Path.Combine(historyDirectory.FullName, $"{bin}.pdf"), false);
             var activitiesDates =
-                registrationActivitiesReference.GetActivitiesDates().ToList();
+                registrationActivitiesReference.GetDatesChanges().ToList();
 
             var dates = activitiesDates.Select(x => x.date).Where(x =>
                     historyDirectory.GetFiles().Any(y => y.Name == $"{x.Day}{x.Month}{x.Year}_{bin.ToString()}.pdf"))
@@ -223,7 +224,7 @@ namespace CamelliaManagementSystem.Requests
 
             // Head changes
             var head =
-                new PdfParser(
+                new RegisteredDatePdfParser(
                     Path.Combine(historyDirectory.FullName,
                         $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf"),
                     false).GetHead();
@@ -232,7 +233,7 @@ namespace CamelliaManagementSystem.Requests
                     {Date = dates.First(), Type = "fullname_director", Before = null, After = head});
             foreach (var date in dates)
             {
-                var newHead = new PdfParser(
+                var newHead = new RegisteredDatePdfParser(
                     Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"),
                     false).GetHead();
                 if (string.IsNullOrEmpty(newHead) || head == newHead)
@@ -244,7 +245,7 @@ namespace CamelliaManagementSystem.Requests
 
             // Place changes
             var place =
-                new PdfParser(
+                new RegisteredDatePdfParser(
                     Path.Combine(historyDirectory.FullName,
                         $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf"),
                     false).GetPlace();
@@ -253,7 +254,7 @@ namespace CamelliaManagementSystem.Requests
                     {Date = dates.First(), Type = "legal_address", Before = null, After = place});
             foreach (var date in dates)
             {
-                var newPlace = new PdfParser(
+                var newPlace = new RegisteredDatePdfParser(
                     Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"),
                     false).GetPlace();
                 if (string.IsNullOrEmpty(newPlace) || place == newPlace)
@@ -265,7 +266,7 @@ namespace CamelliaManagementSystem.Requests
 
             // Name changes
             var name =
-                new PdfParser(
+                new RegisteredDatePdfParser(
                     Path.Combine(historyDirectory.FullName,
                         $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf"),
                     false).GetName();
@@ -274,7 +275,7 @@ namespace CamelliaManagementSystem.Requests
                     {Date = dates.First(), Type = "name_ru", Before = null, After = name});
             foreach (var date in dates)
             {
-                var newName = new PdfParser(
+                var newName = new RegisteredDatePdfParser(
                     Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"),
                     false).GetName();
                 if (string.IsNullOrEmpty(newName) || name == newName)
@@ -286,7 +287,7 @@ namespace CamelliaManagementSystem.Requests
 
             // Occupation changes
             var occupation =
-                new PdfParser(
+                new RegisteredDatePdfParser(
                     Path.Combine(historyDirectory.FullName,
                         $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf"),
                     false).GetOccupation();
@@ -295,7 +296,7 @@ namespace CamelliaManagementSystem.Requests
                     {Date = dates.First(), Type = "occupation", Before = null, After = occupation});
             foreach (var date in dates)
             {
-                var newOccupation = new PdfParser(
+                var newOccupation = new RegisteredDatePdfParser(
                     Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"),
                     false).GetOccupation();
                 if (string.IsNullOrEmpty(newOccupation) || occupation == newOccupation)
@@ -305,6 +306,32 @@ namespace CamelliaManagementSystem.Requests
                 occupation = newOccupation;
             }
 
+            // Founders changes
+            var startFounders =
+                new RegisteredDatePdfDictionaryParser(
+                    Path.Combine(historyDirectory.FullName,$"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf")).GetFounders();
+            
+            var previousFounders = new List<string>();
+            if (startFounders != null)
+            {
+                changes.AddRange(startFounders.Select(startFounder => new CompanyChange
+                    {Date = dates.First(), Type = "founder", Before = null, After = startFounder}));
+                previousFounders = startFounders;
+            }
+            
+            foreach (var date in dates)
+            {
+                var tempFounders =
+                    new RegisteredDatePdfDictionaryParser(
+                        Path.Combine(historyDirectory.FullName,$"{date.Day}{date.Month}{date.Year}_{bin}.pdf")).GetFounders();
+                // Old removed
+                changes.AddRange(from previousFounder in previousFounders where tempFounders.All(x => x != previousFounder) select new CompanyChange {Date = date, Type = "founder", Before = previousFounder, After = null});
+                
+                //New added
+                changes.AddRange(from tempFounder in tempFounders where previousFounders.All(x => x != tempFounder) select new CompanyChange {Date = date, Type = "founder", Before = null, After = tempFounder});
+                previousFounders = tempFounders;
+            }
+            
             return changes;
         }
     }

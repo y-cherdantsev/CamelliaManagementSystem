@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 // ReSharper disable CommentTypo
@@ -11,24 +11,29 @@ using System.Text.RegularExpressions;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
-namespace CamelliaManagementSystem.FileManage
+namespace CamelliaManagementSystem.FileManage.PlainTextParsers
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.05.2020 14:49:19
     /// <summary>
     /// Get activities with dates
     /// </summary>
-    public class ActivitiesDatePdfParse : PdfParse
+    public class RegistrationActivitiesPdfParser : PdfPlainTextParser
     {
+        /// <inheritdoc />
+        public RegistrationActivitiesPdfParser(string path, bool deleteFile = false) : base(path, deleteFile)
+        {
+            MinimizeReferenceText();
+        }
+
         /// <summary>
         /// Gets dates from registration activities reference
         /// </summary>
-        /// <param name="innerText">Text from the reference</param>
         /// <returns>List of DateActivity objects</returns>
-        public static IEnumerable<DateActivity> GetDatesChanges(string innerText)
+        public IEnumerable<DateActivity> GetDatesChanges()
         {
             var result = new List<DateActivity>();
-            innerText = MinimizeReferenceText(innerText);
+            var innerText = InnerText;
             innerText = innerText.Substring(innerText.IndexOf("<b>Местонахождение</b>") + 3,
                 innerText.Length - innerText.IndexOf("<b>Местонахождение</b>") - 3);
             innerText = innerText.Substring(innerText.IndexOf("<b>"),
@@ -72,9 +77,7 @@ namespace CamelliaManagementSystem.FileManage
                 try
                 {
                     if (activityString.IndexOf("(", StringComparison.Ordinal) == -1)
-                    {
                         throw new Exception();
-                    }
 
                     activityString = activityString.Substring(activityString.IndexOf("(") + 1,
                         activityString.Length - activityString.IndexOf("(") - 2);

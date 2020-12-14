@@ -5,23 +5,29 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable StringIndexOfIsCultureSpecific.1
 
-namespace CamelliaManagementSystem.FileManage
+namespace CamelliaManagementSystem.FileManage.PlainTextParsers
 {
+    
     /// @author Yevgeniy Cherdantsev
     /// @date 14.05.2020 14:49:19
     /// <summary>
     /// Parse text and gets where the person is head
     /// </summary>
-    public class WhereIsHeadPdfParse : PdfParse
+    public class FlParticipationPdfParser : PdfPlainTextParser
     {
+        /// <inheritdoc />
+        public FlParticipationPdfParser(string path, bool deleteFile = true) : base(path, deleteFile)
+        {
+        }
         
         /// <summary>
         /// Parse text and gets where the person is head
         /// </summary>
-        /// <param name="innerText">Text of a pdf file</param>
         /// <returns>IEnumerable - List of bins</returns>
-        public static IEnumerable<string> GetWhereIsHead(string innerText)
+        public IEnumerable<string> GetWhereIsHead()
         {
+
+            var innerText = InnerText;
             var companies = new List<string>();
             var fullname = innerText.Substring(innerText.IndexOf("<b>Ф.И.О.</b><br>")+17, 
                 innerText.Substring(innerText.IndexOf("<b>Ф.И.О.</b><br>")+17).IndexOf("<br>"))
@@ -43,5 +49,7 @@ namespace CamelliaManagementSystem.FileManage
             }
             return companies;
         }
+
+
     }
 }

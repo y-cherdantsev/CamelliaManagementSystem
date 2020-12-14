@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using CamelliaManagementSystem.FileManage;
+using CamelliaManagementSystem.FileManage.PlainTextParsers;
 
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
@@ -48,7 +48,7 @@ namespace CamelliaManagementSystem.Requests.References
             var temp = reference.First(x => x.language.Contains("ru"));
 
             return temp != null
-                ? new PdfParser(
+                ? new RegistrationPdfParser(
                         await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
                             $"{bin.TrimStart('0')}_registration"), deleteFile)
                     .GetFounders()

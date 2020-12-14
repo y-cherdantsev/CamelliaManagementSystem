@@ -1,28 +1,35 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
+using System.Collections.Generic;
 using CamelliaManagementSystem.Requests;
 
 //TODO(REFACTOR)
-namespace CamelliaManagementSystem.FileManage
+namespace CamelliaManagementSystem.FileManage.PlainTextParsers
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 14:49:19
     /// <summary>
     /// Gets bins of all child companies
     /// </summary>
-    public sealed class ChildCompaniesPdfParse : PdfParse
+    public sealed class UlParticipationPdfParser : PdfPlainTextParser
     {
+        /// <inheritdoc />
+        public UlParticipationPdfParser(string path, bool deleteFile = true) : base(path, deleteFile)
+        {
+            MinimizeReferenceText();
+        }
+        
+        
         /// <summary>
         /// Get list of child companies from the reference
         /// </summary>
-        /// <param name="innerText">text of the reference</param>
         /// <returns>IEnumerable - list of child companies</returns>
         /// <exception cref="CamelliaNoneDataException">If no information were found</exception>
-        public static IEnumerable<string> GetChildCompanies(string innerText)
+        public IEnumerable<string> GetChildCompanies()
         {
+            var innerText = InnerText;
+            innerText = innerText.Replace("\r\n", string.Empty);
+            
             var childCompanies = new List<string>();
-            innerText = MinimizeReferenceText(innerText).Replace("\r\n", string.Empty);
 
             while (innerText.Contains("<b>БИН</b>"))
             {
