@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedType.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable StringIndexOfIsCultureSpecific.1
@@ -16,12 +17,12 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
     /// @author Yevgeniy Cherdantsev
     /// @date 14.05.2020 14:49:19
     /// <summary>
-    /// Get activities with dates
+    /// Get activities with dates using plain text method
     /// </summary>
-    public class RegistrationActivitiesPdfParser : PdfPlainTextParser
+    public class RegistrationActivitiesPdfTextParser : PdfPlainTextParser
     {
         /// <inheritdoc />
-        public RegistrationActivitiesPdfParser(string path, bool deleteFile = false) : base(path, deleteFile)
+        public RegistrationActivitiesPdfTextParser(string path, bool deleteFile = false) : base(path, deleteFile)
         {
             MinimizeReferenceText();
         }

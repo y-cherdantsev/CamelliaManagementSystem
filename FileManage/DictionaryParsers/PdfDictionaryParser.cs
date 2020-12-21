@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using CamelliaManagementSystem.Requests;
 using iText.Kernel.Colors;
 using iText.PdfCleanup.Autosweep;
@@ -13,23 +15,26 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
     public class PdfDictionaryParser
     {
         protected internal readonly string FilePath;
-        protected internal readonly Dictionary<string, List<string>> Dictionary;
+        protected internal Dictionary<string, List<string>> Dictionary;
 
         public PdfDictionaryParser(string filePath, bool deleteFile = false)
         {
             FilePath = filePath;
+            LoadDictionary(deleteFile).GetAwaiter().GetResult();
+        }
 
-            var file = new FileInfo(filePath);
+        public async Task LoadDictionary(bool deleteFile)
+        {
+            var file = new FileInfo(FilePath);
 
             if (!file.Exists)
                 throw new CamelliaFileException($"No file has been found; Full path:'{file.FullName}'");
-
-            Dictionary = new PdfDictTransformer()
-                .ReadPdfFileCreateListData(filePath).GetAwaiter()
-                .GetResult();
-
+            
+            Dictionary = await new PdfDictTransformer()
+                .ReadPdfFileCreateListData(FilePath);
+            
             if (deleteFile)
-                new FileInfo(filePath).Delete();
+                new FileInfo(FilePath).Delete();
         }
 
         /// <summary>

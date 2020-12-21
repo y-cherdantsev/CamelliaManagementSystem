@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using CamelliaManagementSystem.FileManage.DictionaryParsers;
 using CamelliaManagementSystem.FileManage.PlainTextParsers;
 
 // ReSharper disable CommentTypo
@@ -50,7 +51,7 @@ namespace CamelliaManagementSystem.Requests.References
             var temp = reference.First(x => x.language.Contains("ru"));
 
             return temp != null
-                ? new FlParticipationPdfParser(
+                ? new FlParticipationPdfDictionaryParser(
                         await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
                             $"{iin.TrimStart('0')}_fl_participation"), deleteFile)
                     .GetWhereIsHead()

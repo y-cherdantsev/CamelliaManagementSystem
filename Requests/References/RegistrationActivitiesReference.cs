@@ -38,7 +38,7 @@ namespace CamelliaManagementSystem.Requests.References
         /// <param name="deleteFile">If the file should be deleted after parsing</param>
         /// <param name="timeout">Timeout</param>
         /// <returns>IEnumerable - list of founders</returns>
-        public async Task<IEnumerable<RegistrationActivitiesPdfParser.DateActivity>> GetActivitiesDatesAsync(string bin,
+        public async Task<IEnumerable<RegistrationActivitiesPdfTextParser.DateActivity>> GetActivitiesDatesAsync(string bin,
             string saveFolderPath = null, int delay = 1000, bool deleteFile = false, int timeout = 20000)
         {
             saveFolderPath ??= Path.GetTempPath();
@@ -47,7 +47,7 @@ namespace CamelliaManagementSystem.Requests.References
             var temp = reference.First(x => x.language.Contains("ru"));
 
             return temp != null
-                ? new RegistrationActivitiesPdfParser(
+                ? new RegistrationActivitiesPdfTextParser(
                         await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
                             $"{bin.TrimStart('0')}_activities"), deleteFile)
                     .GetDatesChanges()

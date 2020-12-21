@@ -13,7 +13,12 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
     public class PdfDictTransformer
     {
         private const string Splitter = "|||";
-
+        
+        /// <summary>
+        /// If the field outlined
+        /// </summary>
+        private const float Treshold = 26.1f;
+        
         public async Task<Dictionary<string, List<string>>> ReadPdfFileCreateListData(string fileName)
         {
             var dictionary = new Dictionary<PdfTextField, PdfTextField>();
@@ -56,6 +61,8 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
                 var valuesList = pdfTextFields.Value?.UnformattedContent.Split(Splitter).ToList();
                 valuesList?.ForEach(x => x.Trim());
                 valuesList?.RemoveAll(x => x.Equals(string.Empty));
+                if (result.ContainsKey(key))
+                    key += $"_{result.Count(x => x.Key.StartsWith(key))}";
                 result.Add(key, valuesList);
             }
 
@@ -255,16 +262,16 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
 
         private static bool IsTextFieldInsideRectangle(Rectangle outer, PdfTextField inner, Rectangle size)
         {
-            var lowerLeftX = (float) Math.Round(inner.RootBottomLeft.X);
-            var lowerLeftY = size.Height - (float) Math.Round(inner.RootBottomLeft.Y);
-            var upperRightX = (float) Math.Round(lowerLeftX + inner.Length);
-            var upperRightY = (float) Math.Round(lowerLeftY + inner.Height);
+            var llx = (float) Math.Round(inner.RootBottomLeft.X);
+            var lly = size.Height - (float) Math.Round(inner.RootBottomLeft.Y);
+            var urx = (float) Math.Round(llx + inner.Length);
+            var ury = (float) Math.Round(lly + inner.Height);
 
-            var rect = new Rectangle(lowerLeftX, lowerLeftY, upperRightX, upperRightY);
+            var rect = new Rectangle(llx, lly, urx, ury);
 
-            return outer.Left <= rect.Left
+            return (outer.Left <= rect.Left | Math.Abs(outer.Left - rect.Left) < Treshold)
                    & outer.Top >= rect.Top
-                   & outer.Right >= rect.Right
+                   & (outer.Right >= rect.Right | Math.Abs(outer.Right - rect.Right) < Treshold)
                    & outer.Bottom <= rect.Bottom;
         }
     }

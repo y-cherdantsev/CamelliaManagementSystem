@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using CamelliaManagementSystem.Requests;
 
-//TODO(REFACTOR)
+// ReSharper disable CommentTypo
+// ReSharper disable UnusedType.Global
+
 namespace CamelliaManagementSystem.FileManage.PlainTextParsers
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 14.03.2020 14:49:19
     /// <summary>
-    /// Gets bins of all child companies
+    /// Gets bins of all child companies using plain text method
     /// </summary>
-    public sealed class UlParticipationPdfParser : PdfPlainTextParser
+    public sealed class UlParticipationPdfTextParser : PdfPlainTextParser
     {
         /// <inheritdoc />
-        public UlParticipationPdfParser(string path, bool deleteFile = true) : base(path, deleteFile)
+        public UlParticipationPdfTextParser(string path, bool deleteFile = true) : base(path, deleteFile)
         {
             MinimizeReferenceText();
         }
-        
-        
+
         /// <summary>
         /// Get list of child companies from the reference
         /// </summary>

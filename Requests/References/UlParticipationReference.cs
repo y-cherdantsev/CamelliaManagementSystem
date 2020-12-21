@@ -50,7 +50,7 @@ namespace CamelliaManagementSystem.Requests.References
             var temp = reference.First(x => x.language.Contains("ru"));
 
             return temp != null
-                ? new UlParticipationPdfParser(
+                ? new UlParticipationPdfTextParser(
                         await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
                             $"{bin.TrimStart('0')}_ul_participation"), deleteFile)
                     .GetChildCompanies()

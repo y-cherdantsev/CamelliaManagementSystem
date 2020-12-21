@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Collections.Generic;
 
 namespace CamelliaManagementSystem.FileManage.DictionaryParsers
 {
     public class RegisteredDatePdfDictionaryParser : PdfDictionaryParser
     {
-        public RegisteredDatePdfDictionaryParser(string filePath, bool deleteFile = false) : base(filePath, deleteFile)
+        public RegisteredDatePdfDictionaryParser(string filePath) : base(filePath)
         {
         }
 
@@ -15,15 +15,14 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
 
             var dictionaryList = Dictionary["Учредители (участники, члены)"];
             if (dictionaryList == null)
-            {
-                //todo(throw none data)
                 return founders;
-            }
+
             var flag = false;
             foreach (var element in dictionaryList)
             {
-                if (element.Replace(" ", "").All(char.IsUpper) &&
-                    element.Contains(" ") && !element.Contains("\"") && !element.ToLower().Replace(" ", "").Equals("обществосограниченной"))
+                if (element.Replace(" ", "").Replace("-", "").All(char.IsUpper) &&
+                    element.Contains(" ") && !element.Contains("\"") &&
+                    !element.ToLower().Replace(" ", "").Equals("обществосограниченной"))
                 {
                     founders.Add(element);
                     flag = false;

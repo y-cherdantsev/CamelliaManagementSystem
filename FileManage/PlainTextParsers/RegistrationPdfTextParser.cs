@@ -1,20 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using CamelliaManagementSystem.Requests;
 
-//TODO(REFACTOR)
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedType.Global
+// ReSharper disable StringIndexOfIsCultureSpecific.1
+
 namespace CamelliaManagementSystem.FileManage.PlainTextParsers
 {
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 17:30:46
     /// <summary>
-    /// Parsing of registration reference and gettion of founders from it
+    /// Parsing of registration reference and gettion of founders from it using plain text method
     /// </summary>
-    public class RegistrationPdfParser : PdfPlainTextParser
+    public class RegistrationPdfTextParser : PdfPlainTextParser
     {
         /// <inheritdoc />
-        public RegistrationPdfParser(string path, bool deleteFile = true) : base(path, deleteFile)
+        public RegistrationPdfTextParser(string path, bool deleteFile = true) : base(path, deleteFile)
         {
         }
 
@@ -26,7 +30,6 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
         /// /// <exception cref="CamelliaNoneDataException">If no information were found</exception>
         public IEnumerable<string> GetFounders()
         {
-            // todo(test)
             var textFromPdf = InnerText;
             var founders = new List<string>();
             if (textFromPdf.ToLower().Contains("регистрации филиала"))
@@ -34,8 +37,8 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
             
             textFromPdf = MinimizeReferenceText(textFromPdf);
 
-            var from = "<b>Учредители (участники):</b>";
-            var to = "<b>";
+            const string from = "<b>Учредители (участники):</b>";
+            const string to = "<b>";
             if (textFromPdf.ToLower().IndexOf(from.ToLower()) == -1)
                 throw new CamelliaNoneDataException("No information were found in the reference");
             var fromPosition = textFromPdf.ToLower().IndexOf(from.ToLower(), StringComparison.Ordinal);
@@ -168,7 +171,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
         }
 
         /// <summary>
-        /// Removing of unneccesary element and symbols in founders list
+        /// Removing of unnecessary element and symbols in founders list
         /// </summary>
         /// <param name="founders">List of founders</param>
         /// <returns>IEnumerable - normalized list</returns>

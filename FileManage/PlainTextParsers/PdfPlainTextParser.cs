@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
+using System.Diagnostics;
 using CamelliaManagementSystem.Requests;
 
 // ReSharper disable CommentTypo
@@ -103,7 +103,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
         /// </summary>
         /// <returns>string - minimized text</returns>
         /// todo(Not usable for all references)
-        protected string MinimizeReferenceText(string innerText)
+        protected static string MinimizeReferenceText(string innerText)
         {
             innerText = innerText.Trim();
             var to = "<b>Наименование";

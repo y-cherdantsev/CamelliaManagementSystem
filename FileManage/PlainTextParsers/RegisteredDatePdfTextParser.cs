@@ -1,17 +1,31 @@
 ﻿using System;
 using System.Linq;
 
-//TODO(REFACTOR)
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedType.Global
+// ReSharper disable UnusedMember.Global
+// ReSharper disable StringIndexOfIsCultureSpecific.1
+
 namespace CamelliaManagementSystem.FileManage.PlainTextParsers
 {
-    public class RegisteredDatePdfParser : PdfPlainTextParser
+    /// @author Yevgeniy Cherdantsev
+    /// @date 14.05.2020 14:49:19
+    /// <summary>
+    /// Get data about company on the given date using plain text method
+    /// </summary>
+    public class RegisteredDatePdfTextParser : PdfPlainTextParser
     {
         /// <inheritdoc />
-        public RegisteredDatePdfParser(string path, bool deleteFile = true) : base(path, deleteFile)
+        public RegisteredDatePdfTextParser(string path, bool deleteFile = true) : base(path, deleteFile)
         {
             MinimizeReferenceText();
         }
 
+        /// <summary>
+        /// Get head of a company
+        /// </summary>
+        /// <returns>string - Head</returns>
         public string GetHead()
         {
             var innerText = InnerText;
@@ -24,6 +38,8 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
             var elements = innerText.Substring(0, innerText.IndexOf("<b>")).Replace("\r", " ").Replace("\n", " ")
                 .Replace(".", " ").Replace(",", " ")
                 .Split(' ');
+
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var element in elements)
             {
                 if (!element.Equals("И") &&
@@ -50,6 +66,10 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
             return string.IsNullOrEmpty(result) ? null : result;
         }
 
+        /// <summary>
+        /// Get name of a company
+        /// </summary>
+        /// <returns>string - Name</returns>
         public string GetName()
         {
             var innerText = InnerText;
@@ -62,6 +82,10 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
             return string.IsNullOrEmpty(result) ? null : result;
         }
 
+        /// <summary>
+        /// Get place where company located
+        /// </summary>
+        /// <returns>string - Place</returns>
         public string GetPlace()
         {
             var innerText = InnerText;
@@ -77,6 +101,10 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
             return string.IsNullOrEmpty(result) ? null : result;
         }
 
+        /// <summary>
+        /// Get number of founders
+        /// </summary>
+        /// <returns>int - Number of founders</returns>
         public int? CountFounders()
         {
             var innerText = InnerText;
@@ -88,6 +116,10 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
             return Convert.ToInt32(result);
         }
 
+        /// <summary>
+        /// Get occupation of a company
+        /// </summary>
+        /// <returns>string - Occupation</returns>
         public string GetOccupation()
         {
             var innerText = InnerText;

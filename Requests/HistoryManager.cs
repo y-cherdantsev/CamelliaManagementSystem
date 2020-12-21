@@ -149,7 +149,7 @@ namespace CamelliaManagementSystem.Requests
                 throw new CamelliaFileException($"No activities reference found for company '{bin}'");
 
             // Getting dates that are not in history folder yet
-            var dates = new RegistrationActivitiesPdfParser(activitiesReference.FullName,
+            var dates = new RegistrationActivitiesPdfTextParser(activitiesReference.FullName,
                     deleteFile: false).GetDatesChanges()
                 .Select(x => x.date).Distinct().ToList();
             dates = dates.Where(x =>
@@ -213,96 +213,83 @@ namespace CamelliaManagementSystem.Requests
                 throw new CamelliaFileException($"Integrity not provided for company '{bin}'");
 
             var registrationActivitiesReference =
-                new RegistrationActivitiesPdfParser(Path.Combine(historyDirectory.FullName, $"{bin}.pdf"), false);
+                new RegistrationActivitiesPdfTextParser(Path.Combine(historyDirectory.FullName, $"{bin}.pdf"), false);
             var activitiesDates =
                 registrationActivitiesReference.GetDatesChanges().ToList();
 
             var dates = activitiesDates.Select(x => x.date).Where(x =>
                     historyDirectory.GetFiles().Any(y => y.Name == $"{x.Day}{x.Month}{x.Year}_{bin.ToString()}.pdf"))
                 .OrderBy(x => x.Date)
+                .Distinct()
                 .ToList();
+
+
+            var referenceTextParsers = dates.ToDictionary(date => date,
+                date => new RegisteredDatePdfTextParser(
+                    Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"), false));
 
             // Head changes
             var head =
-                new RegisteredDatePdfParser(
-                    Path.Combine(historyDirectory.FullName,
-                        $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf"),
-                    false).GetHead();
+                referenceTextParsers.First().Value.GetHead();
             if (!string.IsNullOrEmpty(head))
                 changes.Add(new CompanyChange
-                    {Date = dates.First(), Type = "fullname_director", Before = null, After = head});
-            foreach (var date in dates)
+                    {Date = referenceTextParsers.First().Key, Type = "fullname_director", Before = null, After = head});
+
+            foreach (var (key, value) in referenceTextParsers)
             {
-                var newHead = new RegisteredDatePdfParser(
-                    Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"),
-                    false).GetHead();
+                var newHead =
+                    value.GetHead();
                 if (string.IsNullOrEmpty(newHead) || head == newHead)
                     continue;
                 changes.Add(new CompanyChange
-                    {Date = date, Type = "fullname_director", Before = head, After = newHead});
+                    {Date = key, Type = "fullname_director", Before = head, After = newHead});
                 head = newHead;
             }
 
             // Place changes
             var place =
-                new RegisteredDatePdfParser(
-                    Path.Combine(historyDirectory.FullName,
-                        $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf"),
-                    false).GetPlace();
+                referenceTextParsers.First().Value.GetPlace();
             if (!string.IsNullOrEmpty(place))
                 changes.Add(new CompanyChange
-                    {Date = dates.First(), Type = "legal_address", Before = null, After = place});
-            foreach (var date in dates)
+                    {Date = referenceTextParsers.First().Key, Type = "legal_address", Before = null, After = place});
+            foreach (var (key, value) in referenceTextParsers)
             {
-                var newPlace = new RegisteredDatePdfParser(
-                    Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"),
-                    false).GetPlace();
+                var newPlace = value.GetPlace();
                 if (string.IsNullOrEmpty(newPlace) || place == newPlace)
                     continue;
                 changes.Add(new CompanyChange
-                    {Date = date, Type = "legal_address", Before = place, After = newPlace});
+                    {Date = key, Type = "legal_address", Before = place, After = newPlace});
                 place = newPlace;
             }
 
             // Name changes
             var name =
-                new RegisteredDatePdfParser(
-                    Path.Combine(historyDirectory.FullName,
-                        $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf"),
-                    false).GetName();
+                referenceTextParsers.First().Value.GetName();
             if (!string.IsNullOrEmpty(name))
                 changes.Add(new CompanyChange
-                    {Date = dates.First(), Type = "name_ru", Before = null, After = name});
-            foreach (var date in dates)
+                    {Date = referenceTextParsers.First().Key, Type = "name_ru", Before = null, After = name});
+            foreach (var (key, value) in referenceTextParsers)
             {
-                var newName = new RegisteredDatePdfParser(
-                    Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"),
-                    false).GetName();
+                var newName = value.GetName();
                 if (string.IsNullOrEmpty(newName) || name == newName)
                     continue;
                 changes.Add(new CompanyChange
-                    {Date = date, Type = "name_ru", Before = name, After = newName});
+                    {Date = key, Type = "name_ru", Before = name, After = newName});
                 name = newName;
             }
 
             // Occupation changes
-            var occupation =
-                new RegisteredDatePdfParser(
-                    Path.Combine(historyDirectory.FullName,
-                        $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.pdf"),
-                    false).GetOccupation();
+            var occupation = referenceTextParsers.First().Value.GetOccupation();
             if (!string.IsNullOrEmpty(occupation))
                 changes.Add(new CompanyChange
-                    {Date = dates.First(), Type = "occupation", Before = null, After = occupation});
-            foreach (var date in dates)
+                    {Date = referenceTextParsers.First().Key, Type = "occupation", Before = null, After = occupation});
+            foreach (var (key, value) in referenceTextParsers)
             {
-                var newOccupation = new RegisteredDatePdfParser(
-                    Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.pdf"),
-                    false).GetOccupation();
+                var newOccupation = value.GetOccupation();
                 if (string.IsNullOrEmpty(newOccupation) || occupation == newOccupation)
                     continue;
                 changes.Add(new CompanyChange
-                    {Date = date, Type = "occupation", Before = occupation, After = newOccupation});
+                    {Date = key, Type = "occupation", Before = occupation, After = newOccupation});
                 occupation = newOccupation;
             }
 
