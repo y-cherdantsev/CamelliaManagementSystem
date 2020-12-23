@@ -13,7 +13,12 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
         {
             var founders = new List<string>();
 
-            var dictionaryList = Dictionary["Учредители (участники, члены)"];
+            var key = Dictionary.Keys.FirstOrDefault(x => x.Contains("Учредители"));
+
+            if (key == null)
+                return founders;
+
+            var dictionaryList = Dictionary[key];
             if (dictionaryList == null)
                 return founders;
 
