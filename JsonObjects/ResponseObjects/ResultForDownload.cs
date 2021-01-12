@@ -60,6 +60,17 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
 
             var fullName = Path.Combine(path, $"{fileName}.pdf");
 
+            var oldFile = new FileInfo(fullName);
+            if (oldFile.Exists)
+                try
+                {
+                    oldFile.Delete();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
             for (var i = 0; i < 10; ++i)
             {
                 var file = new FileInfo(fullName);
@@ -87,7 +98,7 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
 
             return Path.Combine(path, $"{fileName}.pdf");
         }
-        
+
         /// <inheritdoc />
         public void Dispose()
         {
@@ -98,8 +109,8 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
             language = null;
             name = null;
         }
-        
-        
+
+
         /// <summary>
         /// Enumerates different languages of the reference
         /// </summary>
