@@ -17,7 +17,7 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
         /// <summary>
         /// If the field outlined
         /// </summary>
-        private const float Treshold = 26.1f;
+        private const float Treshold = 27.1f;
         
         public async Task<Dictionary<string, List<string>>> ReadPdfFileCreateListData(string fileName)
         {
