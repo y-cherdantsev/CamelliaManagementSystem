@@ -43,7 +43,7 @@ namespace CamelliaManagementSystem.Requests
             for (var i = 0; i < numberOfTries; i++)
             {
                 var response = await camelliaClient.HttpClient
-                    .GetAsync($"https://egov.kz/services/P30.11/rest/gbdul/organizations/{bin}");
+                    .GetAsync($"https://egov.kz/services/P30.05/rest/gbdul/organizations/{bin}");
 
                 // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
                 if (response.StatusCode == HttpStatusCode.Redirect)

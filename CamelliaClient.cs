@@ -73,7 +73,7 @@ namespace CamelliaManagementSystem
         /// <param name="webProxy">Proxy</param>
         /// <param name="httpClientTimeout">Timeout of http client connected to the camellia system; Standard: 15000</param>
         public CamelliaClient(Sign sign, string ncaNodeHost, int ncaNodePort, IWebProxy webProxy = null,
-            int httpClientTimeout = 15000)
+            int httpClientTimeout = 60000)
         {
             Sign = sign;
             Proxy = webProxy;
