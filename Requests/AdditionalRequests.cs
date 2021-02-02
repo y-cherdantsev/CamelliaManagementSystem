@@ -38,7 +38,7 @@ namespace CamelliaManagementSystem.Requests
             bin = bin.PadLeft(12, '0');
 
             //Codes send from system that means that bin is not registered
-            string[] knownErrorCodes = {"031", "033",  "034", "035", "041"};
+            string[] knownErrorCodes = {"031", "033", "034", "035", "041"};
 
             for (var i = 0; i < numberOfTries; i++)
             {
@@ -56,7 +56,7 @@ namespace CamelliaManagementSystem.Requests
                     continue;
                 }
 
-                var result = "";
+                var result = string.Empty;
 
                 if (response.Content != null)
                     result = await response.Content.ReadAsStringAsync();
@@ -132,6 +132,48 @@ namespace CamelliaManagementSystem.Requests
             throw new CamelliaRequestException($"{numberOfTries} tries with delay={delay} exceeded");
         }
 
+        /// <summary>
+        /// Returns person object if the iin is registered in camellia system
+        /// </summary>
+        /// <param name="camelliaClient">Camellia client</param>
+        /// <param name="iin">iin of the person</param>
+        /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
+        /// <param name="delay">Time in millis between requests</param>
+        /// <returns>person - person data</returns>
+        public static async Task<UserInformation.Info.Person> GetPersonData(CamelliaClient camelliaClient, string iin,
+            int numberOfTries = 15,
+            int delay = 500)
+        {
+            //Padding IIN to 12 symbols
+            iin = iin.PadLeft(12, '0');
+
+            for (var i = 0; i < numberOfTries; i++)
+            {
+                var response = await camelliaClient.HttpClient.GetAsync(
+                    $"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short");
+
+                // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        throw new CamelliaNoneDataException("No person has been found");
+
+                    // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
+                    case HttpStatusCode.Redirect when !await camelliaClient.IsLoggedAsync():
+                        throw new CamelliaClientException(
+                            $"'{camelliaClient.Sign.biin}' isn't authorized to the camellia system");
+                    case HttpStatusCode.Redirect:
+                        Thread.Sleep(delay);
+                        continue;
+
+                    default:
+                        return JsonSerializer.Deserialize<UserInformation.Info.Person>(
+                            await response.Content.ReadAsStringAsync());
+                }
+            }
+
+            throw new CamelliaRequestException("Request hasn't been proceeded");
+        }
 
         /// <summary>
         /// Checks if there is no organization with presented name
@@ -164,7 +206,7 @@ namespace CamelliaManagementSystem.Requests
                     continue;
                 }
 
-                var result = "";
+                var result = string.Empty;
 
                 if (response.Content != null)
                     result = await response.Content.ReadAsStringAsync();
@@ -221,7 +263,7 @@ namespace CamelliaManagementSystem.Requests
                     continue;
                 }
 
-                var result = "";
+                var result = string.Empty;
 
                 if (response.Content != null)
                     result = await response.Content.ReadAsStringAsync();
