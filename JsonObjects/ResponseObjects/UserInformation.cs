@@ -1,5 +1,6 @@
 ﻿// ReSharper disable CommentTypo
 // ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -42,10 +43,11 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
                 public int currentAge { get; set; }
                 public long dateOfBirth { get; set; }
                 public string gender { get; set; }
-                public string fullName { get; set; }
+
                 public bool hasActualDocuments { get; set; }
                 public string iin { get; set; }
                 public PersonName name { get; set; }
+                public string fullName { get; set; }
                 public Nationality nationality { get; set; }
                 public string status { get; set; }
                 public string statusCode { get; set; }
@@ -60,6 +62,11 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
                     public string firstName { get; set; }
                     public string lastName { get; set; }
                     public string middleName { get; set; }
+
+                    public override string ToString()
+                    {
+                        return $"{lastName} {firstName} {middleName}";
+                    }
                 }
 
                 /// @author Yevgeniy Cherdantsev
