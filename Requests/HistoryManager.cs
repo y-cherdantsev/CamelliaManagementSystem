@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using CamelliaManagementSystem.FileManage.DictionaryParsers;
 using CamelliaManagementSystem.JsonObjects;
 using CamelliaManagementSystem.Requests.References;
 using CamelliaManagementSystem.FileManage.PlainTextParsers;
+using CamelliaManagementSystem.FileManage.DictionaryParsers;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 // ReSharper disable CommentTypo
@@ -67,7 +67,7 @@ namespace CamelliaManagementSystem.Requests
                 }
                 catch (CamelliaNoneDataException)
                 {
-                    // Finding and removing integrity file if exist
+                    // Finding and creating integrity file for the company if not exist (If data wasn't found)
                     var integrityFilePath = Path.Combine(companyHistoryDirectory.FullName, "integrity");
                     var integrityFile = new FileInfo(integrityFilePath);
                     if (!integrityFile.Exists)

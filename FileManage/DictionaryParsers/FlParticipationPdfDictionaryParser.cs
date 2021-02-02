@@ -31,5 +31,12 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
 
             return companies;
         }
+        
+        
+
+        public string GetPersonFullname()
+        {
+            return string.Join(" ", Dictionary["Ф.И.О."]).Trim().Replace("- ", "-");
+        }
     }
 }

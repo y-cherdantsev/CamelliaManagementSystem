@@ -57,5 +57,33 @@ namespace CamelliaManagementSystem.Requests.References
                     .GetWhereIsHead()
                 : null;
         }
+
+        /// <summary>
+        /// Parsing of fl participation reference and getting persons fullname
+        /// </summary>
+        /// <param name="iin">IIN of the person</param>
+        /// <param name="captchaApiKey">API key for solving captchas</param>
+        /// <param name="saveFolderPath">Defines where to save file</param>
+        /// <param name="delay">Delay of checking if the reference is in ms</param>
+        /// <param name="deleteFile">If the file should be deleted after parsing</param>
+        /// <param name="timeout">Timeout</param>
+        /// <returns>string - persons fullname</returns>
+        public async Task<string> GetPersonFullnameAsync(string iin, string captchaApiKey,
+            string saveFolderPath = null,
+            int delay = 1000,
+            bool deleteFile = false, int timeout = 60000)
+        {
+            saveFolderPath ??= Path.GetTempPath();
+
+            var reference = await GetReferenceAsync(iin, captchaApiKey, delay, timeout);
+            var temp = reference.First(x => x.language.Contains("ru"));
+
+            return temp != null
+                ? new FlParticipationPdfDictionaryParser(
+                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                            $"{iin.TrimStart('0')}_fl_participation"), deleteFile)
+                    .GetPersonFullname()
+                : null;
+        }
     }
 }
