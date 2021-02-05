@@ -63,10 +63,8 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
                     public string lastName { get; set; }
                     public string middleName { get; set; }
 
-                    public override string ToString()
-                    {
-                        return $"{lastName} {firstName} {middleName}";
-                    }
+                    public override string ToString() =>
+                        $"{lastName} {firstName} {middleName}".Replace("  ", " ").Trim();
                 }
 
                 /// @author Yevgeniy Cherdantsev
