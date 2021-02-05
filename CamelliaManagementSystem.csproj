@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-      <PackageVersion>2.0.47-alpha</PackageVersion>
-        <Version>2.0.47-alpha</Version>
+        <PackageVersion>2.0.48-alpha</PackageVersion>
+        <Version>2.0.48-alpha</Version>
         <RootNamespace>CamelliaManagementSystem</RootNamespace>
         <PackageTags>camellia management wisk alldata zhekacher</PackageTags>
         <Company>Wisk Telecom Solutions</Company>
@@ -12,9 +12,9 @@
         <Copyright>Wisk Telecom Solutions</Copyright>
         <RepositoryType>git</RepositoryType>
         <PackageIcon>camellia.png</PackageIcon>
-        <PackageIconUrl />
+        <PackageIconUrl/>
         <RepositoryUrl>https://github.com/ZhekaCher/CamelliaManagementSystem.git</RepositoryUrl>
-        <NeutralLanguage />
+        <NeutralLanguage/>
         <Product>CamelliaManagementSystem</Product>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <ApplicationIcon>camellia.ico</ApplicationIcon>
@@ -33,12 +33,12 @@
         </None>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="itext7" Version="7.1.13" />
-        <PackageReference Include="iTextSharp" Version="5.5.13.2" />
-        <PackageReference Include="NCANode" Version="1.0.1" />
-        <PackageReference Include="RestSharp" Version="106.11.7" />
-        <PackageReference Include="itext7.pdfsweep" Version="2.0.5" />
-        <PackageReference Include="AngleSharp" Version="1.0.0-alpha-822" />
-        <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+        <PackageReference Include="itext7" Version="7.1.13"/>
+        <PackageReference Include="iTextSharp" Version="5.5.13.2"/>
+        <PackageReference Include="NCANode" Version="1.0.1"/>
+        <PackageReference Include="RestSharp" Version="106.11.7"/>
+        <PackageReference Include="itext7.pdfsweep" Version="2.0.5"/>
+        <PackageReference Include="AngleSharp" Version="1.0.0-alpha-822"/>
+        <PackageReference Include="System.Drawing.Common" Version="5.0.0"/>
     </ItemGroup>
 </Project>

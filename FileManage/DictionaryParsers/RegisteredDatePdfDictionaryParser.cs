@@ -137,6 +137,8 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
                 }
             }
 
+            for (var i = 0; i < founders.Count; i++)
+                founders[i] = founders[i].Trim().Trim('-').Trim();
 
             return founders;
         }
