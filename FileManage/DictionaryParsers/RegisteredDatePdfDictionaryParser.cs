@@ -22,6 +22,7 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
             if (dictionaryList == null)
                 return founders;
 
+            // todo(bin: 20240004974)
             var flag = false;
             foreach (var element in dictionaryList)
             {
@@ -36,6 +37,22 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
                 {
                     if (element.ToLower().Trim().Replace(" ", "")
                         .StartsWith("товариществосограниченнойответственностью"))
+                    {
+                        flag = true;
+                        founders.Add(element);
+                        continue;
+                    }
+                    
+                    if (element.ToLower().Trim().Replace(" ", "")
+                        .StartsWith("открытоеакционерноеобщество"))
+                    {
+                        flag = true;
+                        founders.Add(element);
+                        continue;
+                    }
+                    
+                    if (element.ToLower().Trim().Replace(" ", "")
+                        .StartsWith("ао\""))
                     {
                         flag = true;
                         founders.Add(element);
@@ -138,7 +155,17 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
             }
 
             for (var i = 0; i < founders.Count; i++)
-                founders[i] = founders[i].Trim().Trim('-').Trim();
+            {
+                founders[i] = founders[i].Trim('.', '-', ' '); // 60840014782 'АЛИЯ', 'АЛИЯ - -', 'АЛИЯ . -'
+                while (founders[i].Contains("  ")) // Solves problem when 'НИКОЛАЙ НИКОЛАЕВИЧ' and 'НИКОЛАЙ  НИКОЛАЕВИЧ' are different objects
+                    founders[i] = founders[i].Replace("  ", " ");
+                while (founders[i].Contains("- ")) // "Научно-  производственное объединение
+                    founders[i] = founders[i].Replace("- ", "-");
+                while (founders[i].Contains(" -")) // "Научно-  производственное объединение
+                    founders[i] = founders[i].Replace(" -", "-");
+            }
+            // for (var i = 0; i < founders.Count; i++)
+            // founders[i] = founders[i].Trim('.').Trim('уведомление о ').Trim();
 
             return founders;
         }

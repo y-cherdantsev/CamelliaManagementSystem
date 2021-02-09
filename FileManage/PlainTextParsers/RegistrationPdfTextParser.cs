@@ -68,6 +68,22 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
                         continue;
                     }
 
+                    if (element.ToLower().Trim().Replace(" ", "")
+                        .StartsWith("открытоеакционерноеобщество"))
+                    {
+                        flag = true;
+                        founders.Add(element);
+                        continue;
+                    }
+                    
+                    if (element.ToLower().Trim().Replace(" ", "")
+                        .StartsWith("ао\""))
+                    {
+                        flag = true;
+                        founders.Add(element);
+                        continue;
+                    }
+                    
                     if (element.ToLower().Trim().Replace(" ", "").StartsWith("обществосограниченной"))
                     {
                         flag = true;
