@@ -34,7 +34,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
             var founders = new List<string>();
             if (textFromPdf.ToLower().Contains("регистрации филиала"))
                 return founders;
-            
+
             textFromPdf = MinimizeReferenceText(textFromPdf);
 
             const string from = "<b>Учредители (участники):</b>";
@@ -75,7 +75,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
                         founders.Add(element);
                         continue;
                     }
-                    
+
                     if (element.ToLower().Trim().Replace(" ", "")
                         .StartsWith("ао\""))
                     {
@@ -83,7 +83,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
                         founders.Add(element);
                         continue;
                     }
-                    
+
                     if (element.ToLower().Trim().Replace(" ", "").StartsWith("обществосограниченной"))
                     {
                         flag = true;
@@ -181,8 +181,6 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
             }
 
             var result = Normalize(founders);
-            if (result == null)
-                throw new CamelliaNoneDataException("No information were found in the reference");
             return result;
         }
 
@@ -202,9 +200,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
             }
 
             founders = founders.Distinct().ToList();
-            return founders.Count > 0
-                ? founders
-                : throw new CamelliaNoneDataException("Nothing has been found in reference");
+            return founders;
         }
     }
 }

@@ -217,6 +217,17 @@ namespace CamelliaManagementSystem.Requests
             var activitiesDates =
                 registrationActivitiesReference.GetDatesChanges().ToList();
 
+            // Load reorganization changes if exist
+            // ReSharper disable once StringLiteralTypo
+            var reorganizationChanges =
+                activitiesDates.Where(x => x.activity.type.ToLower() == "реорганизация").ToList();
+
+            reorganizationChanges.ForEach(x => changes.Add(new CompanyChange
+            {
+                Date = x.date,
+                Type = "reorganization"
+            }));
+
             var dates = activitiesDates.Select(x => x.date).Where(x =>
                     historyDirectory.GetFiles().Any(y => y.Name == $"{x.Day}{x.Month}{x.Year}_{bin.ToString()}.pdf"))
                 .OrderBy(x => x.Date)
