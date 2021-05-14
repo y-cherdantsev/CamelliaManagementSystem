@@ -21,6 +21,7 @@ namespace CamelliaManagementSystem.Requests.References
         /// <inheritdoc />
         public RegistrationActivitiesReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {
+            binRegistrationStatuses.Remove("035");
         }
 
         /// <inheritdoc />

@@ -44,11 +44,11 @@ namespace CamelliaManagementSystem.Requests
             switch (TypeOfBiin())
             {
                 case BiinType.BIN:
-                    if (biin.Length == 12 && !await AdditionalRequests.IsBinRegisteredAsync(CamelliaClient, biin))
+                    if (biin.Length == 12 && !await IsBinRegisteredAsync(biin))
                         throw new CamelliaNoneDataException("This bin is not registered");
                     break;
                 case BiinType.IIN:
-                    if (biin.Length == 12 && !await AdditionalRequests.IsIinRegisteredAsync(CamelliaClient, biin))
+                    if (biin.Length == 12 && !await IsIinRegisteredAsync(biin))
                         throw new CamelliaNoneDataException("This iin is not registered");
                     break;
                 default: throw new CamelliaRequestException("Unknown BiinType");

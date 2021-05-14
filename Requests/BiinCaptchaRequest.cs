@@ -44,12 +44,12 @@ namespace CamelliaManagementSystem.Requests
             input = input.PadLeft(12, '0');
             if (TypeOfBiin() == BiinType.BIN)
             {
-                if (!await AdditionalRequests.IsBinRegisteredAsync(CamelliaClient, input))
+                if (!await IsBinRegisteredAsync(input))
                     throw new CamelliaNoneDataException("This bin is not registered");
             }
             else
             {
-                if (!await AdditionalRequests.IsIinRegisteredAsync(CamelliaClient, input))
+                if (!await IsIinRegisteredAsync(input))
                     throw new CamelliaNoneDataException("This Iin is not registered");
             }
 

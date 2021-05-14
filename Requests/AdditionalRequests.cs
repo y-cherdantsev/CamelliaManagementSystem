@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CamelliaManagementSystem.JsonObjects.ResponseObjects;
 
 // ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedMember.Global
 
@@ -21,117 +22,6 @@ namespace CamelliaManagementSystem.Requests
     /// </summary>
     public static class AdditionalRequests
     {
-        /// <summary>
-        /// Returns true if the given bin registered in camellia system
-        /// Client should be logged in to work properly
-        /// </summary>
-        /// <param name="camelliaClient">Camellia client</param>
-        /// <param name="bin">bin of the company</param>
-        /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
-        /// <param name="delay">Time in millis between requests</param>
-        /// <returns>bool - true if company registered</returns>
-        // ReSharper disable once CognitiveComplexity
-        public static async Task<bool> IsBinRegisteredAsync(CamelliaClient camelliaClient, string bin,
-            int numberOfTries = 15, int delay = 500)
-        {
-            //Padding BIN to 12 symbols
-            bin = bin.PadLeft(12, '0');
-
-            //Codes send from system that means that bin is not registered
-            string[] knownErrorCodes = {"031", "033", "034", "035", "041"};
-
-            for (var i = 0; i < numberOfTries; i++)
-            {
-                var response = await camelliaClient.HttpClient
-                    .GetAsync($"https://egov.kz/services/P30.05/rest/gbdul/organizations/{bin}");
-
-                // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
-                if (response.StatusCode == HttpStatusCode.Redirect)
-                {
-                    if (!await camelliaClient.IsLoggedAsync())
-                        throw new CamelliaClientException(
-                            $"'{camelliaClient.Sign.biin}' isn't authorized to the camellia system");
-
-                    Thread.Sleep(delay);
-                    continue;
-                }
-
-                var result = string.Empty;
-
-                if (response.Content != null)
-                    result = await response.Content.ReadAsStringAsync();
-                else if (response.ReasonPhrase != null)
-                    throw new CamelliaRequestException(
-                        $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nContent is null;");
-
-
-                if (result.Contains("Number of connections exceeded"))
-                    throw new CamelliaRequestException(
-                        $"StatusCode:'{response.StatusCode}';\nReasonPhrase:'{response.ReasonPhrase}';\nNumber of connections exceeded. Please, try later;");
-
-                try
-                {
-                    var organization = JsonSerializer.Deserialize<Organization>(result);
-                    return !knownErrorCodes.Contains(organization.status.code);
-                }
-                catch (JsonException e)
-                {
-                    throw new JsonException(
-                        $"Json error while deserializing next string '{result}' of the '{bin}' company to organization object",
-                        e);
-                }
-            }
-
-            throw new CamelliaRequestException($"{numberOfTries} tries with delay={delay} exceeded");
-        }
-
-        /// <summary>
-        /// Returns boolean if the iin is registered in camellia system
-        /// </summary>
-        /// <param name="camelliaClient">Camellia client</param>
-        /// <param name="iin">iin of the person</param>
-        /// <param name="numberOfTries">Number of requests if some errors has been occured</param>
-        /// <param name="delay">Time in millis between requests</param>
-        /// <returns>bool - true if person registered</returns>
-        public static async Task<bool> IsIinRegisteredAsync(CamelliaClient camelliaClient, string iin,
-            int numberOfTries = 15, int delay = 500)
-        {
-            //Padding IIN to 12 symbols
-            iin = iin.PadLeft(12, '0');
-
-            /*
-            *
-            * Returns UserInformation.Info.Person in json
-            * Can be deserialized var person = JsonSerializer.Deserialize<UserInformation.Info.Person>(response.Content.ReadAsStringAsync());
-            * 
-            */
-            for (var i = 0; i < numberOfTries; i++)
-            {
-                var response = await camelliaClient.HttpClient.GetAsync(
-                    $"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short");
-
-                // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.NotFound:
-                        return false;
-
-                    // If got 302 'Moved Temporarily' StatusCode then check that user is logged in. If user is logged in then repeat request;
-                    case HttpStatusCode.Redirect when !await camelliaClient.IsLoggedAsync():
-                        throw new CamelliaClientException(
-                            $"'{camelliaClient.Sign.biin}' isn't authorized to the camellia system");
-                    case HttpStatusCode.Redirect:
-                        Thread.Sleep(delay);
-                        continue;
-
-                    default:
-                        return true;
-                }
-            }
-
-            throw new CamelliaRequestException($"{numberOfTries} tries with delay={delay} exceeded");
-        }
-
         /// <summary>
         /// Returns person object if the iin is registered in camellia system
         /// </summary>
