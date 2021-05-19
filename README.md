@@ -6,11 +6,14 @@
 
 ## Libraries
 
-* InteropKalkanCryptCOMLib 1.0.1
-* RestSharp 106.10.1
+* itext7 7.1.13
+* itext7.pdfsweep 2.0.5
+* iTextSharp 5.5.13.2
+* RestSharp 106.11.7
 * AngleSharp 1.0.0-alpha-822
 * NCANode 1.0.1
+* System.Drawing.Common 5.0.0
 
 ## Authors
 
-* **Yevgeniy Cherdantsev** - *Initial work* - [21090](https://gitlab.com/21090)
+* **Yevgeniy Cherdantsev** - *Initial work* - [y-cherdantsev](https://github.com/y-cherdantsev)
