@@ -191,7 +191,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
         /// <returns>IEnumerable - normalized list</returns>
         private static IEnumerable<string> Normalize(List<string> founders)
         {
-            founders.RemoveAll(x => x.Replace(" ", string.Empty).Equals("-"));
+            founders.RemoveAll(x => x.Replace(" ", string.Empty).Equals("-") || x.Replace(" ", string.Empty).Equals(""));
             for (var i = 0; i < founders.Count; i++)
             {
                 founders[i] = founders[i].Replace("\r", string.Empty).Replace("&amp;", "&");
