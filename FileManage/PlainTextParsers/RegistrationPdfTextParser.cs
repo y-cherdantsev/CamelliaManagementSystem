@@ -98,6 +98,13 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
                         continue;
                     }
 
+                    if (element.ToLower().Trim().Replace(" ", "").StartsWith("ао "))
+                    {
+                        flag = true;
+                        founders.Add(element);
+                        continue;
+                    }
+
                     if (element.ToLower().Trim().Replace(" ", "").StartsWith("акционерноеобщество"))
                     {
                         flag = true;
