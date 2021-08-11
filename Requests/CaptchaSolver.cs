@@ -1,6 +1,7 @@
 ﻿using System;
 using RestSharp;
 using System.IO;
+using System.Net;
 using System.Web;
 using System.Threading;
 
@@ -16,6 +17,14 @@ namespace CamelliaManagementSystem.Requests
     /// </summary>
     internal static class CaptchaSolver
     {
+        /// <summary>
+        /// Proxy for sending requests
+        /// </summary>
+        private static WebProxy _proxy = new WebProxy("185.120.76.159", 34512)
+        {
+            Credentials = new NetworkCredential("adatadev21W4", "X4v2KjB")
+        };
+
         /// <summary>
         /// Solves captcha
         /// </summary>
@@ -59,7 +68,7 @@ namespace CamelliaManagementSystem.Requests
             while (true)
             {
                 var url = $"https://2captcha.com/res.php?key={apiKey}&action=get&id={captchaId}";
-                var client = new RestClient(url);
+                var client = new RestClient(url) {Proxy = _proxy};
                 var request = new RestRequest(Method.GET);
                 var response = client.Execute(request);
                 if (!response.Content.Equals("CAPCHA_NOT_READY"))
@@ -85,7 +94,7 @@ namespace CamelliaManagementSystem.Requests
         /// <exception cref="CamelliaCaptchaSolverException">Occured when API ERROR appears</exception>
         private static string GetCaptchaId(string base64, string apiKey)
         {
-            var client = new RestClient("https://2captcha.com/in.php");
+            var client = new RestClient("https://2captcha.com/in.php") {Proxy = _proxy};
             var request = new RestRequest(Method.POST);
             request.AddParameter("undefined", $"method=base64&key={apiKey}&body={base64}",
                 ParameterType.RequestBody);
@@ -97,7 +106,8 @@ namespace CamelliaManagementSystem.Requests
             }
             catch (Exception)
             {
-                throw new CamelliaCaptchaSolverException($"2captcha answer: '{response.Content}'; Status code: '{response.StatusCode}'");
+                throw new CamelliaCaptchaSolverException(
+                    $"2captcha answer: '{response.Content}'; Status code: '{response.StatusCode}'");
             }
         }
 
