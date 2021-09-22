@@ -20,7 +20,7 @@ namespace CamelliaManagementSystem.Requests
         /// <summary>
         /// Proxy for sending requests
         /// </summary>
-        private static WebProxy _proxy = new WebProxy("185.120.76.159", 34512)
+        private static WebProxy _proxy = new WebProxy("45.152.84.89", 34512)
         {
             Credentials = new NetworkCredential("adatadev21W4", "X4v2KjB")
         };
