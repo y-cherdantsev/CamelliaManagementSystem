@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -44,6 +45,7 @@ namespace CamelliaManagementSystem.Requests.References
             int delay = 1000,
             bool deleteFile = false, int timeout = 60000)
         {
+            throw new NotImplementedException();
             saveFolderPath ??= Path.GetTempPath();
 
             var reference = await GetReferenceAsync(bin, captchaApiKey, delay, timeout);

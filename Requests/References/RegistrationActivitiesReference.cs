@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -42,6 +43,7 @@ namespace CamelliaManagementSystem.Requests.References
         public async Task<IEnumerable<RegistrationActivitiesPdfTextParser.DateActivity>> GetActivitiesDatesAsync(string bin,
             string saveFolderPath = null, int delay = 1000, bool deleteFile = false, int timeout = 20000)
         {
+            throw new NotImplementedException();
             saveFolderPath ??= Path.GetTempPath();
 
             var reference = await GetReferenceAsync(bin, delay, timeout);

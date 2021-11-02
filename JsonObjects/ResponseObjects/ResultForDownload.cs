@@ -48,17 +48,19 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
         /// <param name="path">Where file should be saved</param>
         /// <param name="client">Client that will proceed request</param>
         /// <param name="fileName">Name of the file</param>
+        /// <param name="fileType">Type of file html | pdf <br/> Default pdf</param>
         /// <returns>Path of the file that has been saved</returns>
         /// ReSharper disable once CognitiveComplexity
-        public async Task<string> SaveFileAsync(string path, HttpClient client, string fileName = null)
-        {
+        public async Task<string> SaveFileAsync(string path, HttpClient client, string fileName = null, string fileType = "pdf")
+        { 
             // Generating name of a file using known values
             fileName = fileName == null
                 ? $"{nameEn} - {DateTime.Now.Ticks}"
-                : fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty);
+                : fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty)
+                    .Replace(".HTML", string.Empty).Replace(".html", string.Empty);
 
 
-            var fullName = Path.Combine(path, $"{fileName}.pdf");
+            var fullName = Path.Combine(path, $"{fileName}.{fileType}");
 
             var oldFile = new FileInfo(fullName);
             if (oldFile.Exists)
@@ -96,7 +98,7 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
                 contentStream.Close();
             }
 
-            return Path.Combine(path, $"{fileName}.pdf");
+            return Path.Combine(path, $"{fileName}.{fileType}");
         }
 
         /// <inheritdoc />

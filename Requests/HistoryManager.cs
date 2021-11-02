@@ -30,6 +30,7 @@ namespace CamelliaManagementSystem.Requests
         /// <param name="historiesFolderPath"></param>
         public HistoryManager(string historiesFolderPath)
         {
+            throw new NotImplementedException();
             _historiesDirectory = new DirectoryInfo(historiesFolderPath);
             if (!_historiesDirectory.Exists)
                 _historiesDirectory.Create();
