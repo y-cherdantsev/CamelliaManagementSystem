@@ -13,7 +13,7 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
     /// @author Yevgeniy Cherdantsev
     /// @date 11.02.2021 02:05:22
     /// <summary>
-    /// Parsing of registration reference and gettion of founders from it
+    /// Parsing of registration reference and getting of founders from it
     /// </summary>
     public class RegistrationHtmlParser : HtmlParser
     {

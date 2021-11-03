@@ -68,7 +68,7 @@ namespace CamelliaManagementSystem.Requests
             while (true)
             {
                 var url = $"https://2captcha.com/res.php?key={apiKey}&action=get&id={captchaId}";
-                var client = new RestClient(url) {Proxy = _proxy};
+                var client = new RestClient(url);//{Proxy = _proxy};
                 var request = new RestRequest(Method.GET);
                 var response = client.Execute(request);
                 if (!response.Content.Equals("CAPCHA_NOT_READY"))
@@ -94,7 +94,7 @@ namespace CamelliaManagementSystem.Requests
         /// <exception cref="CamelliaCaptchaSolverException">Occured when API ERROR appears</exception>
         private static string GetCaptchaId(string base64, string apiKey)
         {
-            var client = new RestClient("https://2captcha.com/in.php") {Proxy = _proxy};
+            var client = new RestClient("https://2captcha.com/in.php");// {Proxy = _proxy};
             var request = new RestRequest(Method.POST);
             request.AddParameter("undefined", $"method=base64&key={apiKey}&body={base64}",
                 ParameterType.RequestBody);

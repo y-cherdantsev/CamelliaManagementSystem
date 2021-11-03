@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using CamelliaManagementSystem.FileManage.DictionaryParsers;
-using CamelliaManagementSystem.FileManage.PlainTextParsers;
+using CamelliaManagementSystem.FileManage.HtmlParsers;
 
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
@@ -51,12 +49,10 @@ namespace CamelliaManagementSystem.Requests.References
             var reference = await GetReferenceAsync(iin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
 
-            return temp != null
-                ? new FlParticipationPdfDictionaryParser(
-                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
-                            $"{iin.TrimStart('0')}_fl_participation"), deleteFile)
-                    .GetWhereIsHead()
-                : null;
+            return new FlParticipationHtmlParser(
+                    await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                        $"{iin.TrimStart('0')}_fl_participation", "html"), deleteFile)
+                .GetWhereIsHead();
         }
 
         /// <summary>
@@ -74,18 +70,15 @@ namespace CamelliaManagementSystem.Requests.References
             int delay = 1000,
             bool deleteFile = false, int timeout = 60000)
         {
-            throw new NotImplementedException();
             saveFolderPath ??= Path.GetTempPath();
 
             var reference = await GetReferenceAsync(iin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
 
-            return temp != null
-                ? new FlParticipationPdfDictionaryParser(
-                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
-                            $"{iin.TrimStart('0')}_fl_participation"), deleteFile)
-                    .GetPersonFullname()
-                : null;
+            return new FlParticipationHtmlParser(
+                    await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                        $"{iin.TrimStart('0')}_fl_participation", "html"), deleteFile)
+                .GetPersonFullname();
         }
     }
 }
