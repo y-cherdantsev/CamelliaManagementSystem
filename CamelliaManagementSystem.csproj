@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <PackageVersion>2.1.2-beta</PackageVersion>
-        <Version>2.1.2-beta</Version>
+        <PackageVersion>2.1.3-beta</PackageVersion>
+        <Version>2.1.3-beta</Version>
         <RootNamespace>CamelliaManagementSystem</RootNamespace>
         <PackageTags>camellia management wisk alldata zhekacher</PackageTags>
         <Company>Wisk Telecom Solutions</Company>
