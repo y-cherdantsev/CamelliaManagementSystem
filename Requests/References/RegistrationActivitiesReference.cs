@@ -1,8 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using CamelliaManagementSystem.FileManage.HtmlParsers;
 using CamelliaManagementSystem.FileManage.PlainTextParsers;
 
 // ReSharper disable CommentTypo
@@ -40,21 +40,18 @@ namespace CamelliaManagementSystem.Requests.References
         /// <param name="deleteFile">If the file should be deleted after parsing</param>
         /// <param name="timeout">Timeout</param>
         /// <returns>IEnumerable - list of founders</returns>
-        public async Task<IEnumerable<RegistrationActivitiesPdfTextParser.DateActivity>> GetActivitiesDatesAsync(string bin,
+        public async Task<IEnumerable<RegistrationActivitiesHtmlParser.DateActivity>> GetActivitiesDatesAsync(string bin,
             string saveFolderPath = null, int delay = 1000, bool deleteFile = false, int timeout = 20000)
         {
-            throw new NotImplementedException();
             saveFolderPath ??= Path.GetTempPath();
 
             var reference = await GetReferenceAsync(bin, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
 
-            return temp != null
-                ? new RegistrationActivitiesPdfTextParser(
-                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
-                            $"{bin.TrimStart('0')}_activities"), deleteFile)
-                    .GetDatesChanges()
-                : null;
+            return new RegistrationActivitiesHtmlParser(
+                    await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                        $"{bin.TrimStart('0')}_activities", "html"), deleteFile)
+                .GetDatesChanges();
         }
     }
 }

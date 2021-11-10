@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using AngleSharp.Dom;
 using System.Collections.Generic;
+using AngleSharp;
 using CamelliaManagementSystem.Requests;
 
 // ReSharper disable CommentTypo
@@ -31,15 +32,14 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
         public IEnumerable<string> GetFounders()
         {
             var founders = new List<string>();
-            if (InnerText.ToLower().Contains("регистрации филиала"))
+            if (HtmlDoc.ToHtml().ToLower().Contains("регистрации филиала"))
                 return founders;
 
             const string from = "Учредители (участники):";
-            if (InnerText.ToLower().IndexOf(from.ToLower()) == -1)
+            if (HtmlDoc.ToHtml().ToLower().IndexOf(from.ToLower()) == -1)
                 throw new CamelliaNoneDataException("No information were found in the reference");
 
-            var htmlDoc = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(InnerText);
-            var tableRows = htmlDoc.QuerySelectorAll("td").FirstOrDefault(x => x.GetAttribute("align") == "center")?
+            var tableRows = HtmlDoc.QuerySelectorAll("td").FirstOrDefault(x => x.GetAttribute("align") == "center")?
                 .QuerySelectorAll("tr");
             var foundersRowFound = false;
             // ReSharper disable once PossibleNullReferenceException

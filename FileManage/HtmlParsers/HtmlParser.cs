@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using AngleSharp.Html.Dom;
 using CamelliaManagementSystem.Requests;
 
 // ReSharper disable CommentTypo
@@ -16,9 +17,9 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
     public abstract class HtmlParser
     {
         /// <summary>
-        /// Inner text of a pdf
+        /// Inner HTML DOM of a document
         /// </summary>
-        protected readonly string InnerText;
+        protected readonly IHtmlDocument HtmlDoc;
 
         /// <summary>
         /// Constructor
@@ -34,7 +35,7 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
 
             try
             {
-                InnerText = GetHtmlFromFile(file);
+                HtmlDoc = GetHtmlFromFile(file);
             }
             catch (Exception)
             {
@@ -50,10 +51,11 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
         /// </summary>
         /// <param name="file">File that should be parsed</param>
         /// <returns>string - inner text</returns>
-        private static string GetHtmlFromFile(FileSystemInfo file){
+        private static IHtmlDocument GetHtmlFromFile(FileSystemInfo file){
             var htmlFile = new FileInfo(file.FullName.Replace(file.Extension, ".html"));
             var text = File.ReadAllText(htmlFile.FullName);
-            return text;
+            var htmlDoc = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(text);
+            return htmlDoc;
         }
     }
 }

@@ -31,8 +31,7 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
         {
             var companies = new List<string>();
             var fullname = GetPersonFullname();
-            var htmlDoc = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(InnerText);
-            var tableRows = htmlDoc.QuerySelectorAll("td").FirstOrDefault(x => x.GetAttribute("align") == "center")?
+            var tableRows = HtmlDoc.QuerySelectorAll("td").FirstOrDefault(x => x.GetAttribute("align") == "center")?
                 .QuerySelectorAll("tr");
             var dataRows = tableRows!.Where(x =>
                     x.InnerHtml.ToUpper().Contains(">БИН<") || x.InnerHtml.ToUpper().Contains("ПЕРВЫЙ РУКОВОДИТЕЛЬ"))
@@ -63,8 +62,7 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
         /// <returns>Person fullname</returns>
         public string GetPersonFullname()
         {
-            var htmlDoc = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(InnerText);
-            var fullnameRow = htmlDoc.QuerySelectorAll("td").FirstOrDefault(x => x.GetAttribute("align") == "center")?
+            var fullnameRow = HtmlDoc.QuerySelectorAll("td").FirstOrDefault(x => x.GetAttribute("align") == "center")?
                 .QuerySelectorAll("tr").FirstOrDefault(x => x.InnerHtml.Contains("Ф.И.О."));
             var fullname = fullnameRow!.QuerySelectorAll("span")
                 .FirstOrDefault(x => !x.GetAttribute("style").Contains("font-weight: bold")).Text();
