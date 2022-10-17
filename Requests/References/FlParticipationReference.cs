@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Data;
+using CamelliaManagementSystem.FileManage.DictionaryParsers;
 using CamelliaManagementSystem.FileManage.HtmlParsers;
 
 // ReSharper disable CommentTypo
@@ -49,10 +51,18 @@ namespace CamelliaManagementSystem.Requests.References
             var reference = await GetReferenceAsync(iin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
 
-            return new FlParticipationHtmlParser(
-                    await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
-                        $"{iin.TrimStart('0')}_fl_participation", "html"), deleteFile)
-                .GetWhereIsHead();
+            if (temp.url.Split(".").Last().ToLower().Contains("htm") ||
+                temp.url.Split(".").Last().ToLower().Contains("html"))
+                return new FlParticipationHtmlParser(
+                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                            $"{iin.TrimStart('0')}_fl_participation"), deleteFile)
+                    .GetWhereIsHead();
+            if (temp.url.Split(".").Last().ToLower().Contains("pdf"))
+                return new FlParticipationPdfDictionaryParser(
+                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                            $"{iin.TrimStart('0')}_registration"), deleteFile)
+                    .GetWhereIsHead();
+            throw new DataException($"Not found such type of file: {temp.url}");
         }
 
         /// <summary>
@@ -75,10 +85,20 @@ namespace CamelliaManagementSystem.Requests.References
             var reference = await GetReferenceAsync(iin, captchaApiKey, delay, timeout);
             var temp = reference.First(x => x.language.Contains("ru"));
 
-            return new FlParticipationHtmlParser(
-                    await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
-                        $"{iin.TrimStart('0')}_fl_participation", "html"), deleteFile)
-                .GetPersonFullname();
+            if (temp.url.Split(".").Last().ToLower().Contains("htm") ||
+                temp.url.Split(".").Last().ToLower().Contains("html"))
+                return new FlParticipationHtmlParser(
+                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                            $"{iin.TrimStart('0')}_fl_participation"), deleteFile)
+                    .GetPersonFullname();
+            if (temp.url.Split(".").Last().ToLower().Contains("pdf"))
+                return new FlParticipationPdfDictionaryParser(
+                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                            $"{iin.TrimStart('0')}_fl_participation"), deleteFile)
+                    .GetPersonFullname();
+            throw new DataException($"Not found such type of file: {temp.url}");
+            
+
         }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using AngleSharp;
+using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using CamelliaManagementSystem.Requests;
 
@@ -56,6 +59,21 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
             var text = File.ReadAllText(htmlFile.FullName);
             var htmlDoc = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(text);
             return htmlDoc;
+        }
+        
+        /// <summary>
+        /// Removes field from html
+        /// </summary>
+        /// <param name="newFilePath">Result html file path</param>
+        /// <param name="regex">Regex in string format</param>
+        public void DeleteField(string newFilePath, string field)
+        {
+            var html = HtmlDoc.ToHtml();
+            var fieldRecord = HtmlDoc.QuerySelectorAll("td").FirstOrDefault(x => x.GetAttribute("align") == "center")?
+                .QuerySelectorAll("tr").FirstOrDefault(x => x.InnerHtml.Contains(field));
+            var removeHtml = fieldRecord.Html();
+            html = html.Replace(removeHtml, string.Empty);
+            File.WriteAllText(newFilePath, html);
         }
     }
 }

@@ -63,12 +63,8 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Network address of NCANode
         /// </summary>
-        public readonly string NcaNodeHost;
+        public readonly string NcaNodeAddress;
 
-        /// <summary>
-        /// Network port of NCANode
-        /// </summary>
-        public readonly int NcaNodePort;
 
         /// @author Yevgeniy Cherdantsev
         /// @date 18.02.2020 10:31:53
@@ -76,13 +72,12 @@ namespace CamelliaManagementSystem
         /// Creates clients from the given signs
         /// </summary>
         /// <param name="signs">List of signs</param>
-        /// <param name="ncaNodeHost">Network address of NCANode</param>
-        /// <param name="ncaNodePort">Network port of NCANode</param>
+        /// <param name="ncaNodeAddress">Network address of NCANode</param>
         /// <param name="webProxies">Proxy if need</param>
         /// <param name="handlerTimeout">Timeout</param>
         /// <param name="numberOfTries">Number Of Tries</param>
         /// <param name="allowedDowntime">Allowed downtime in seconds without clients, after it reload will be proceeded</param>
-        public CamelliaClientProvider(List<Sign> signs, string ncaNodeHost, int ncaNodePort,
+        public CamelliaClientProvider(List<Sign> signs, string ncaNodeAddress,
             List<IWebProxy> webProxies = null,
             int handlerTimeout = 20000, int numberOfTries = 5, int allowedDowntime = 240)
         {
@@ -92,8 +87,7 @@ namespace CamelliaManagementSystem
             _numberOfTries = numberOfTries;
             _allowedDowntime = allowedDowntime;
             _secondsLeft = allowedDowntime;
-            NcaNodeHost = ncaNodeHost;
-            NcaNodePort = ncaNodePort;
+            NcaNodeAddress = ncaNodeAddress;
 
             // Timer that check existence of clients in the list
             new Task(async () =>
@@ -148,8 +142,8 @@ namespace CamelliaManagementSystem
                     }
 
                 var client = _webProxies != null
-                    ? new CamelliaClient(sign, NcaNodeHost, NcaNodePort, _webProxies.Current, _handlerTimeout)
-                    : new CamelliaClient(sign, NcaNodeHost, NcaNodePort, httpClientTimeout: _handlerTimeout);
+                    ? new CamelliaClient(sign, NcaNodeAddress, _webProxies.Current, _handlerTimeout)
+                    : new CamelliaClient(sign, NcaNodeAddress, httpClientTimeout: _handlerTimeout);
 
                 tasks.Add(LoadClientAsync(client, _numberOfTries));
             }

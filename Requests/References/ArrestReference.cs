@@ -16,17 +16,17 @@ namespace CamelliaManagementSystem.Requests.References
     /// @author Yevgeniy Cherdantsev
     /// @date 07.03.2020 16:49:47
     /// <summary>
-    /// Registration reference with founder information
+    /// Arrest reference
     /// </summary>
-    public sealed class RegistrationReference : BiinRequest
+    public sealed class ArrestReference : BiinRequest
     {
         /// <inheritdoc />
-        public RegistrationReference(CamelliaClient camelliaClient) : base(camelliaClient)
+        public ArrestReference(CamelliaClient camelliaClient) : base(camelliaClient)
         {
         }
 
         /// <inheritdoc />
-        protected override string RequestLink() => "https://egov.kz/services/P30.11/";
+        protected override string RequestLink() => "https://egov.kz/services/P30.08/";
 
         /// <inheritdoc />
         protected override BiinType TypeOfBiin() => BiinType.BIN;
@@ -40,7 +40,7 @@ namespace CamelliaManagementSystem.Requests.References
         /// <param name="deleteFile">If the file should be deleted after parsing</param>
         /// <param name="timeout">Timeout</param>
         /// <returns>IEnumerable - list of founders</returns>
-        public async Task<IEnumerable<string>> GetFoundersAsync(string bin, string saveFolderPath = null,
+        public async Task<Dictionary<string, string>> GetArrestsAsync(string bin, string saveFolderPath = null,
             bool deleteFile = false, int delay = 1000,
             int timeout = 20000)
         {
@@ -51,15 +51,10 @@ namespace CamelliaManagementSystem.Requests.References
 
             if (temp.url.Split(".").Last().ToLower().Contains("htm") ||
                 temp.url.Split(".").Last().ToLower().Contains("html"))
-                return new RegistrationHtmlParser(
+                return new ArrestHtmlParser(
                         await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
-                            $"{bin.TrimStart('0')}_registration"), deleteFile)
-                    .GetFounders();
-            if (temp.url.Split(".").Last().ToLower().Contains("pdf"))
-                return new RegistrationPdfTextParser(
-                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
-                            $"{bin.TrimStart('0')}_registration"), deleteFile)
-                    .GetFounders();
+                            $"{bin.TrimStart('0')}_arrest"), deleteFile)
+                    .GetArrest();
             throw new DataException($"Not found such type of file: {temp.url}");
         }
     }

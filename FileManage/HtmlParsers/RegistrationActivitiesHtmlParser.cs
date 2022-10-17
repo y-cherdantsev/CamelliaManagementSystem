@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AngleSharp.Dom;
+using CamelliaManagementSystem.Requests.References;
 
 namespace CamelliaManagementSystem.FileManage.HtmlParsers
 {
@@ -16,9 +17,9 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
         /// Gets dates from registration activities reference
         /// </summary>
         /// <returns>List of DateActivity objects</returns>
-        public IEnumerable<DateActivity> GetDatesChanges()
+        public IEnumerable<RegistrationActivitiesReference.DateActivity> GetDatesChanges()
         {
-            var result = new List<DateActivity>();
+            var result = new List<RegistrationActivitiesReference.DateActivity>();
             var rows = HtmlDoc.QuerySelectorAll("tr");
             var rowsWithBold = rows.Where(x
                 => x.QuerySelectorAll("span")
@@ -43,7 +44,7 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
                     typeTo = activityString.Length;
 
 
-                var activity = new Activity
+                var activity = new RegistrationActivitiesReference.Activity
                 {
                     type = activityString.Substring(0, typeTo).Trim(),
                     action = new List<string>()
@@ -65,7 +66,7 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
                     // ignored
                 }
 
-                result.Add(new DateActivity(date, activity));
+                result.Add(new RegistrationActivitiesReference.DateActivity(date, activity));
             }
 
             return Normalize(result);
@@ -76,7 +77,7 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
         /// </summary>
         /// <param name="dateActivities">List of DateActivity</param>
         /// <returns>Clear DateActivity list with normalized view</returns>
-        private static IEnumerable<DateActivity> Normalize(IEnumerable<DateActivity> dateActivities)
+        private static IEnumerable<RegistrationActivitiesReference.DateActivity> Normalize(IEnumerable<RegistrationActivitiesReference.DateActivity> dateActivities)
         {
             //Removing same values
             var result = dateActivities.ToList();
@@ -88,42 +89,6 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
             return result.Where(x => x != null).OrderBy(x => x.date).ToList();
         }
 
-        /// <summary>
-        /// Date with activities
-        /// </summary>
-        public class DateActivity
-        {
-            internal DateActivity(DateTime date, Activity activity)
-            {
-                this.date = date;
-                this.activity = activity;
-            }
-
-            /// <summary>
-            /// Date of activity
-            /// </summary>
-            public DateTime date { get; set; }
-
-            /// <summary>
-            /// Activity
-            /// </summary>
-            public Activity activity { get; set; }
-        }
-
-        /// <summary>
-        /// Activity type with list of actions
-        /// </summary>
-        public class Activity
-        {
-            /// <summary>
-            /// Type of activity
-            /// </summary>
-            public string type { get; set; }
-
-            /// <summary>
-            /// List of actions
-            /// </summary>
-            public List<string> action { get; set; }
-        }
+ 
     }
 }

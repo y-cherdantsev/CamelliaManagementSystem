@@ -69,7 +69,7 @@ namespace CamelliaManagementSystem.Requests
 
             // Signing token
             var signedToken = await SignXmlTokens.SignTokenAsync(token, CamelliaClient.Sign.rsa,
-                CamelliaClient.Sign.password, CamelliaClient.NcaNodeHost, CamelliaClient.NcaNodePort);
+                CamelliaClient.Sign.password, CamelliaClient.NcaNodeAddress);
 
             // Sending request and getting reference
             var requestNumber = await SendPdfRequestAsync(signedToken);

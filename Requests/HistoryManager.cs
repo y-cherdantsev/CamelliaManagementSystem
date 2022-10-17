@@ -117,14 +117,14 @@ namespace CamelliaManagementSystem.Requests
                 await ruFileActivitiesReference.SaveFileAsync(
                     historyDirectory.FullName,
                     client.HttpClient,
-                    bin.ToString(), "html"
+                    bin.ToString()
                 );
 
             if (kzFileActivitiesReference != null)
                 await kzFileActivitiesReference.SaveFileAsync(
                     historyDirectory.FullName,
                     client.HttpClient,
-                    $"kz{bin.ToString()}", "html"
+                    $"kz{bin.ToString()}"
                 );
         }
 
@@ -177,14 +177,14 @@ namespace CamelliaManagementSystem.Requests
                     await ruFileDateReference.SaveFileAsync(
                         historyDirectory.FullName,
                         client.HttpClient,
-                        $"{dateTime.Day}{dateTime.Month}{dateTime.Year}_{bin.ToString()}", "html"
+                        $"{dateTime.Day}{dateTime.Month}{dateTime.Year}_{bin.ToString()}"
                     );
 
                 if (kzFileDateReference != null)
                     await kzFileDateReference.SaveFileAsync(
                         historyDirectory.FullName,
                         client.HttpClient,
-                        $"kz{dateTime.Day}{dateTime.Month}{dateTime.Year}_{bin.ToString()}", "html"
+                        $"kz{dateTime.Day}{dateTime.Month}{dateTime.Year}_{bin.ToString()}"
                     );
             }
 
@@ -383,12 +383,24 @@ namespace CamelliaManagementSystem.Requests
                 occupation = newOccupation;
             }
             //todo(Участники) (Судя по всему убрали учредителей)
-/*
+            // return changes;
             // Founders changes
+            var foundersFirstFilePath = referenceFiles.First().Value.FullName;
+            var foundersFileExtension = foundersFirstFilePath.Split(".").Last();
             var startFounders =
-                new RegisteredDatePdfDictionaryParser(
-                    Path.Combine(historyDirectory.FullName,
-                        $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.html")).GetFounders();
+                foundersFileExtension switch
+                {
+                    "html" => new RegisteredDateHtmlParser(nameFirstFilePath, deleteFile: false)
+                        .GetFounders(),
+                    "pdf" => new RegisteredDatePdfDictionaryParser(nameFirstFilePath, deleteFile: false)
+                        .GetFounders(),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            startFounders = startFounders.ConvertAll(d => d.ToLower());
+            // var startFounders =
+            //     new RegisteredDateHtmlParser(
+            //         Path.Combine(historyDirectory.FullName,
+            //             $"{dates.First().Day}{dates.First().Month}{dates.First().Year}_{bin}.html")).GetFounders();
 
             var previousFounders = new List<string>();
             if (startFounders != null)
@@ -398,24 +410,31 @@ namespace CamelliaManagementSystem.Requests
                 previousFounders = startFounders;
             }
 
-            foreach (var date in dates)
+            foreach (var (key, value) in referenceFiles)
             {
-                var tempFounders =
-                    new RegisteredDatePdfDictionaryParser(
-                            Path.Combine(historyDirectory.FullName, $"{date.Day}{date.Month}{date.Year}_{bin}.html"))
-                        .GetFounders();
+                foundersFileExtension = value.FullName.Split(".").Last();
+                var tempFounders = 
+                    foundersFileExtension switch
+                {
+                    "html" => new RegisteredDateHtmlParser(value.FullName, deleteFile: false)
+                        .GetFounders(),
+                    "pdf" => new RegisteredDatePdfDictionaryParser(value.FullName, deleteFile: false)
+                        .GetFounders(),
+                    _ => previousFounders
+                };
+                tempFounders = tempFounders.ConvertAll(d => d.ToLower());
                 // Old removed
                 changes.AddRange(from previousFounder in previousFounders
                     where tempFounders.All(x => x != previousFounder)
-                    select new CompanyChange {Date = date, Type = "founder", Before = previousFounder, After = null});
+                    select new CompanyChange {Date = key, Type = "founder", Before = previousFounder, After = null});
 
                 //New added
                 changes.AddRange(from tempFounder in tempFounders
                     where previousFounders.All(x => x != tempFounder)
-                    select new CompanyChange {Date = date, Type = "founder", Before = null, After = tempFounder});
+                    select new CompanyChange {Date = key, Type = "founder", Before = null, After = tempFounder});
                 previousFounders = tempFounders;
             }
-*/
+
             return changes;
         }
     }

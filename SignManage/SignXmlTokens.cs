@@ -22,14 +22,12 @@ namespace CamelliaManagementSystem.SignManage
         /// <param name="inData">XML text</param>
         /// <param name="base64Sign">Base64 representation of sign file</param>
         /// <param name="password">Password</param>
-        /// <param name="host">API host</param>
-        /// <param name="port">API port</param>
+        /// <param name="address">API address</param>
         /// <returns>string - signed token</returns>
         public static async Task<string> SignTokenAsync(string inData, string base64Sign, string password,
-            string host,
-            int port)
+            string address)
         {
-            var ncaNode = new NCANode.NCANode(host, port);
+            var ncaNode = new NCANode.NcaNode(address);
             var xmlSignRequest = new XMLSignRequest
             {
                 useTsaPotspHashAlgorithm = TspHashAlgorithm.SHA256,

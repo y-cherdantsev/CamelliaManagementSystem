@@ -5,7 +5,7 @@ namespace CamelliaManagementSystem.FileManage.DictionaryParsers
 {
     public class RegisteredDatePdfDictionaryParser : PdfDictionaryParser
     {
-        public RegisteredDatePdfDictionaryParser(string filePath) : base(filePath)
+        public RegisteredDatePdfDictionaryParser(string path, bool deleteFile = true) : base(path, deleteFile)
         {
         }
 

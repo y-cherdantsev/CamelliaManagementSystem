@@ -129,8 +129,16 @@ namespace CamelliaManagementSystem.FileManage.HtmlParsers
         }
 
         public List<string> GetFounders()
-        {
-            throw new NotImplementedException();
+        {      
+            if (HtmlDoc.ToHtml().IndexOf("Учредители (участники, члены):") == -1)
+                    return new List<string>();
+            var row = HtmlDoc.QuerySelectorAll("td").FirstOrDefault(x => x.GetAttribute("align") == "center")
+                ?.QuerySelectorAll("tr")
+                .FirstOrDefault(x => x.InnerHtml.Contains("Учредители (участники, члены):"));
+
+            var result = row?.QuerySelectorAll("span")
+                .Where(x => !x.GetAttribute("style").Contains("font-weight: bold")).Select(x => x.InnerHtml.Trim(' ').Trim(';').Split(" БИН ")[0].Trim(','));
+            return result!.ToList();
         }
     }
 }

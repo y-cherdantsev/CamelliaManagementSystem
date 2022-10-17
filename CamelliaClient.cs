@@ -56,29 +56,22 @@ namespace CamelliaManagementSystem
         /// <summary>
         /// Network address of NCANode
         /// </summary>
-        public readonly string NcaNodeHost;
-
-        /// <summary>
-        /// Network port of NCANode
-        /// </summary>
-        public readonly int NcaNodePort;
+        public readonly string NcaNodeAddress;
 
 
         /// <summary>
         /// Constructor for creating Camellia client with(out) proxy
         /// </summary>
         /// <param name="sign">AUTH and RSA signs of the user</param>
-        /// <param name="ncaNodeHost">Network address of NCANode</param>
-        /// <param name="ncaNodePort">Network port of NCANode</param>
+        /// <param name="ncaNodeAddress">Network address of NCANode</param>
         /// <param name="webProxy">Proxy</param>
         /// <param name="httpClientTimeout">Timeout of http client connected to the camellia system; Standard: 15000</param>
-        public CamelliaClient(Sign sign, string ncaNodeHost, int ncaNodePort, IWebProxy webProxy = null,
+        public CamelliaClient(Sign sign, string ncaNodeAddress, IWebProxy webProxy = null,
             int httpClientTimeout = 60000)
         {
             Sign = sign;
             Proxy = webProxy;
-            NcaNodeHost = ncaNodeHost;
-            NcaNodePort = ncaNodePort;
+            NcaNodeAddress = ncaNodeAddress;
             //If proxy equals null creates handler without proxy and vice versa
             var handler = Proxy != null
                 ? new HttpClientHandler {UseProxy = true, Proxy = Proxy}
@@ -146,7 +139,7 @@ namespace CamelliaManagementSystem
             var token = await GetTokenAsync();
 
             //Signing token for authorization
-            var signedToken = await SignXmlTokens.SignTokenAsync(token, Sign.auth, Sign.password, NcaNodeHost, NcaNodePort);
+            var signedToken = await SignXmlTokens.SignTokenAsync(token, Sign.auth, Sign.password, NcaNodeAddress);
 
             var values = new Dictionary<string, string>
             {

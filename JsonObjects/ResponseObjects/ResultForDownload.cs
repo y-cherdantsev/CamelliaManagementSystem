@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -48,16 +49,17 @@ namespace CamelliaManagementSystem.JsonObjects.ResponseObjects
         /// <param name="path">Where file should be saved</param>
         /// <param name="client">Client that will proceed request</param>
         /// <param name="fileName">Name of the file</param>
-        /// <param name="fileType">Type of file html | pdf <br/> Default pdf</param>
         /// <returns>Path of the file that has been saved</returns>
         /// ReSharper disable once CognitiveComplexity
-        public async Task<string> SaveFileAsync(string path, HttpClient client, string fileName = null, string fileType = "pdf")
-        { 
+        public async Task<string> SaveFileAsync(string path, HttpClient client, string fileName = null)
+        {
+            var fileType = url.Split(".").Last().ToLower().Split("?").First();
             // Generating name of a file using known values
             fileName = fileName == null
                 ? $"{nameEn} - {DateTime.Now.Ticks}"
                 : fileName.Replace(".PDF", string.Empty).Replace(".pdf", string.Empty)
-                    .Replace(".HTML", string.Empty).Replace(".html", string.Empty);
+                    .Replace(".HTML", string.Empty).Replace(".html", string.Empty)
+                    .Replace(".HTM", string.Empty).Replace(".htm", string.Empty);
 
 
             var fullName = Path.Combine(path, $"{fileName}.{fileType}");

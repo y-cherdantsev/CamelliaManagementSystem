@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <PackageVersion>2.1.3-beta</PackageVersion>
-        <Version>2.1.3-beta</Version>
+        <PackageVersion>2.1.15</PackageVersion>
+        <Version>2.1.15</Version>
         <RootNamespace>CamelliaManagementSystem</RootNamespace>
         <PackageTags>camellia management wisk alldata zhekacher</PackageTags>
         <Company>Wisk Telecom Solutions</Company>
@@ -35,7 +35,7 @@
     <ItemGroup>
         <PackageReference Include="itext7" Version="7.1.13" />
         <PackageReference Include="iTextSharp" Version="5.5.13.2" />
-        <PackageReference Include="NCANode" Version="1.0.1" />
+        <PackageReference Include="NCANode" Version="1.0.4" />
         <PackageReference Include="RestSharp" Version="106.11.7" />
         <PackageReference Include="itext7.pdfsweep" Version="2.0.5" />
         <PackageReference Include="AngleSharp" Version="1.0.0-alpha-822" />

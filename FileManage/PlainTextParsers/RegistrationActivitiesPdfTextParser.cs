@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using CamelliaManagementSystem.Requests.References;
 
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
@@ -31,9 +32,9 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
         /// Gets dates from registration activities reference
         /// </summary>
         /// <returns>List of DateActivity objects</returns>
-        public IEnumerable<DateActivity> GetDatesChanges()
+        public IEnumerable<RegistrationActivitiesReference.DateActivity> GetDatesChanges()
         {
-            var result = new List<DateActivity>();
+            var result = new List<RegistrationActivitiesReference.DateActivity>();
             var innerText = InnerText;
             innerText = innerText.Substring(innerText.IndexOf("<b>Местонахождение</b>") + 3,
                 innerText.Length - innerText.IndexOf("<b>Местонахождение</b>") - 3);
@@ -69,7 +70,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
                     typeTo = activityString.Length;
 
 
-                var activity = new Activity
+                var activity = new RegistrationActivitiesReference.Activity
                 {
                     type = activityString.Substring(0, typeTo).Trim(),
                     action = new List<string>()
@@ -91,7 +92,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
                     // ignored
                 }
 
-                result.Add(new DateActivity(date, activity));
+                result.Add(new RegistrationActivitiesReference.DateActivity(date, activity));
             }
 
             return Normalize(result);
@@ -102,7 +103,7 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
         /// </summary>
         /// <param name="dateActivities">List of DateActivity</param>
         /// <returns>Clear DateActivity list with normalized view</returns>
-        private static IEnumerable<DateActivity> Normalize(IEnumerable<DateActivity> dateActivities)
+        private static IEnumerable<RegistrationActivitiesReference.DateActivity> Normalize(IEnumerable<RegistrationActivitiesReference.DateActivity> dateActivities)
         {
             //Removing same values
             var result = dateActivities.ToList();
@@ -112,44 +113,6 @@ namespace CamelliaManagementSystem.FileManage.PlainTextParsers
                     result.RemoveAt(j);
 
             return result.Where(x => x != null).OrderBy(x => x.date).ToList();
-        }
-
-        /// <summary>
-        /// Date with activities
-        /// </summary>
-        public class DateActivity
-        {
-            internal DateActivity(DateTime date, Activity activity)
-            {
-                this.date = date;
-                this.activity = activity;
-            }
-
-            /// <summary>
-            /// Date of activity
-            /// </summary>
-            public DateTime date { get; set; }
-
-            /// <summary>
-            /// Activity
-            /// </summary>
-            public Activity activity { get; set; }
-        }
-
-        /// <summary>
-        /// Activity type with list of actions
-        /// </summary>
-        public class Activity
-        {
-            /// <summary>
-            /// Type of activity
-            /// </summary>
-            public string type { get; set; }
-
-            /// <summary>
-            /// List of actions
-            /// </summary>
-            public List<string> action { get; set; }
         }
     }
 }
