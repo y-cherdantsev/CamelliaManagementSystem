@@ -40,7 +40,7 @@ namespace CamelliaManagementSystem.Requests
             for (var i = 0; i < numberOfTries; i++)
             {
                 var response = await camelliaClient.HttpClient.GetAsync(
-                    $"https://egov.kz/services/P30.04/rest/gbdfl/persons/{iin}?infotype=short");
+                    $"https://egov.kz/services/P33.01/rest/gbdfl/persons/{iin}?infotype=short");
 
                 // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
                 switch (response.StatusCode)

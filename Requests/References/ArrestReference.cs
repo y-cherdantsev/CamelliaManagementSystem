@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using CamelliaManagementSystem.FileManage.HtmlParsers;
 using CamelliaManagementSystem.FileManage.PlainTextParsers;
+using iText.StyledXmlParser.Jsoup.Parser;
 
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
@@ -51,10 +52,16 @@ namespace CamelliaManagementSystem.Requests.References
 
             if (temp.url.Split(".").Last().ToLower().Contains("htm") ||
                 temp.url.Split(".").Last().ToLower().Contains("html"))
-                return new ArrestHtmlParser(
-                        await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
-                            $"{bin.TrimStart('0')}_arrest"), deleteFile)
-                    .GetArrest();
+            {
+                var file = await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                    $"{bin.TrimStart('0')}_arrest");
+                var parser = new ArrestHtmlParser(await temp.SaveFileAsync(saveFolderPath, CamelliaClient.HttpClient,
+                        $"{bin.TrimStart('0')}_arrest")
+                    , deleteFile);
+                parser.DeleteField(file, "Выдана");
+                return parser.GetArrest();
+            }
+
             throw new DataException($"Not found such type of file: {temp.url}");
         }
     }
